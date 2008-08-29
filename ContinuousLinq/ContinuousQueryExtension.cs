@@ -32,6 +32,87 @@ namespace ContinuousLinq
         
         #endregion
 
+        #region SelectMany - OC based extension
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
+            this ObservableCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
+            this ObservableCollection<TSource> source, Expression<Func<TSource, Int32, IEnumerable<TResult>>> manySelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+            this ObservableCollection<TSource> source,
+            Expression<Func<TSource, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+            this ObservableCollection<TSource> source,
+            Expression<Func<TSource, int, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        {
+        }
+
+        #endregion
+
+        #region SelectMany - ROC based extension
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
+            this ReadOnlyObservableCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
+            this ReadOnlyObservableCollection<TSource> source, Expression<Func<TSource, Int32, IEnumerable<TResult>>> manySelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+            this ReadOnlyObservableCollection<TSource> source,
+            Expression<Func<TSource, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+            this ReadOnlyObservableCollection<TSource> source,
+            Expression<Func<TSource, int, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        {
+        }
+
+        #endregion
+
+        #region SelectMany - ROCC based extension
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
+            this ReadOnlyContinuousCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
+            this ReadOnlyContinuousCollection<TSource> source, Expression<Func<TSource, Int32, IEnumerable<TResult>>> manySelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        {
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, int, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        {
+        }
+
+        #endregion
+
         #region Where
 
         public static ReadOnlyContinuousCollection<TSource> Where<TSource>(

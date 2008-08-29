@@ -11,15 +11,15 @@ namespace ContinuousLinq
 {
     public class SelectReadOnlyContinuousCollection<TSource, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult> 
     {
-        internal Func<TSource, TResult> Function { get; set; }
+        internal Func<TSource, TResult> SelectorFunction { get; set; }
         internal Dictionary<TSource, TResult> CurrentValues { get; set; }
 
         internal Dictionary<TSource, int> CurrentIndices { get; set; }
 
-        public SelectReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource,TResult>> expression)
-            : base(list, ExpressionPropertyAnalyzer.Analyze(expression))
+        public SelectReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource,TResult>> selectorExpression)
+            : base(list, ExpressionPropertyAnalyzer.Analyze(selectorExpression))
         {
-            this.Function = expression.Compile();
+            this.SelectorFunction = selectorExpression.Compile();
 
             this.CurrentValues = new Dictionary<TSource, TResult>(this.Source.Count);
             RecordCurrentValues(this.Source);
@@ -40,7 +40,7 @@ namespace ContinuousLinq
             TSource senderAsTSource = (TSource)sender;
             
             TResult oldValue = this.CurrentValues[senderAsTSource];
-            TResult newValue = this.Function(senderAsTSource);
+            TResult newValue = this.SelectorFunction(senderAsTSource);
             
             if (EqualityComparer<TResult>.Default.Equals(oldValue, newValue))
                 return;
@@ -74,7 +74,7 @@ namespace ContinuousLinq
         {
             foreach (TSource item in items)
             {
-                this.CurrentValues[item] = this.Function(item);
+                this.CurrentValues[item] = this.SelectorFunction(item);
             }
         }
 
@@ -140,7 +140,7 @@ namespace ContinuousLinq
         {
             RecordCurrentValues(newItems);
             InsertIntoIndexTable(index, newItems);
-            IEnumerable<TResult> selectedItems = newItems.Select(this.Function);
+            IEnumerable<TResult> selectedItems = newItems.Select(this.SelectorFunction);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, selectedItems.ToList(), index));
         }
 
@@ -148,7 +148,7 @@ namespace ContinuousLinq
         {
             RemoveCurrentValues(oldItems);
             RemoveFromIndexTable(index, oldItems);
-            IEnumerable<TResult> selectedItems = oldItems.Select(this.Function);
+            IEnumerable<TResult> selectedItems = oldItems.Select(this.SelectorFunction);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, selectedItems.ToList(), index));
         }
 
@@ -164,7 +164,7 @@ namespace ContinuousLinq
         void OnMove(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             MoveInIndexTable(oldStartingIndex, newStartingIndex);
-            IEnumerable<TResult> newSelectedItems = newItems.Select(this.Function);
+            IEnumerable<TResult> newSelectedItems = newItems.Select(this.SelectorFunction);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newSelectedItems.ToList(), newStartingIndex, oldStartingIndex));
         }
         
@@ -173,8 +173,8 @@ namespace ContinuousLinq
             ReplaceInIndexTable(newStartingIndex, oldItems, newItems);
             RemoveCurrentValues(oldItems);
             RecordCurrentValues(newItems);
-            IEnumerable<TResult> newSelectedItems = newItems.Select(this.Function);
-            IEnumerable<TResult> oldSelectedItems = oldItems.Select(this.Function);
+            IEnumerable<TResult> newSelectedItems = newItems.Select(this.SelectorFunction);
+            IEnumerable<TResult> oldSelectedItems = oldItems.Select(this.SelectorFunction);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newSelectedItems.ToList(), oldSelectedItems.ToList(), newStartingIndex));
         }
     }
