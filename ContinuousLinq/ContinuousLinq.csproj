@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
     <Compile Include="Expressions\ConstantNode.cs" />
     <Compile Include="Aggregation\ContinuousAggregationExtension.cs" />
     <Compile Include="Collections\ContinuousCollection.cs" />

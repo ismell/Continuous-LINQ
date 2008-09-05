@@ -102,7 +102,7 @@ namespace ContinuousLinq.Aggregates
 
         internal ContinuousValue(
             IList<TSource> input, 
-            Expression<Func<TSource, TResult>> expression,
+            Expression<Func<TSource, TResult>> selectorExpression,
             Func<IList<TSource>, Func<TSource,TResult>, TResult> aggregateOperation)
         {
             this.Source = input;
@@ -111,10 +111,10 @@ namespace ContinuousLinq.Aggregates
 
             PropertyAccessTree propertyAccessTree = null;
             
-            if (expression != null)
+            if (selectorExpression != null)
             {
-                this.Selector = expression.Compile();
-                propertyAccessTree = ExpressionPropertyAnalyzer.Analyze(expression);
+                this.Selector = selectorExpression.Compile();
+                propertyAccessTree = ExpressionPropertyAnalyzer.Analyze(selectorExpression);
             }
 
             this.NotifyCollectionChangedMonitor = new NotifyCollectionChangedMonitor<TSource>(propertyAccessTree, input);

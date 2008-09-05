@@ -141,79 +141,97 @@ namespace ContinuousLinq.Aggregates
 
         #endregion
 
-        //#region MIN
+        #region MIN
+        #region -- Int
+        public static ContinuousValue<int> ContinuousMin<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, int>(input, minFunc, (list, selector) => list.Min(selector));
+        }
+        
+        public static ContinuousValue<int> ContinuousMin<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, int>(input, minFunc, (list, selector) => list.Min(selector));
+        }
 
-        //public static ContinuousValue<int> ContinuousMin<T>(
-        //    this ObservableCollection<T> input,
-        //    Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorInt<T>(input, minFunc).Value;
-        //}
+        public static ContinuousValue<int> ContinuousMin<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, int>(input, minFunc, (list, selector) => list.Min(selector));
+        }
+        #endregion
 
-        //public static ContinuousValue<int> ContinuousMin<T>(
-        //    this ReadOnlyObservableCollection<T> input,
-        //    Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorInt<T>(input, minFunc).Value;
-        //}
+        #region -- Double
+        public static ContinuousValue<double> ContinuousMin<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double>(input, minFunc, (list, selector) => list.Min(selector));
+        }
+        public static ContinuousValue<double> ContinuousMin<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double>(input, minFunc, (list, selector) => list.Min(selector));
+        }
+        public static ContinuousValue<double> ContinuousMin<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double>(input, minFunc, (list, selector) => list.Min(selector));
+        }
+        #endregion
 
-        //public static ContinuousValue<double> ContinuousMin<T>(
-        //    this ObservableCollection<T> input,
-        //    Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorDouble<T>(input, minFunc).Value;
-        //}
+        #region -- Float
+        public static ContinuousValue<float> ContinuousMin<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, float>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, float>(input, minSelector, (list, selector) => list.Min(selector));
+        }
+        public static ContinuousValue<float> ContinuousMin<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, float>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, float>(input, minSelector, (list, selector) => list.Min(selector));
+        }
+        public static ContinuousValue<float> ContinousMin<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, float>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, float>(input, minSelector, (list, selector) => list.Min(selector));
+        }
 
-        //public static ContinuousValue<double> ContinuousMin<T>(
-        //    this ReadOnlyObservableCollection<T> input,
-        //    Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorDouble<T>(input, minFunc).Value;
-        //}
+        #endregion
 
-        //public static ContinuousValue<decimal> ContinuousMin<T>(
-        //    this ObservableCollection<T> input,
-        //    Expression<Func<T, decimal>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorDecimal<T>(input, minFunc).Value;
-        //}
+        #region -- Long
+        public static ContinuousValue<long> ContinuousMin<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, long>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, long>(input, minSelector, (list, selector) => list.Min(selector));
+        }
+        public static ContinuousValue<long> ContinousMin<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, long>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, long>(input, minSelector, (list, selector) => list.Min(selector));
+        }
+        public static ContinuousValue<long> ContinuousMin<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, long>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, long>(input, minSelector, (list, selector) => list.Min(selector));
+        }
+        #endregion
+        #endregion
 
-        //public static ContinuousValue<decimal> ContinuousMin<T>(
-        //    this ReadOnlyObservableCollection<T> input,
-        //    Expression<Func<T, decimal>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorDecimal<T>(input, minFunc).Value;
-        //}
 
-        //public static ContinuousValue<float> ContinuousMin<T>(
-        //    this ObservableCollection<T> input,
-        //    Expression<Func<T, float>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorFloat<T>(input, minFunc).Value;
-        //}
 
-        //public static ContinuousValue<float> ContinuousMin<T>(
-        //    this ReadOnlyObservableCollection<T> input,
-        //    Expression<Func<T, float>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorFloat<T>(input, minFunc).Value;
-        //}
-
-        //public static ContinuousValue<long> ContinuousMin<T>(
-        //    this ObservableCollection<T> input,
-        //    Expression<Func<T, long>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorLong<T>(input, minFunc).Value;
-        //}
-
-        //public static ContinuousValue<long> ContinuousMin<T>(
-        //    this ReadOnlyObservableCollection<T> input,
-        //    Expression<Func<T, long>> minFunc) where T : INotifyPropertyChanged
-        //{
-        //    return new ContinuousMinMonitorLong<T>(input, minFunc).Value;
-        //}
-
-        //#endregion
 
         //#region AVG
 
