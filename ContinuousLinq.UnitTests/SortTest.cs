@@ -5,6 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Collections;
 
 namespace ContinuousLinq.UnitTests
 {
@@ -180,6 +181,21 @@ namespace ContinuousLinq.UnitTests
             /*Assert.AreEqual(output[1].Age, output[2].Age); // should both be 20
             Assert.AreEqual(output[1].Name.ToLower(), "alfonse");
             Assert.AreEqual(output[2].Name.ToLower(), "zoolander"); */
+        }
+
+        [Test]
+        public void Test()
+        {
+
+            ResetAgesForThenBy();
+           
+            IEnumerable<Person> list = _source;
+
+            var output = from person in list
+                         orderby person.Age, person.Name
+                         select person;
+
+            Assert.AreEqual(_source.Count, output.Count());
         }
 
         [Test]

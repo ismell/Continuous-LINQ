@@ -5,9 +5,11 @@ using System.Text;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace ContinuousLinq.UnitTests
 {
+    [DebuggerDisplay("Name: {Name}, Age: {Age}")]
     public class Person : INotifyPropertyChanged
     {
         #region Fields
@@ -110,7 +112,6 @@ namespace ContinuousLinq.UnitTests
                    where this.Brother != null && person.Age == this.Brother.Age
                    select person;
         }
-
         #endregion
     }
 }

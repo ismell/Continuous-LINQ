@@ -6,9 +6,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Collections;
+using System.Diagnostics;
 
 namespace ContinuousLinq
 {
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(ReadOnlyContinuousCollection<>.DebugView))]
     public abstract class ReadOnlyContinuousCollection<T> : INotifyCollectionChanged, INotifyPropertyChanged, IList<T>, IList
     {
         #region INotifyCollectionChanged Members
@@ -227,5 +230,27 @@ namespace ContinuousLinq
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+   
+        internal class DebugView
+        {
+            private ReadOnlyContinuousCollection<T> Collection { get; set; }
+
+            public DebugView(ReadOnlyContinuousCollection<T> collection)
+            {
+                this.Collection = collection;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public T[] Items
+            {
+                get
+                {
+                    T[] items = new T[this.Collection.Count];
+                    this.Collection.CopyTo(items, 0);
+
+                    return items;
+                }
+            }
+        }
     }
 }

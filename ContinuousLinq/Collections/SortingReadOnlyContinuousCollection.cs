@@ -34,22 +34,27 @@ namespace ContinuousLinq.Collections
         }
     }
 
-    public class SortingReadOnlyContinuousCollection<TSource, TKey> : ReadOnlyAdapterContinuousCollection<TSource, TSource>
+    internal interface ISortingReadOnlyContinuousCollection<TSource> where TSource : INotifyPropertyChanged
+    {
+        IComparer<TSource> KeySorter { get; }
+    }
+
+    internal class SortingReadOnlyContinuousCollection<TSource, TKey> : 
+        ReadOnlyAdapterContinuousCollection<TSource, TSource>,
+        ISortingReadOnlyContinuousCollection<TSource>
         where TKey : IComparable
         where TSource : INotifyPropertyChanged
     {   
       
         internal Func<TSource, TKey> KeySelector { get; set; }
         internal List<TSource> Output { get; set; }
-        internal IComparer<TSource> KeySorter { get; set; }    
-        internal bool IsLastComparer { get; set; }
+        public IComparer<TSource> KeySorter { get; set; }    
                   
         public SortingReadOnlyContinuousCollection(IList<TSource> list,
             Expression<Func<TSource, TKey>> keySelectorExpression,
             bool descending)
             : base(list, ExpressionPropertyAnalyzer.Analyze(keySelectorExpression))
         {
-            this.IsLastComparer = true;
             this.KeySelector = keySelectorExpression.Compile();
             this.KeySorter = new SortsSourceByKey<TSource, TKey>(this.KeySelector, descending);
             SetComparerChain(this.KeySorter);
@@ -65,10 +70,9 @@ namespace ContinuousLinq.Collections
 
         private void SetComparerChain(IComparer<TSource> compareFunc)
         {
-            SortingReadOnlyContinuousCollection<TSource, TKey> previous = this.Source as SortingReadOnlyContinuousCollection<TSource, TKey>;
+            ISortingReadOnlyContinuousCollection<TSource> previous = this.Source as ISortingReadOnlyContinuousCollection<TSource>;
             if (previous != null)
             {
-                previous.IsLastComparer = false;
                 this.KeySorter = new ChainComparer(previous.KeySorter, compareFunc);
             }
             else
@@ -119,25 +123,15 @@ namespace ContinuousLinq.Collections
         {
             TSource item = (TSource)sender;
 
-            if (this.IsLastComparer)
-            {
-                RemoveItemFromOutput(item);                
-                InsertItemInSortOrder(item);                
-            }
+            RemoveItemFromOutput(item);                
+            InsertItemInSortOrder(item);                
         }
 
         void OnAdd(int index, IEnumerable<TSource> newItems)
         {
             foreach (TSource item in newItems)
             {
-                if (this.IsLastComparer)
-                {
-                    InsertItemInSortOrder(item);
-                }
-                else
-                {
-                    AddItemToOutput(item);
-                }
+                InsertItemInSortOrder(item);
             }
         }
         
@@ -157,20 +151,10 @@ namespace ContinuousLinq.Collections
 
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
-            if (this.IsLastComparer)
-            {
-                foreach (TSource oldItem in oldItems)
-                    RemoveItemFromOutput(oldItem);
-                foreach (TSource newItem in newItems)
-                    InsertItemInSortOrder(newItem);
-            }
-            else
-            {
-                foreach (TSource oldItem in oldItems)
-                    RemoveItemFromOutput(oldItem);
-                foreach (TSource newItem in newItems)
-                    AddItemToOutput(newItem);
-            }
+            foreach (TSource oldItem in oldItems)
+                RemoveItemFromOutput(oldItem);
+            foreach (TSource newItem in newItems)
+                InsertItemInSortOrder(newItem);
         }
         #endregion        
 
@@ -204,5 +188,6 @@ namespace ContinuousLinq.Collections
                 return _currentComparer.Compare(x, y);
             }
         }
+
     }
 }
