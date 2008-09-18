@@ -90,20 +90,20 @@ namespace ContinuousLinq.Aggregates
         #endregion
     }
 
-    internal class ContinuousValue<TSource, TResult> : ContinuousValue<TResult> where TSource : INotifyPropertyChanged
+    internal class ContinuousValue<TSource, TColSelectorResult, TResult> : ContinuousValue<TResult> where TSource : INotifyPropertyChanged
     {
         internal IList<TSource> Source { get; set; }
 
-        internal Func<TSource, TResult> Selector { get; set; }
+        internal Func<TSource, TColSelectorResult> Selector { get; set; }
 
-        internal Func<IList<TSource>, Func<TSource, TResult>, TResult> AggregationOperation { get; set; }
+        internal Func<IList<TSource>, Func<TSource, TColSelectorResult>, TResult> AggregationOperation { get; set; }
 
         internal NotifyCollectionChangedMonitor<TSource> NotifyCollectionChangedMonitor { get; set; }
 
         internal ContinuousValue(
             IList<TSource> input, 
-            Expression<Func<TSource, TResult>> selectorExpression,
-            Func<IList<TSource>, Func<TSource,TResult>, TResult> aggregateOperation)
+            Expression<Func<TSource, TColSelectorResult>> selectorExpression,
+            Func<IList<TSource>, Func<TSource,TColSelectorResult>, TResult> aggregateOperation)
         {
             this.Source = input;
 

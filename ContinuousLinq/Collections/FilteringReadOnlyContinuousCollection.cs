@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace ContinuousLinq
+namespace ContinuousLinq.Collections
 {
     public class FilteringReadOnlyContinuousCollection<TSource> : ReadOnlyAdapterContinuousCollection<TSource, TSource>
     {

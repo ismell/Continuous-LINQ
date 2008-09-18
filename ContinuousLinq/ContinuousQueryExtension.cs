@@ -83,6 +83,76 @@ namespace ContinuousLinq
         
         #endregion
 
+        #region OrderBy
+        public static ReadOnlyContinuousCollection<TSource> OrderBy<TSource, TKey>(
+            this ObservableCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource,TKey>(source, keySelector, false);
+        }
+        public static ReadOnlyContinuousCollection<TSource> OrderBy<TSource, TKey>(
+            this ReadOnlyObservableCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource,TKey>(source, keySelector, false);
+        }
+        public static ReadOnlyContinuousCollection<TSource> OrderBy<TSource, TKey>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource,TKey>(source, keySelector, false);
+        }
+        public static ReadOnlyContinuousCollection<TSource> ThenBy<TSource, TKey>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource,TKey>(source, keySelector, false);
+        }
+        #endregion
+
+        #region OrderByDescending
+        public static ReadOnlyContinuousCollection<TSource> OrderByDescending<TSource, TKey>(
+           this ObservableCollection<TSource> source,
+           Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource, TKey>(source, keySelector, true);
+        }
+        public static ReadOnlyContinuousCollection<TSource> OrderByDescending<TSource, TKey>(
+            this ReadOnlyObservableCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource, TKey>(source, keySelector, true);
+        }
+        public static ReadOnlyContinuousCollection<TSource> OrderByDescending<TSource, TKey>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource, TKey>(source, keySelector, true);
+        }
+        public static ReadOnlyContinuousCollection<TSource> ThenByDescending<TSource, TKey>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IComparable
+        {
+            return new SortingReadOnlyContinuousCollection<TSource, TKey>(source, keySelector, true);
+        }
+        #endregion
+
         #region AsReadOnly
 
         public static ReadOnlyContinuousCollection<TSource> AsReadOnly<TSource>(

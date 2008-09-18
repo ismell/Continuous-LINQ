@@ -6,6 +6,8 @@ using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
+using ContinuousLinq.Collections;
+
 namespace ContinuousLinq.UnitTests
 {
     [TestFixture]
