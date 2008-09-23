@@ -17,6 +17,8 @@ namespace ContinuousLinq
 
         public Dictionary<T, SubscriptionTree> Subscriptions { get; set; }
 
+        public ReferenceCountTracker<T> ReferenceCountTracker { get; set; }
+
         public event Action<int, IEnumerable<T>> Add;
         public event Action<int, IEnumerable<T>> Remove;
         public event Action<int, IEnumerable<T>, int, IEnumerable<T>> Replace;
@@ -41,6 +43,7 @@ namespace ContinuousLinq
 
             this.PropertyAccessTree = propertyAccessTree;
             this.Subscriptions = new Dictionary<T, SubscriptionTree>();
+            this.ReferenceCountTracker = new ReferenceCountTracker<T>();
             
             SubscribeToItems(_input);
 
@@ -60,9 +63,12 @@ namespace ContinuousLinq
 
         private void SubscribeToItem(T item)
         {
-            SubscriptionTree subscriptionTree = this.PropertyAccessTree.CreateSubscriptionTree((INotifyPropertyChanged)item);
-            subscriptionTree.PropertyChanged += OnAnyPropertyChangeInSubscriptionTree;
-            this.Subscriptions.Add(item, subscriptionTree);
+            if (this.ReferenceCountTracker.Add(item))
+            {
+                SubscriptionTree subscriptionTree = this.PropertyAccessTree.CreateSubscriptionTree((INotifyPropertyChanged)item);
+                subscriptionTree.PropertyChanged += OnAnyPropertyChangeInSubscriptionTree;
+                this.Subscriptions.Add(item, subscriptionTree);
+            }
         }
 
         void OnAnyPropertyChangeInSubscriptionTree(SubscriptionTree sender)
@@ -86,8 +92,11 @@ namespace ContinuousLinq
 
         private void UnsubscribeFromItem(T item)
         {
-            this.Subscriptions[item].PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
-            this.Subscriptions.Remove(item);
+            if (this.ReferenceCountTracker.Remove(item))
+            {
+                this.Subscriptions[item].PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                this.Subscriptions.Remove(item);
+            }
         }
 
         private void ClearSubscriptions()
@@ -101,6 +110,7 @@ namespace ContinuousLinq
             }
 
             this.Subscriptions.Clear();
+            this.ReferenceCountTracker.Clear();
         }
 
         public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

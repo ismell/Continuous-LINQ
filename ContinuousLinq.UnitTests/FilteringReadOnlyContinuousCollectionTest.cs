@@ -166,5 +166,32 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(2, _target.Count);
             Assert.IsTrue(_target.Contains(_source[0]));
         }
+
+        [Test]
+        public void Where_AllFalseThenMadeAllTrue_ExpectedResult()
+        {
+            for (int i = 0; i < _source.Count; i++)
+            {
+                _source[i].Age = 100;
+            }
+
+            var result = _source.Where(p => p.Age >= 100);
+
+            Assert.AreEqual(2, result.Count);
+
+            for (int i = 0; i < _source.Count; i++)
+            {
+                _source[i].Age = 0;
+            }
+            
+            Assert.AreEqual(0, result.Count);
+
+            for (int i = 0; i < _source.Count; i++)
+            {
+                _source[i].Age = 100;
+            }
+
+            Assert.AreEqual(2, result.Count);
+        }
     }
 }

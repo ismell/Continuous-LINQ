@@ -57,13 +57,18 @@
     <Compile Include="ClinqTestFactory.cs" />
     <Compile Include="ContinuousCountTest.cs" />
     <Compile Include="ContinuousSumTest.cs" />
+    <Compile Include="DistinctReadOnlyContinuousCollectionTest.cs" />
+    <Compile Include="DistinctTest.cs" />
     <Compile Include="ExpressionPropertyAnalyzerTest.cs" />
     <Compile Include="FilteringReadOnlyContinuousCollectionTest.cs" />
+    <Compile Include="ListIndexerTest.cs" />
     <Compile Include="PassThroughReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="PausedAggregationTest.cs" />
     <Compile Include="PropertyAccessNodeTest.cs" />
     <Compile Include="PropertyAccessTreeTest.cs" />
     <Compile Include="ReadOnlyContinuousCollectionTest.cs" />
+    <Compile Include="ReferenceCountTrackerTest.cs" />
+    <Compile Include="SelectReadOnlyContinuousCollectionDuplicatesTest.cs" />
     <Compile Include="SelectReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="SelectTest.cs" />
     <Compile Include="Person.cs" />
@@ -72,6 +77,7 @@
     <Compile Include="SortTest.cs" />
     <Compile Include="SubscriptionNodeTest.cs" />
     <Compile Include="SubscriptionTreeTest.cs" />
+    <Compile Include="ThenByTest.cs" />
     <Compile Include="WhereTest.cs" />
   </ItemGroup>
   <ItemGroup>

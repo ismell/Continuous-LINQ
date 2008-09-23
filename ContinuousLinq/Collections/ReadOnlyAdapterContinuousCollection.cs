@@ -9,17 +9,22 @@ using System.ComponentModel;
 namespace ContinuousLinq
 {
     public abstract class ReadOnlyAdapterContinuousCollection<TSource, TResult> : ReadOnlyContinuousCollection<TResult>
-            //where TSource : INotifyPropertyChanged
     {
         protected IList<TSource> Source { get; set; }
 
         internal NotifyCollectionChangedMonitor<TSource> NotifyCollectionChangedMonitor { get; set; }
 
-        internal ReadOnlyAdapterContinuousCollection(IList<TSource> list, PropertyAccessTree propertyAcessTree)
+        internal ReadOnlyAdapterContinuousCollection(IList<TSource> list, PropertyAccessTree propertyAccessTree)
         {
             INotifyCollectionChanged listAsINotifyCollectionChanged = list as INotifyCollectionChanged;
             this.Source = list;
-            this.NotifyCollectionChangedMonitor = new NotifyCollectionChangedMonitor<TSource>(propertyAcessTree, list);
+            this.NotifyCollectionChangedMonitor = new NotifyCollectionChangedMonitor<TSource>(propertyAccessTree, list);
         }
+
+        internal ReadOnlyAdapterContinuousCollection(IList<TSource> list)
+            :this(list, null)
+        {
+        }
+
     }
 }

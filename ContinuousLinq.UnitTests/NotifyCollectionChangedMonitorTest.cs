@@ -192,7 +192,6 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
-        //[Ignore("Need to modify own PropertyChangedEventManager to track subscriptions")]
         public void ClearSourceAndChangePropertyOnItem_SingleItem_ItemChangedNotFired()
         {
             Person person = _source[0];
@@ -201,6 +200,54 @@ namespace ContinuousLinq.UnitTests
 
             _source.Clear();
             person.Age = 1000;
+        }
+
+        [Test]
+        public void DuplicateInSource_ChangePropertyOnItem_OnlyNotifiedOnce()
+        {
+            Person person = _source[0];
+            
+            int callCount = 0;
+            _target.ItemChanged += (item) => callCount++;
+
+            _source.Add(person);
+
+            person.Age++;
+
+            Assert.AreEqual(1, callCount);
+        }
+
+        [Test]
+        public void DuplicateInSource_AddAndThenRemove_OnlyNotifiedOnce()
+        {
+            Person person = _source[0];
+
+            int callCount = 0;
+            _target.ItemChanged += (item) => callCount++;
+
+            _source.Add(person);
+            _source.Remove(person);
+
+            person.Age++;
+
+            Assert.AreEqual(1, callCount);
+        }
+
+        [Test]
+        public void DuplicateInSource_AddAndThenRemoveBoth_NotNotified()
+        {
+            Person person = _source[0];
+
+            int callCount = 0;
+            _target.ItemChanged += (item) => callCount++;
+
+            _source.Add(person);
+            _source.Remove(person);
+            _source.Remove(person);
+
+            person.Age++;
+
+            Assert.AreEqual(0, callCount);
         }
     }
 }

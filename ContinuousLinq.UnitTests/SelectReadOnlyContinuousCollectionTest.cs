@@ -139,4 +139,6 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, callCount);
         }
     }
+
+
 }

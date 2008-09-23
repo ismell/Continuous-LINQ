@@ -11,44 +11,13 @@ using System.Diagnostics;
 
 namespace ContinuousLinq.Collections
 {
-    internal class SortsSourceByKey<TSource, TKey> : Comparer<TSource> where TKey : IComparable
-    {
-        private Func<TSource, TKey> _keySelector;
-        private int _multiplier;
-
-        public SortsSourceByKey(Func<TSource, TKey> keySelector, bool descending)
-        {
-            if (descending)
-                _multiplier = -1;
-            else
-                _multiplier = 1;
-
-            _keySelector = keySelector;
-        }
-
-        public override int Compare(TSource x, TSource y)
-        {
-            int originalCompare = Comparer<TKey>.Default.Compare(
-                _keySelector(x), _keySelector(y));
-            return _multiplier * originalCompare;
-        }
-    }
-
-    internal interface ISortingReadOnlyContinuousCollection<TSource> where TSource : INotifyPropertyChanged
-    {
-        IComparer<TSource> KeySorter { get; }
-    }
-
     internal class SortingReadOnlyContinuousCollection<TSource, TKey> : 
-        ReadOnlyAdapterContinuousCollection<TSource, TSource>,
-        ISortingReadOnlyContinuousCollection<TSource>
-        where TKey : IComparable
+        OrderedReadOnlyContinuousCollection<TSource>
         where TSource : INotifyPropertyChanged
+        where TKey : IComparable
     {   
-      
         internal Func<TSource, TKey> KeySelector { get; set; }
         internal List<TSource> Output { get; set; }
-        public IComparer<TSource> KeySorter { get; set; }    
                   
         public SortingReadOnlyContinuousCollection(IList<TSource> list,
             Expression<Func<TSource, TKey>> keySelectorExpression,
@@ -68,17 +37,9 @@ namespace ContinuousLinq.Collections
             this.NotifyCollectionChangedMonitor.ItemChanged += OnItemChanged;
         }
 
-        private void SetComparerChain(IComparer<TSource> compareFunc)
+        protected virtual void SetComparerChain(IComparer<TSource> compareFunc)
         {
-            ISortingReadOnlyContinuousCollection<TSource> previous = this.Source as ISortingReadOnlyContinuousCollection<TSource>;
-            if (previous != null)
-            {
-                this.KeySorter = new ChainComparer(previous.KeySorter, compareFunc);
-            }
-            else
-            {
-                this.KeySorter = compareFunc;
-            }
+            this.KeySorter = compareFunc;
         }
 
         public override int Count
@@ -106,19 +67,18 @@ namespace ContinuousLinq.Collections
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
         }
 
-        private void AddItemToOutput(TSource item)
-        {
-            this.Output.Add(item);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
-        }
 
         private void RemoveItemFromOutput(TSource item)
         {
-            this.Output.Remove(item);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
+            int index = this.Output.IndexOf(item);
+
+            this.Output.RemoveAt(index);
+            
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
         }
 
         #region NotifyCollectionChangedMonitor Event Handlers
+        
         void OnItemChanged(INotifyPropertyChanged sender)
         {
             TSource item = (TSource)sender;
@@ -152,9 +112,14 @@ namespace ContinuousLinq.Collections
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             foreach (TSource oldItem in oldItems)
+            {
                 RemoveItemFromOutput(oldItem);
+            }
+            
             foreach (TSource newItem in newItems)
+            {
                 InsertItemInSortOrder(newItem);
+            }
         }
         #endregion        
 
@@ -167,27 +132,28 @@ namespace ContinuousLinq.Collections
             this.Output.AddRange(sortedList);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
+    }
 
+    internal class SortsSourceByKey<TSource, TKey> : Comparer<TSource> where TKey : IComparable
+    {
+        private Func<TSource, TKey> _keySelector;
+        private int _multiplier;
 
-        private class ChainComparer : IComparer<TSource>
+        public SortsSourceByKey(Func<TSource, TKey> keySelector, bool descending)
         {
-            private readonly IComparer<TSource> _previousComparer;
-            private readonly IComparer<TSource> _currentComparer;
+            if (descending)
+                _multiplier = -1;
+            else
+                _multiplier = 1;
 
-            public ChainComparer(IComparer<TSource> previousComparer, IComparer<TSource> currentComparer)
-            {
-                _previousComparer = previousComparer;
-                _currentComparer = currentComparer;
-            }
-
-            public int Compare(TSource x, TSource y)
-            {
-                int result = _previousComparer.Compare(x, y);
-                if (result != 0)
-                    return result;
-                return _currentComparer.Compare(x, y);
-            }
+            _keySelector = keySelector;
         }
 
+        public override int Compare(TSource x, TSource y)
+        {
+            int originalCompare = Comparer<TKey>.Default.Compare(
+                _keySelector(x), _keySelector(y));
+            return _multiplier * originalCompare;
+        }
     }
 }

@@ -26,5 +26,21 @@ namespace ContinuousLinq.UnitTests
             }
             return source;
         }
+
+        public static ObservableCollection<Person> CreateSixPersonSourceWithDuplicates()
+        {
+            Person bob = new Person("Bob", 10);
+            Person jim = new Person("Jim", 20);
+
+            ObservableCollection<Person> source = CreateSixPersonSource();
+            source[0] = bob;
+            source[1] = bob;
+            source[2] = bob;
+
+            source[4] = jim;
+            source[5] = jim;
+
+            return source;
+        }
     }
 }

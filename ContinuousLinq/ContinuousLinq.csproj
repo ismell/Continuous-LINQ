@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EFC0FA51-6547-4B90-A84E-905035227972}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -54,8 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregation\StdDev.cs" />
+    <Compile Include="Collections\DistinctReadOnlyContinuousCollection.cs" />
+    <Compile Include="Collections\OrderedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SortingReadOnlyContinuousCollection.cs" />
+    <Compile Include="Collections\ThenByReadOnlyContinuousCollection.cs" />
     <Compile Include="Expressions\ConstantNode.cs" />
     <Compile Include="Aggregation\ContinuousAggregationExtension.cs" />
     <Compile Include="Collections\ContinuousCollection.cs" />
@@ -71,11 +74,13 @@
     <Compile Include="Expressions\PropertyAccessTreeNode.cs" />
     <Compile Include="Collections\ReadOnlyAdapterContinuousCollection.cs" />
     <Compile Include="Collections\ReadOnlyContinuousCollection.cs" />
+    <Compile Include="ListIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NotifyCollectionChangedMonitor.cs" />
     <Compile Include="Collections\SelectReadOnlyContinuousCollection.cs" />
     <Compile Include="Expressions\SubscriptionNode.cs" />
     <Compile Include="Expressions\SubscriptionTree.cs" />
+    <Compile Include="ReferenceCountTracker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -87,7 +92,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>@echo off
-REM xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
-REM xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
+xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
+xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

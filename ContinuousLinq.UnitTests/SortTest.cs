@@ -14,23 +14,6 @@ namespace ContinuousLinq.UnitTests
     {
         private ObservableCollection<Person> _source;
 
-        private void ResetAges()
-        {
-            for (int x = 0; x < _source.Count; x++)
-            {
-                _source[x].Age = x * 10;
-            }
-        }
-
-        private void ResetAgesForThenBy()
-        {
-            ResetAges();
-            _source[1].Age = 20; // same as _source[2].age
-            _source[2].Age = 20;
-            _source[1].Name = "Zoolander";
-            _source[2].Name = "Alfonse";
-        }
-
         [SetUp]
         public void SetUp()
         {
@@ -38,9 +21,29 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
+        public void RemoveFromSource_LastItemInCollection_CountIsZeroAndNoExceptionThrown()
+        {
+            var sourceWithTwoItems = new ObservableCollection<Person>();
+            var personOne = new Person("Bob", 10);
+            var personTwo = new Person("Jim", 20);
+
+            ReadOnlyContinuousCollection<string> output =
+                from person in sourceWithTwoItems
+                where person.Age <= 20
+                orderby person.Name
+                select person.Name;
+
+            sourceWithTwoItems.Add(personOne);
+            sourceWithTwoItems.Add(personTwo);
+            sourceWithTwoItems.Remove(personOne);
+            
+            //Assert.AreEqual(_source.Count, output.Count);
+        }
+
+
+        [Test]
         public void Sort_CountRemainsTheSame()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age
@@ -52,7 +55,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_SortedListRemainsSorted()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age
@@ -67,7 +69,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_HeadBecomesTail()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age
@@ -81,7 +82,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_TailBecomesHead()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age
@@ -96,7 +96,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_Descending_CountRemainsTheSame()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age descending
@@ -108,7 +107,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_Descending_HeadBecomesTail()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age descending
@@ -122,7 +120,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_Descending_TailBecomesHead()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age descending
@@ -135,7 +132,6 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Sort_Descending_SortedItemsAreInProperIndexes()
         {
-            ResetAges();
             ReadOnlyContinuousCollection<Person> output =
                 from person in _source
                 orderby person.Age descending
@@ -148,54 +144,6 @@ namespace ContinuousLinq.UnitTests
                 Assert.AreEqual(_source[sourceIdx].Age, output[outputIdx].Age);
                 outputIdx--;
             }
-        }
-
-        [Test]
-        public void Sort_ThenBy_CountRemainsTheSame()
-        {
-            ResetAgesForThenBy();
-
-            ReadOnlyContinuousCollection<Person> output =
-                from person in _source
-                orderby person.Age, person.Name
-                select person;
-
-            Assert.AreEqual(_source.Count, output.Count);
-        }
-
-        [Test]
-        public void Sort_ThenBy_SortedItemsAreInProperIndexes()
-        {
-            ResetAgesForThenBy();
-           
-            ReadOnlyContinuousCollection<Person> output =
-                from person in _source
-                orderby person.Age ascending, person.Name ascending
-                select person;
-
-            Assert.AreEqual(output[0].Age, 0);
-            Assert.AreEqual(output[1].Age, 20);
-            Assert.AreEqual(output[2].Age, 20);
-            // output IDX 1 should be alfonse
-            // output IDX 2 should be zoolander
-            /*Assert.AreEqual(output[1].Age, output[2].Age); // should both be 20
-            Assert.AreEqual(output[1].Name.ToLower(), "alfonse");
-            Assert.AreEqual(output[2].Name.ToLower(), "zoolander"); */
-        }
-
-        [Test]
-        public void Test()
-        {
-
-            ResetAgesForThenBy();
-           
-            IEnumerable<Person> list = _source;
-
-            var output = from person in list
-                         orderby person.Age, person.Name
-                         select person;
-
-            Assert.AreEqual(_source.Count, output.Count());
         }
 
         [Test]
