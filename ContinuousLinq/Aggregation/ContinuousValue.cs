@@ -54,7 +54,7 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        internal abstract void Refresh();
+        internal abstract void Refresh();        
     }
 
     public abstract class ContinuousValue<T> : ContinuousValue, INotifyPropertyChanged
@@ -80,8 +80,8 @@ namespace ContinuousLinq.Aggregates
                 return;
 
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
+        }        
+        
 
         #region INotifyPropertyChanged Members
 
@@ -100,11 +100,13 @@ namespace ContinuousLinq.Aggregates
 
         internal NotifyCollectionChangedMonitor<TSource> NotifyCollectionChangedMonitor { get; set; }
 
+        public Action<TResult> AfterEffect { get; set; }
+
         internal ContinuousValue(
             IList<TSource> input, 
             Expression<Func<TSource, TColSelectorResult>> selectorExpression,
             Func<IList<TSource>, Func<TSource,TColSelectorResult>, TResult> aggregateOperation)
-        {
+        {            
             this.Source = input;
 
             this.AggregationOperation = aggregateOperation;
@@ -123,6 +125,17 @@ namespace ContinuousLinq.Aggregates
             this.NotifyCollectionChangedMonitor.ItemChanged += OnItemChanged;
             
             Refresh();
+        }
+
+        internal ContinuousValue(
+            IList<TSource> input,
+            Expression<Func<TSource, TColSelectorResult>> selectorExpression,
+            Func<IList<TSource>, Func<TSource, TColSelectorResult>, TResult> aggregateOperation,
+            Action<TResult> afterEffect)
+            : this(input, selectorExpression, aggregateOperation)
+        {
+            this.AfterEffect = afterEffect;
+            this.AfterEffect(this.CurrentValue);
         }
 
         void OnItemChanged(INotifyPropertyChanged obj)
@@ -147,6 +160,9 @@ namespace ContinuousLinq.Aggregates
             }
 
             this.CurrentValue = this.AggregationOperation(this.Source, this.Selector);
+
+            if (this.AfterEffect != null)
+                AfterEffect(this.CurrentValue);
         }
     }
 }

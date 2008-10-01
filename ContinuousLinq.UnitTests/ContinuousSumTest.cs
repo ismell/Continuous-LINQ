@@ -37,6 +37,18 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
+        public void SumIntegers_ChangeValueOfMonitoredPropertyCollection_PostChangeLambda()
+        {
+            int monitoredSum = 0;
+
+            ContinuousValue<int> sum = _source.ContinuousSum(p => p.Age, newVal => monitoredSum = newVal);
+            _source[0].Age += 12;
+
+            Assert.AreEqual(sum.CurrentValue, 42);
+            Assert.AreEqual(monitoredSum, sum.CurrentValue);
+        }
+
+        [Test]
         public void SumIntegers_ChangeValueOfMonitoredPropertyCollection_PropertyChangedEventFires()
         {
             ContinuousValue<int> sum = _source.ContinuousSum(p => p.Age);

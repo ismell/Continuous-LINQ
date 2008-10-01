@@ -35,5 +35,16 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(3, count.CurrentValue);
         }
+
+        [Test]
+        public void Count_AddingValueToCollection_AfterEffect()
+        {
+            int modCount = 0;
+            ContinuousValue<int> count = _source.ContinuousCount(c => modCount = c);
+            _source.Add(new Person());
+
+            Assert.AreEqual(3, count.CurrentValue);
+            Assert.AreEqual(modCount, count.CurrentValue);
+        }
     }
 }
