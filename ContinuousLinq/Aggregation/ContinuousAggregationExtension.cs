@@ -1036,5 +1036,50 @@ namespace ContinuousLinq.Aggregates
 
         #endregion
         #endregion        
+
+        #region CONTAINS
+        public static ContinuousValue<bool> ContinuousContains<T>(
+            this ObservableCollection<T> input,
+            T item) where T: INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, bool>(input, null, (list, selector) => list.Contains(item));
+        }
+        public static ContinuousValue<bool> ContinuousContains<T>(
+            this ObservableCollection<T> input,
+            T item,
+            Action<bool> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, bool>(input, null, (list, selector) => list.Contains(item), afterEffect);
+        }
+
+        public static ContinuousValue<bool> ContinuousContains<T>(
+            this ReadOnlyObservableCollection<T> input,
+            T item) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, bool>(input, null, (list, selector) => list.Contains(item));
+        }
+        public static ContinuousValue<bool> ContinuousContains<T>(
+            this ReadOnlyObservableCollection<T> input,
+            T item,
+            Action<bool> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, bool>(input, null, (list, selector) => list.Contains(item), afterEffect);
+        }
+
+        public static ContinuousValue<bool> ContinuousContains<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            T item) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, bool>(input, null, (list, selector) => list.Contains(item));
+        }
+        public static ContinuousValue<bool> ContinuousContains<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            T item,
+            Action<bool> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, bool>(input, null, (list, selector) => list.Contains(item), afterEffect);
+        }
+        
+        #endregion
     }
 }
