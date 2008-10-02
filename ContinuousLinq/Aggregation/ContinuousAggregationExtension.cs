@@ -1081,5 +1081,83 @@ namespace ContinuousLinq.Aggregates
         }
         
         #endregion
+
+        #region FirstOrDefault
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ObservableCollection<T> input) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, T, T>(input, null, (list, selector) => list.FirstOrDefault());  
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, bool>> predicate) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()));
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ObservableCollection<T> input,
+            Action<T> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, T, T>(input, null, (list, selector) => list.FirstOrDefault(), afterEffect);
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, bool>> predicate,
+            Action<T> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()), afterEffect);
+        }
+
+
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyObservableCollection<T> input) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, T, T>(input, null, (list, selector) => list.FirstOrDefault());
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, bool>> predicate) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()));
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Action<T> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, T, T>(input, null, (list, selector) => list.FirstOrDefault(), afterEffect);
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, bool>> predicate,
+            Action<T> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()), afterEffect);
+        }
+
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyContinuousCollection<T> input) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, T, T>(input, null, (list, selector) => list.FirstOrDefault());
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, bool>> predicate) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()));
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Action<T> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, T, T>(input, null, (list, selector) => list.FirstOrDefault(), afterEffect);
+        }
+        public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, bool>> predicate,
+            Action<T> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()), afterEffect);
+        }
+        #endregion
     }
 }
