@@ -95,12 +95,22 @@ namespace ContinuousLinq
 
         void OnRemove(int index, IEnumerable<TSource> oldItems)
         {
-            this.SourceIndex.Remove(index, oldItems); 
+            this.SourceIndex.Remove(index, oldItems);
+            List<TResult> oldValues = GetCurrentValues(oldItems);
             RemoveCurrentValues(oldItems);
-            IEnumerable<TResult> selectedItems = oldItems.Select(this.SelectorFunction);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, selectedItems.ToList(), index));
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldValues, index));
         }
 
+        private List<TResult> GetCurrentValues(IEnumerable<TSource> items)
+        {
+            List<TResult> oldValues = new List<TResult>();
+            foreach (TSource item in items)
+            {
+                oldValues.Add(this.CurrentValues[item]);
+            }
+            return oldValues;
+        }
+        
         void OnReset()
         {
             this.SourceIndex.Reset();
@@ -119,11 +129,11 @@ namespace ContinuousLinq
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             this.SourceIndex.Replace(newStartingIndex, oldItems, newItems);
+            List<TResult> oldValues = GetCurrentValues(oldItems);
             RemoveCurrentValues(oldItems);
             RecordCurrentValues(newItems);
             IEnumerable<TResult> newSelectedItems = newItems.Select(this.SelectorFunction);
-            IEnumerable<TResult> oldSelectedItems = oldItems.Select(this.SelectorFunction);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newSelectedItems.ToList(), oldSelectedItems.ToList(), newStartingIndex));
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newSelectedItems.ToList(), oldValues, newStartingIndex));
         }
     }
 }
