@@ -155,5 +155,39 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, callCount);
         }
+
+        [Test]
+        public void GetParameterAccessString_OneDeepAccess_ReturnsValue()
+        {
+            InitializeTargetJustAgeAccess();
+
+            Assert.AreEqual("Age", _target.GetParameterPropertyAccessString());
+        }
+
+        [Test]
+        public void GetParameterAccessString_TwoDeepAccess_ReturnsValue()
+        {
+            InitializeTargetBrothersAgeAccess();
+
+            Assert.AreEqual("Brother.Age", _target.GetParameterPropertyAccessString());
+        }
+
+        [Test]
+        public void GetParameterAccessString_NoProperties_ReturnsEmptyString()
+        {
+            _target = new PropertyAccessTree();
+
+            Assert.AreEqual(string.Empty, _target.GetParameterPropertyAccessString());
+        }
+
+        [Test]
+        [ExpectedException()]
+        public void GetParameterAccessString_MultipleBranchAccess_ThrowsException()
+        {
+            InitializeTargetBrothersAgeAccess();
+            _brotherPropertyAccessNode.Children.Add(new PropertyAccessNode(_brotherProperty));
+
+            _target.GetParameterPropertyAccessString();
+        }
     }
 }

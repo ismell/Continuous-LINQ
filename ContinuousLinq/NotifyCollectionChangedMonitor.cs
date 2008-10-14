@@ -6,16 +6,17 @@ using System.ComponentModel;
 using System.Windows;
 using System.Collections.Specialized;
 using System.Collections;
+using System.Linq.Expressions;
 
 namespace ContinuousLinq
 {
-    internal class NotifyCollectionChangedMonitor<T> : IWeakEventListener, INotifyCollectionChanged //where T : INotifyPropertyChanged
+    public class NotifyCollectionChangedMonitor<T> : IWeakEventListener, INotifyCollectionChanged //where T : INotifyPropertyChanged
     {
         protected readonly IList<T> _input;
 
         public PropertyAccessTree PropertyAccessTree { get; set; }
 
-        public Dictionary<T, SubscriptionTree> Subscriptions { get; set; }
+        internal Dictionary<T, SubscriptionTree> Subscriptions { get; set; }
 
         public ReferenceCountTracker<T> ReferenceCountTracker { get; set; }
 
@@ -28,6 +29,11 @@ namespace ContinuousLinq
         public event Action<INotifyPropertyChanged> ItemChanged;
 
         #region IWeakEventListener Members
+
+        public static NotifyCollectionChangedMonitor<T> Create<TResult>(IList<T> input, Expression<Func<T, TResult>> expression)
+        {
+            return new NotifyCollectionChangedMonitor<T>(ExpressionPropertyAnalyzer.Analyze(expression), input);
+        }
 
         public NotifyCollectionChangedMonitor(PropertyAccessTree propertyAccessTree, IList<T> input)
         {

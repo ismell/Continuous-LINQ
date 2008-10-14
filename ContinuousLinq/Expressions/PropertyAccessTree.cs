@@ -19,7 +19,7 @@ namespace ContinuousLinq
             this.Children = new List<PropertyAccessTreeNode>();
         }
 
-        internal SubscriptionTree CreateSubscriptionTree(INotifyPropertyChanged parameter)
+        public SubscriptionTree CreateSubscriptionTree(INotifyPropertyChanged parameter)
         {
             List<SubscriptionNode> subscribers = new List<SubscriptionNode>(this.Children.Count);
             foreach (PropertyAccessTreeNode child in this.Children)
@@ -33,6 +33,45 @@ namespace ContinuousLinq
 
             var subscriptionTree = new SubscriptionTree(parameter, subscribers);
             return subscriptionTree;
+        }
+
+        public string GetParameterPropertyAccessString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (PropertyAccessTreeNode child in this.Children)
+            {
+                var childAsParameterNode = child as ParameterNode;
+                
+                if (childAsParameterNode == null)
+                    continue;
+                
+                GetParameterPropertyAccessString(stringBuilder, childAsParameterNode);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private void GetParameterPropertyAccessString(StringBuilder stringBuilder, PropertyAccessTreeNode currentNode)
+        {
+            foreach (PropertyAccessTreeNode child in currentNode.Children)
+            {
+                var childAsPropertyAccessNode = child as PropertyAccessNode;
+
+                if (childAsPropertyAccessNode == null)
+                    continue;
+
+                if (child.Children.Count > 1)
+                {
+                    throw new Exception("This property access tree has multiple branches.  Use only with singl branch lambdas like (foo=> foo.Bar) NOT (foo => foo.Bar || foo.Ninja");
+                }
+
+                stringBuilder.AppendFormat(
+                    stringBuilder.Length == 0 ? "{0}" : ".{0}",
+                    childAsPropertyAccessNode.Property.Name);
+
+                GetParameterPropertyAccessString(stringBuilder, childAsPropertyAccessNode);
+            }
         }
     }
 }

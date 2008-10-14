@@ -10,15 +10,15 @@ using System.Collections;
 
 namespace ContinuousLinq
 {
-    internal class SubscriptionTree
+    public class SubscriptionTree
     {
         public INotifyPropertyChanged Parameter { get; set; }
 
-        public List<SubscriptionNode> Children { get; set; }
+        internal List<SubscriptionNode> Children { get; set; }
 
         public event Action<SubscriptionTree> PropertyChanged;
 
-        public SubscriptionTree(INotifyPropertyChanged parameter, List<SubscriptionNode> children)
+        internal SubscriptionTree(INotifyPropertyChanged parameter, List<SubscriptionNode> children)
         {
             this.Parameter = parameter;
             this.Children = children;
@@ -26,7 +26,7 @@ namespace ContinuousLinq
             SubscribeToEntireTree(this.Children);
         }
 
-        private void SubscribeToEntireTree(List<SubscriptionNode> nodes)
+        internal void SubscribeToEntireTree(List<SubscriptionNode> nodes)
         {
             foreach (SubscriptionNode child in nodes)
             {
@@ -38,7 +38,7 @@ namespace ContinuousLinq
             }
         }
 
-        void OnNodeInTreePropertyChanged()
+        private void OnNodeInTreePropertyChanged()
         {
             if (PropertyChanged == null)
                 return;
