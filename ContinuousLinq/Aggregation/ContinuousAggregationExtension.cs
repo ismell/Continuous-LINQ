@@ -274,42 +274,42 @@ namespace ContinuousLinq.Aggregates
             this ObservableCollection<T> input,
             Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : int.MaxValue);
         }
         public static ContinuousValue<int> ContinuousMin<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, int>> minFunc,
             Action<int> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : int.MaxValue, afterEffect);
         }
         
         public static ContinuousValue<int> ContinuousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : int.MaxValue);
         }
         public static ContinuousValue<int> ContinuousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, int>> minFunc,
             Action<int> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : int.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<int> ContinuousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, int>> minFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : int.MaxValue);
         }
         public static ContinuousValue<int> ContinuousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, int>> minFunc,
             Action<int> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, int, int>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : int.MaxValue, afterEffect);
         }
         #endregion
 
@@ -318,42 +318,86 @@ namespace ContinuousLinq.Aggregates
             this ObservableCollection<T> input,
             Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : double.MaxValue);
         }
         public static ContinuousValue<double> ContinuousMin<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, double>> minFunc,
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : double.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<double> ContinuousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : double.MaxValue);
         }
         public static ContinuousValue<double> ContinuousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, double>> minFunc,
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : double.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<double> ContinuousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, double>> minFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : double.MaxValue);
         }
         public static ContinuousValue<double> ContinuousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, double>> minFunc,
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, double, double>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : double.MaxValue, afterEffect);
+        }
+        #endregion
+
+        #region -- Decimal
+        public static ContinuousValue<decimal> ContinuousMin<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, decimal>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, decimal, decimal>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : decimal.MaxValue);
+        }
+        public static ContinuousValue<decimal> ContinuousMin<T>(
+            this ObservableCollection<T> input,
+            Expression<Func<T, decimal>> minFunc,
+            Action<decimal> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, decimal, decimal>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : decimal.MaxValue, afterEffect);
+        }
+
+        public static ContinuousValue<decimal> ContinuousMin<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, decimal>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, decimal, decimal>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : decimal.MaxValue);
+        }
+        public static ContinuousValue<decimal> ContinuousMin<T>(
+            this ReadOnlyObservableCollection<T> input,
+            Expression<Func<T, decimal>> minFunc,
+            Action<decimal> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, decimal, decimal>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : decimal.MaxValue, afterEffect);
+        }
+
+        public static ContinuousValue<decimal> ContinuousMin<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, decimal>> minFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, decimal, decimal>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : decimal.MaxValue);
+        }
+        public static ContinuousValue<decimal> ContinuousMin<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, decimal>> minFunc,
+            Action<decimal> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, decimal, decimal>(input, minFunc, (list, selector) => list.Count > 0 ? list.Min(selector) : decimal.MaxValue, afterEffect);
         }
         #endregion
 
@@ -362,42 +406,42 @@ namespace ContinuousLinq.Aggregates
             this ObservableCollection<T> input,
             Expression<Func<T, float>> minSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : float.MaxValue);
         }
         public static ContinuousValue<float> ContinuousMin<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, float>> minSelector,
             Action<float> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : float.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<float> ContinuousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, float>> minSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : float.MaxValue);
         }
         public static ContinuousValue<float> ContinuousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, float>> minSelector,
             Action<float> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : float.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<float> ContinousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, float>> minSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : float.MaxValue);
         }
         public static ContinuousValue<float> ContinousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, float>> minSelector,
             Action<float> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, float, float>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : float.MaxValue, afterEffect);
         }
 
 
@@ -408,42 +452,42 @@ namespace ContinuousLinq.Aggregates
             this ObservableCollection<T> input,
             Expression<Func<T, long>> minSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : long.MaxValue);
         }
         public static ContinuousValue<long> ContinuousMin<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, long>> minSelector,
             Action<long> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : long.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<long> ContinousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, long>> minSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : long.MaxValue);
         }
         public static ContinuousValue<long> ContinousMin<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, long>> minSelector,
             Action<long> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : long.MaxValue, afterEffect);
         }
 
         public static ContinuousValue<long> ContinuousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, long>> minSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Min(selector));
+            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : long.MaxValue);
         }
         public static ContinuousValue<long> ContinuousMin<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, long>> minSelector,
             Action<long> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Min(selector), afterEffect);
+            return new ContinuousValue<T, long, long>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector) : long.MaxValue, afterEffect);
         }
         #endregion
         #endregion
@@ -585,33 +629,34 @@ namespace ContinuousLinq.Aggregates
         #endregion
 
         #region MAX
+       
         #region -- Int
         public static ContinuousValue<int> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, int>> maxSelector) where T : INotifyPropertyChanged
-        {           
-            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Max(selector));
+        {
+            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : int.MinValue);
         }
         public static ContinuousValue<int> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, int>> maxSelector,
             Action<int> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : int.MinValue, afterEffect);
         }
 
         public static ContinuousValue<int> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, int>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : int.MinValue);
         }
         public static ContinuousValue<int> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, int>> maxSelector,
             Action<int> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : int.MinValue, afterEffect);
         }
 
 
@@ -619,14 +664,14 @@ namespace ContinuousLinq.Aggregates
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, int>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : int.MinValue);
         }
         public static ContinuousValue<int> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, int>> maxSelector,
             Action<int> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, int, int>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : int.MinValue, afterEffect);
         }
         #endregion
 
@@ -635,43 +680,42 @@ namespace ContinuousLinq.Aggregates
            this ObservableCollection<T> input,
            Expression<Func<T, long>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : long.MinValue);
         }
         public static ContinuousValue<long> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, long>> maxSelector,
             Action<long> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : long.MinValue, afterEffect);
         }
 
         public static ContinuousValue<long> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, long>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : long.MinValue);
         }
         public static ContinuousValue<long> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, long>> maxSelector,
             Action<long> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : long.MinValue, afterEffect);
         }
-
 
         public static ContinuousValue<long> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, long>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : long.MinValue);
         }
         public static ContinuousValue<long> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, long>> maxSelector,
             Action<long> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, long, long>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : long.MinValue, afterEffect);
         }
         #endregion
 
@@ -680,28 +724,28 @@ namespace ContinuousLinq.Aggregates
            this ObservableCollection<T> input,
            Expression<Func<T, decimal>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : decimal.MinValue);
         }
         public static ContinuousValue<decimal> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, decimal>> maxSelector,
             Action<decimal> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : decimal.MinValue, afterEffect);
         }
 
         public static ContinuousValue<decimal> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, decimal>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : decimal.MinValue);
         }
         public static ContinuousValue<decimal> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, decimal>> maxSelector,
             Action<decimal> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : decimal.MinValue, afterEffect);
         }
 
 
@@ -709,14 +753,14 @@ namespace ContinuousLinq.Aggregates
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, decimal>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : decimal.MinValue);
         }
         public static ContinuousValue<decimal> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, decimal>> maxSelector,
             Action<decimal> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, decimal, decimal>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : decimal.MinValue, afterEffect);
         }
         #endregion
 
@@ -725,14 +769,14 @@ namespace ContinuousLinq.Aggregates
            this ObservableCollection<T> input,
            Expression<Func<T, double>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue);
         }
         public static ContinuousValue<double> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, double>> maxSelector,
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue, afterEffect);
         }
 
 
@@ -740,28 +784,28 @@ namespace ContinuousLinq.Aggregates
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, double>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue);
         }
         public static ContinuousValue<double> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, double>> maxSelector,
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue, afterEffect);
         }
 
         public static ContinuousValue<double> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, double>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue);
         }
         public static ContinuousValue<double> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, double>> maxSelector,
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue, afterEffect);
         }
         #endregion
 
@@ -770,42 +814,42 @@ namespace ContinuousLinq.Aggregates
            this ObservableCollection<T> input,
            Expression<Func<T, float>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue);
         }
         public static ContinuousValue<float> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, float>> maxSelector,
             Action<float> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue, afterEffect);
         }
 
         public static ContinuousValue<float> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, float>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue);
         }
         public static ContinuousValue<float> ContinousMax<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, float>> maxSelector,
             Action<float> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue, afterEffect);
         }
 
         public static ContinuousValue<float> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, float>> maxSelector) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Max(selector));
+            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue);
         }
         public static ContinuousValue<float> ContinuousMax<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, float>> maxSelector,
             Action<float> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Max(selector), afterEffect);
+            return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue, afterEffect);
         }
         #endregion
         #endregion        
