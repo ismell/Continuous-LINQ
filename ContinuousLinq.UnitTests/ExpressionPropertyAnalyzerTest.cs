@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
@@ -16,7 +12,12 @@ namespace ContinuousLinq.UnitTests
         private PropertyInfo _ageProperty;
         private PropertyInfo _nameProperty;
         private PropertyInfo _brotherProperty;
+
+        #region For Unit Testing 'this'
+
         public int TestProperty { get; set; }
+
+        #endregion
 
         [SetUp]
         public void Setup()
@@ -214,16 +215,8 @@ namespace ContinuousLinq.UnitTests
 
         #region INotifyPropertyChanged Members
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;        
 
-        #endregion
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged == null)
-                return;
-
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #endregion        
     }
 }

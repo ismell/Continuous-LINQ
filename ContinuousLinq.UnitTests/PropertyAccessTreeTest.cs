@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using System.Windows;
 using System.Reflection;
 
 namespace ContinuousLinq.UnitTests
 {
-
     [TestFixture]
     public class PropertyAccessTreeTest
     {
@@ -181,7 +176,7 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
-        [ExpectedException()]
+        [ExpectedException(typeof(Exception))]
         public void GetParameterAccessString_MultipleBranchAccess_ThrowsException()
         {
             InitializeTargetBrothersAgeAccess();

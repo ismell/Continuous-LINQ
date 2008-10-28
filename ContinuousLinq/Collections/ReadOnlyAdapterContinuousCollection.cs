@@ -1,10 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 
 namespace ContinuousLinq
 {
@@ -16,7 +10,6 @@ namespace ContinuousLinq
 
         internal ReadOnlyAdapterContinuousCollection(IList<TSource> list, PropertyAccessTree propertyAccessTree)
         {
-            INotifyCollectionChanged listAsINotifyCollectionChanged = list as INotifyCollectionChanged;
             this.Source = list;
             this.NotifyCollectionChangedMonitor = new NotifyCollectionChangedMonitor<TSource>(propertyAccessTree, list);
         }
@@ -25,6 +18,5 @@ namespace ContinuousLinq
             :this(list, null)
         {
         }
-
     }
 }

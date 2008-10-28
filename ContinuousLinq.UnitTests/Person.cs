@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -17,10 +12,17 @@ namespace ContinuousLinq.UnitTests
         private string _name;
         private int _age;
         private Person _brother;
+        private ObservableCollection<Person> _parents;
 
         #endregion
 
+        #region Events
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Constructors
 
         public Person()
         {
@@ -31,6 +33,10 @@ namespace ContinuousLinq.UnitTests
             _name = name;
             _age = age;
         }
+
+        #endregion
+
+        #region Properties
 
         public string Name
         {
@@ -76,7 +82,6 @@ namespace ContinuousLinq.UnitTests
             }
         }
 
-        private ObservableCollection<Person> _parents;
         public ObservableCollection<Person> Parents
         {
             get { return _parents; }
@@ -89,7 +94,10 @@ namespace ContinuousLinq.UnitTests
                 OnPropertyChanged("Parents");
             }
         }
-        #region Members
+
+        #endregion
+
+        #region Methods
 
         private void OnPropertyChanged(string property)
         {
@@ -112,6 +120,7 @@ namespace ContinuousLinq.UnitTests
                    where this.Brother != null && person.Age == this.Brother.Age
                    select person;
         }
+
         #endregion
     }
 }

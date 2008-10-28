@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
@@ -10,6 +8,8 @@ namespace ContinuousLinq
 {
     public static class ExpressionPropertyAnalyzer
     {
+        #region Methods
+
         public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression)
         {
             if (!DoesTypeImplementINotifyPropertyChanged(typeof(T)))
@@ -17,15 +17,12 @@ namespace ContinuousLinq
                 return null;
             }
 
-            List<PropertyAccessNode> propertyNodes = new List<PropertyAccessNode>();
-
             PropertyAccessTree tree = BuildUnoptimizedTree(expression.Body);
             RemoveRedundantNodesFromTree(tree.Children);
-
             return tree;
         }
 
-        private static void RemoveRedundantNodesFromTree(List<PropertyAccessTreeNode> nodes)
+        private static void RemoveRedundantNodesFromTree(IList<PropertyAccessTreeNode> nodes)
         {
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -93,7 +90,6 @@ namespace ContinuousLinq
                 BuildBranches(conditionalExpression.Test, tree, currentNodeBranch);
                 BuildBranches(conditionalExpression.IfTrue, tree, currentNodeBranch);
                 BuildBranches(conditionalExpression.IfFalse, tree, currentNodeBranch);
-
                 return;
             }
 
@@ -166,7 +162,7 @@ namespace ContinuousLinq
             }
         }
 
-        internal static void AddBranch(PropertyAccessTree tree, Stack<PropertyAccessTreeNode> currentNodeBranch)
+        private static void AddBranch(PropertyAccessTree tree, Stack<PropertyAccessTreeNode> currentNodeBranch)
         {
             if (currentNodeBranch.Count == 0)
                 return;
@@ -182,6 +178,7 @@ namespace ContinuousLinq
             }
         }
 
+        #endregion
     }
 }
 

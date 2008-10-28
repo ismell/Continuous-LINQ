@@ -1,16 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
-using System.Windows;
-using System.Collections.Specialized;
-using System.Collections;
 
 namespace ContinuousLinq
-{
+{    
     public class ListIndexer<TSource>
     {
+        #region Constructor
+
+        public ListIndexer(IList<TSource> source)
+        {
+            this.Source = source;
+            this.CurrentIndices = new Dictionary<TSource, HashSet<int>>(this.Source.Count);
+            RecordIndicesOfItemsInSource();
+        }
+
+        #endregion
+
+        #region Properties
+
         private IList<TSource> Source { get; set; }
 
         private Dictionary<TSource, HashSet<int>> CurrentIndices { get; set; }
@@ -20,12 +27,9 @@ namespace ContinuousLinq
             get { return this.CurrentIndices[item]; }
         }
 
-        public ListIndexer(IList<TSource> source)
-        {
-            this.Source = source;
-            this.CurrentIndices = new Dictionary<TSource, HashSet<int>>(this.Source.Count);
-            RecordIndicesOfItemsInSource();
-        }
+        #endregion
+        
+        #region Methods
 
         public bool Contains(TSource item)
         {
@@ -156,5 +160,6 @@ namespace ContinuousLinq
             }
         }
 
+        #endregion
     }
 }

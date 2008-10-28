@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using ContinuousLinq;
 
 namespace ContinuousLinq.UnitTests
 {
@@ -40,12 +36,13 @@ namespace ContinuousLinq.UnitTests
             var readOnlySource = new ReadOnlyObservableCollection<Person>(_source);
             ReadOnlyContinuousCollection<Person> output = from person in readOnlySource
                                                           select person;
+            Assert.AreEqual(readOnlySource, output);
         }
 
         [Test]
         public void Select_SourceContainsNonNotifyingObject_OnlyMonitorsCollectionChanges()
         {
-            ObservableCollection<int> source = new ObservableCollection<int>() { 0, 1, 2, 3 };
+            ObservableCollection<int> source = new ObservableCollection<int> { 0, 1, 2, 3 };
             ReadOnlyContinuousCollection<int> result = source.Select(item => item);
             int callCount = 0;
             result.CollectionChanged += (sender, args) => callCount++;
