@@ -213,7 +213,6 @@ namespace ContinuousLinq.UnitTests
             Assert.IsNull(tree);
         }
 
-
         [Test]
         public void Analyze_SpecialTypeFilterWithExpressionThatPassesFilter_ReturnsPropertyAccessTree()
         {
