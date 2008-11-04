@@ -10,16 +10,21 @@ namespace ContinuousLinq
     {
         #region Methods
 
-        public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression)
+        public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression, Predicate<Type> typeFilter)
         {
-            if (!DoesTypeImplementINotifyPropertyChanged(typeof(T)))
+            if (!typeFilter(typeof(T)))
             {
                 return null;
             }
 
-            PropertyAccessTree tree = BuildUnoptimizedTree(expression.Body);
+            PropertyAccessTree tree = BuildUnoptimizedTree(expression.Body, typeFilter);
             RemoveRedundantNodesFromTree(tree.Children);
             return tree;
+        }
+
+        public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression)
+        {
+            return Analyze(expression, DoesTypeImplementINotifyPropertyChanged);
         }
 
         private static void RemoveRedundantNodesFromTree(IList<PropertyAccessTreeNode> nodes)
@@ -38,12 +43,12 @@ namespace ContinuousLinq
             }
         }
 
-        private static PropertyAccessTree BuildUnoptimizedTree(Expression expression)
+        private static PropertyAccessTree BuildUnoptimizedTree(Expression expression, Predicate<Type> typeFilter)
         {
             PropertyAccessTree tree = new PropertyAccessTree();
 
             var currentNodeBranch = new Stack<PropertyAccessTreeNode>();
-            BuildBranches(expression, tree, currentNodeBranch);
+            BuildBranches(expression, tree, currentNodeBranch, typeFilter);
 
             return tree;
         }
@@ -53,14 +58,14 @@ namespace ContinuousLinq
             return type.GetInterface(typeof(INotifyPropertyChanged).Name) != null;
         }
 
-        private static void BuildBranches(Expression expression, PropertyAccessTree tree, Stack<PropertyAccessTreeNode> currentNodeBranch)
+        private static void BuildBranches(Expression expression, PropertyAccessTree tree, Stack<PropertyAccessTreeNode> currentNodeBranch, Predicate<Type> typeFilter)
         {
             BinaryExpression binaryExpression = expression as BinaryExpression;
 
             if (binaryExpression != null)
             {
-                BuildBranches(binaryExpression.Left, tree, currentNodeBranch);
-                BuildBranches(binaryExpression.Right, tree, currentNodeBranch);
+                BuildBranches(binaryExpression.Left, tree, currentNodeBranch, typeFilter);
+                BuildBranches(binaryExpression.Right, tree, currentNodeBranch, typeFilter);
                 return;
             }
 
@@ -68,7 +73,7 @@ namespace ContinuousLinq
 
             if (unaryExpression != null)
             {
-                BuildBranches(unaryExpression.Operand, tree, currentNodeBranch);
+                BuildBranches(unaryExpression.Operand, tree, currentNodeBranch, typeFilter);
                 return;
             }
 
@@ -78,7 +83,7 @@ namespace ContinuousLinq
             {
                 foreach (Expression argument in methodCallExpression.Arguments)
                 {
-                    BuildBranches(argument, tree, currentNodeBranch);
+                    BuildBranches(argument, tree, currentNodeBranch, typeFilter);
                 }
                 return;
             }
@@ -87,9 +92,9 @@ namespace ContinuousLinq
 
             if (conditionalExpression != null)
             {
-                BuildBranches(conditionalExpression.Test, tree, currentNodeBranch);
-                BuildBranches(conditionalExpression.IfTrue, tree, currentNodeBranch);
-                BuildBranches(conditionalExpression.IfFalse, tree, currentNodeBranch);
+                BuildBranches(conditionalExpression.Test, tree, currentNodeBranch, typeFilter);
+                BuildBranches(conditionalExpression.IfTrue, tree, currentNodeBranch, typeFilter);
+                BuildBranches(conditionalExpression.IfFalse, tree, currentNodeBranch, typeFilter);
                 return;
             }
 
@@ -102,17 +107,17 @@ namespace ContinuousLinq
                     FieldInfo fieldInfo = memberExpression.Member as FieldInfo;
                     if (property != null)
                     {
-                        if (DoesTypeImplementINotifyPropertyChanged(property.DeclaringType))
+                        if (typeFilter(property.DeclaringType))
                         {
                             PropertyAccessNode node = new PropertyAccessNode(property);
                             currentNodeBranch.Push(node);
                         }
-                        BuildBranches(memberExpression.Expression, tree, currentNodeBranch);
+                        BuildBranches(memberExpression.Expression, tree, currentNodeBranch, typeFilter);
                     }
                     else if (fieldInfo != null)
                     {
-                        if (DoesTypeImplementINotifyPropertyChanged(fieldInfo.FieldType))
-                        {                        
+                        if (typeFilter(fieldInfo.FieldType))
+                        {
                             ConstantExpression constantExpression = (ConstantExpression)memberExpression.Expression;
                             if (constantExpression.Value != null)
                             {
@@ -129,7 +134,7 @@ namespace ContinuousLinq
                     }
                     else
                     {
-                        BuildBranches(memberExpression.Expression, tree, currentNodeBranch);
+                        BuildBranches(memberExpression.Expression, tree, currentNodeBranch, typeFilter);
                     }
 
                     break;
@@ -143,7 +148,7 @@ namespace ContinuousLinq
                 case ExpressionType.Constant:
                     {
                         ConstantExpression constantExpression = (ConstantExpression)expression;
-                        if (DoesTypeImplementINotifyPropertyChanged(constantExpression.Type) &&
+                        if (typeFilter(constantExpression.Type) &&
                             constantExpression.Value != null)
                         {
                             ConstantNode constantNode = new ConstantNode((INotifyPropertyChanged)constantExpression.Value);

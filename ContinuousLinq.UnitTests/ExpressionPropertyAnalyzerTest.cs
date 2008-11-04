@@ -213,6 +213,34 @@ namespace ContinuousLinq.UnitTests
             Assert.IsNull(tree);
         }
 
+
+        [Test]
+        public void Analyze_SpecialTypeFilterWithExpressionThatPassesFilter_ReturnsPropertyAccessTree()
+        {
+            Expression<Func<string, bool>> expression = str => str.Length == 0;
+
+            PropertyAccessTree tree = ExpressionPropertyAnalyzer.Analyze(expression, type => type == typeof(string));
+
+            Assert.AreEqual(1, tree.Children.Count);
+            PropertyAccessTreeNode parameterNode = tree.Children[0];
+            Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
+            Assert.AreEqual(1, parameterNode.Children.Count);
+
+            PropertyAccessNode lengthNode = (PropertyAccessNode)parameterNode.Children[0];
+            Assert.AreEqual(typeof(string).GetProperty("Length"), lengthNode.Property);
+            Assert.AreEqual(0, lengthNode.Children.Count);
+        }
+
+        [Test]
+        public void Analyze_SpecialTypeFilterWithExpressionThatFailsFilter_ReturnsPropertyAccessTree()
+        {
+            Expression<Func<string, bool>> expression = str => str.Length == 0;
+
+            PropertyAccessTree tree = ExpressionPropertyAnalyzer.Analyze(expression, type => type == typeof(int));
+
+            Assert.IsNull(tree);
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;        
