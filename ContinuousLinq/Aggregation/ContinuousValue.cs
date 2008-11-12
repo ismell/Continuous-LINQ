@@ -159,7 +159,10 @@ namespace ContinuousLinq.Aggregates
                 return;
             }
 
-            this.CurrentValue = this.AggregationOperation(this.Source, this.Selector);
+            if (this.Source.Count == 0)
+                this.CurrentValue = default(TResult);
+            else
+                this.CurrentValue = this.AggregationOperation(this.Source, this.Selector);
 
             if (this.AfterEffect != null)
                 AfterEffect(this.CurrentValue);
