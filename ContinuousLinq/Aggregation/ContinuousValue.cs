@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Collections.Specialized;
-using System.Windows;
 
 namespace ContinuousLinq.Aggregates
 {
@@ -54,7 +51,7 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        internal abstract void Refresh();        
+        protected abstract void Refresh();        
     }
 
     public abstract class ContinuousValue<T> : ContinuousValue, INotifyPropertyChanged
@@ -151,7 +148,7 @@ namespace ContinuousLinq.Aggregates
             Refresh();
         }
 
-        internal override void Refresh()
+        protected override void Refresh()
         {
             if (IsGloballyPaused)
             {

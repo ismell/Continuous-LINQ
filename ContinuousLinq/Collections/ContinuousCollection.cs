@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using System.Threading;
-using System.ComponentModel;
 
 namespace ContinuousLinq
 {
@@ -18,10 +17,7 @@ namespace ContinuousLinq
     /// <typeparam name="T">Type of element contained within the collection</typeparam>
     public class ContinuousCollection<T> : ObservableCollection<T>
     {
-        // Maybe later this will be changeable:
-        private readonly DispatcherPriority _updatePriority = DispatcherPriority.Normal;
         private readonly Dispatcher _dispatcher;
-
 
         private delegate void ZeroDelegate();
         private delegate void IndexDelegate(int index);
@@ -33,7 +29,7 @@ namespace ContinuousLinq
         /// to the dispatcher.
         /// </summary>
         public ContinuousCollection()
-        {
+        {            
             _dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
         }
 
@@ -122,7 +118,7 @@ namespace ContinuousLinq
             }
             else
             {
-                _dispatcher.Invoke(_updatePriority, new ZeroDelegate(ClearItems));
+                _dispatcher.Invoke(DispatcherPriority.Normal, new ZeroDelegate(ClearItems));
             }
         }
 
@@ -140,7 +136,7 @@ namespace ContinuousLinq
             }
             else
             {
-                _dispatcher.Invoke(_updatePriority,
+                _dispatcher.Invoke(DispatcherPriority.Normal,
                     new IndexItemDelegate(InsertItem), index, item);
             }
         }
@@ -153,7 +149,7 @@ namespace ContinuousLinq
             }
             else
             {
-                _dispatcher.Invoke(_updatePriority,
+                _dispatcher.Invoke(DispatcherPriority.Normal,
                     new IndexIndexDelegate(MoveItem), oldIndex, newIndex);
             }
         }
@@ -172,7 +168,7 @@ namespace ContinuousLinq
             }
             else
             {
-                _dispatcher.Invoke(_updatePriority, new IndexDelegate(RemoveItem), index);
+                _dispatcher.Invoke(DispatcherPriority.Normal, new IndexDelegate(RemoveItem), index);
             }
 
         }
@@ -190,7 +186,7 @@ namespace ContinuousLinq
             }
             else
             {
-                _dispatcher.Invoke(_updatePriority,
+                _dispatcher.Invoke(DispatcherPriority.Normal,
                     new IndexItemDelegate(SetItem), index, item);
             }
         }
