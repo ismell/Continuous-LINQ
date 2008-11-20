@@ -19,7 +19,24 @@ namespace ContinuousLinq
 
             PropertyAccessTree tree = BuildUnoptimizedTree(expression.Body, typeFilter);
             RemoveRedundantNodesFromTree(tree.Children);
+            ApplyTypeFilter(tree.Children, typeFilter);
             return tree;
+        }
+
+        private static void ApplyTypeFilter(List<PropertyAccessTreeNode> children, Predicate<Type> typeFilter)
+        {
+            for (int i = children.Count - 1; i >= 0; i--)
+            {
+                var propertyAccessNode = children[i] as PropertyAccessNode;
+                if (propertyAccessNode != null)
+                {
+                    if (propertyAccessNode.Children.Count > 0 && !typeFilter(propertyAccessNode.Property.PropertyType))
+                    {
+                        propertyAccessNode.Children.Clear();
+                    }
+                }
+                ApplyTypeFilter(children[i].Children, typeFilter);
+            }
         }
 
         public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression)
@@ -107,11 +124,9 @@ namespace ContinuousLinq
                     FieldInfo fieldInfo = memberExpression.Member as FieldInfo;
                     if (property != null)
                     {
-                        if (typeFilter(property.DeclaringType))
-                        {
-                            PropertyAccessNode node = new PropertyAccessNode(property);
-                            currentNodeBranch.Push(node);
-                        }
+                        PropertyAccessNode node = new PropertyAccessNode(property);
+                        currentNodeBranch.Push(node);
+
                         BuildBranches(memberExpression.Expression, tree, currentNodeBranch, typeFilter);
                     }
                     else if (fieldInfo != null)
