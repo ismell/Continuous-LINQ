@@ -55,6 +55,8 @@
   <ItemGroup>
     <Compile Include="Aggregation\StdDev.cs" />
     <Compile Include="Collections\DistinctReadOnlyContinuousCollection.cs" />
+    <Compile Include="Collections\GroupedContinuousCollection.cs" />
+    <Compile Include="Collections\GroupingReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\OrderedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SortingReadOnlyContinuousCollection.cs" />

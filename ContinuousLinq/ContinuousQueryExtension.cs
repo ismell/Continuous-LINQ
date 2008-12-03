@@ -190,6 +190,34 @@ namespace ContinuousLinq
 
         #endregion
 
+        #region GroupBy
+        public static GroupingReadOnlyContinuousCollection<TKey, TSource> GroupBy<TKey, TSource>(
+            this ObservableCollection<TSource> source, 
+            Expression<Func<TSource, TKey>> keySelector) 
+            where TSource : INotifyPropertyChanged
+            where TKey : IEquatable<TKey>
+        {
+            return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
+        }
+
+        public static GroupingReadOnlyContinuousCollection<TKey, TSource> GroupBy<TKey, TSource>(
+            this ReadOnlyObservableCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector) 
+            where TSource : INotifyPropertyChanged
+            where TKey : IEquatable<TKey>
+        {
+            return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
+        }
+
+        public static GroupingReadOnlyContinuousCollection<TKey, TSource> GroupBy<TKey, TSource>(
+            this ReadOnlyContinuousCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
+            where TSource : INotifyPropertyChanged
+            where TKey : IEquatable<TKey>
+        {
+            return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
+        }
+        #endregion
 
         #region AsReadOnly
 

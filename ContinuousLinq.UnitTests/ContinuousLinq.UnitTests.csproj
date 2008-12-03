@@ -65,6 +65,7 @@
     <Compile Include="ExpressionPropertyAnalyzerTest.cs" />
     <Compile Include="FilteringReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="FirstOrDefaultTest.cs" />
+    <Compile Include="GroupByTest.cs" />
     <Compile Include="ListIndexerTest.cs" />
     <Compile Include="PassThroughReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="PausedAggregationTest.cs" />

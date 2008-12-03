@@ -42,5 +42,26 @@ namespace ContinuousLinq.UnitTests
 
             return source;
         }
+
+        internal static ObservableCollection<Person> CreateGroupablePersonSource()
+        {
+            ObservableCollection<Person> col = new ObservableCollection<Person>();
+            // add person objects to collection sufficient to create 10 groups of 6
+            // based on their age.
+            for (int x = 0; x < 10; x++)
+            {
+                for (int y = 0; y < 6; y++)
+                {
+                    Person p = new Person()
+                    {
+                         Age = x * 20 + 5,
+                         Name = "Person " + x.ToString() + " " + y.ToString()
+                    };
+                    col.Add(p);
+                }
+            }
+
+            return col;
+        }
     }
 }
