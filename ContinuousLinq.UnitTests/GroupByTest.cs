@@ -45,19 +45,71 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
-        public void GroupBy_CountGroups_AfterChange()
+        public void ChangeItemInExistingGroup_NewValueNotMatchingCurrentKey_NewGroupFormed()
         {
             GroupingReadOnlyContinuousCollection<int, Person> liveGroup =
                 from p in _source
                 group p by p.Age;
 
-            // now change one of the ages to create an 11th group.
-            // change in the source, not liveGroup.
-
             _source[0].Age = 999;
 
             Assert.AreEqual(11, liveGroup.Count);
             Assert.AreEqual(1, liveGroup[liveGroup.Count - 1].Count);
+        }
+
+        [Test]
+        public void ChangingItem_LastItemInGroup_GroupRemoved()
+        {
+            _source = ClinqTestFactory.CreateTwoPersonSource();
+
+            var group = from p in _source group p by p.Name;
+
+            _source[0].Name = "Foo";
+
+            Assert.AreEqual(2, group.Count);
+        }
+
+        [Test]
+        public void GroupBy_MultipleGroups_UsesAnonymouseTypeForComparison()
+        {
+            _source = ClinqTestFactory.CreateTwoPersonSource();
+
+            var group = from p in _source group p by new { p.Name, p.Age };
+
+            _source.Add(new Person("Bob", 10));
+            _source.Add(new Person("Jim", 20));
+
+            Assert.AreEqual(2, group.Count);
+            Assert.AreEqual(2, group[group.Count - 1].Count);
+        }
+
+        [Test]
+        public void AddItemToSource_ItemIsADuplicate_AddedToCorrectGroup()
+        {
+            _source = ClinqTestFactory.CreateTwoPersonSource();
+
+            var group = from p in _source group p 
+                        by new { p.Name, p.Age };
+
+            _source.Add(_source[0]);
+
+            Assert.AreEqual(2, group.Count);
+            Assert.AreEqual(2, group[0].Count);
+        }
+
+        [Test]
+        public void RemoveItemFromSource_ItemIsADuplicate_AddedToCorrectGroup()
+        {
+            _source = ClinqTestFactory.CreateTwoPersonSource();
+            _source.Add(_source[0]);
+
+            var group = from p in _source 
+                        group p by new { p.Name, p.Age };
+
+            _source.Remove(_source[0]);
+
+            Assert.AreEqual(2, group.Count);
+            Assert.AreEqual(1, group[0].Count);
         }
     }
 }

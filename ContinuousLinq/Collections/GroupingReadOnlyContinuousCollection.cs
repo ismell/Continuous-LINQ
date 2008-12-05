@@ -9,17 +9,24 @@ using System.Linq.Expressions;
 
 namespace ContinuousLinq.Collections
 {
-    public class GroupingReadOnlyContinuousCollection<TKey,TSource> : ReadOnlyAdapterContinuousCollection<TSource, GroupedContinuousCollection<TKey, TSource>> where TKey : IEquatable<TKey>
+    public class GroupingReadOnlyContinuousCollection<TKey,TSource> 
+        : ReadOnlyAdapterContinuousCollection<TSource, GroupedReadOnlyContinuousCollection<TKey, TSource>>
     {
+        internal ContinuousCollection<GroupedReadOnlyContinuousCollection<TKey, TSource>> Output { get; set; }
 
-        internal ContinuousCollection<GroupedContinuousCollection<TKey, TSource>> Output { get; set; }
         internal Func<TSource, TKey> KeySelector { get; set; }
 
-        public GroupingReadOnlyContinuousCollection(IList<TSource> list,
-            Expression<Func<TSource, TKey>> keySelectorExpression) : base(list, ExpressionPropertyAnalyzer.Analyze(keySelectorExpression))
+        internal Dictionary<TSource, GroupedReadOnlyContinuousCollection<TKey, TSource>> ItemToGroupIndex { get; set; }
+
+        internal GroupingReadOnlyContinuousCollection(
+            IList<TSource> list,
+            Expression<Func<TSource, TKey>> keySelectorExpression) 
+            : base(list, ExpressionPropertyAnalyzer.Analyze(keySelectorExpression))
         {
             this.KeySelector = keySelectorExpression.Compile();
-            this.Output = new ContinuousCollection<GroupedContinuousCollection<TKey, TSource>>();
+            this.Output = new ContinuousCollection<GroupedReadOnlyContinuousCollection<TKey, TSource>>();
+
+            this.ItemToGroupIndex = new Dictionary<TSource, GroupedReadOnlyContinuousCollection<TKey, TSource>>();
 
             AddNewItems(this.Source);
 
@@ -30,7 +37,6 @@ namespace ContinuousLinq.Collections
             this.NotifyCollectionChangedMonitor.ItemChanged += OnItemChanged;
 
             this.Output.CollectionChanged += OnOutputCollectionChanged;
-           
         }
 
         private void OnOutputCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
@@ -38,24 +44,31 @@ namespace ContinuousLinq.Collections
             FireCollectionChanged(args);
         }
 
-        private GroupedContinuousCollection<TKey, TSource> GetCollectionForKey(TKey key)
+        private GroupedReadOnlyContinuousCollection<TKey, TSource> GetCollectionForKey(TKey key)
         {
-            GroupedContinuousCollection<TKey, TSource> col =
-                this.Output.FirstOrDefault(item => item.Key.Equals(key));
-            if (col == null)
+            GroupedReadOnlyContinuousCollection<TKey, TSource> group =
+                this.Output.FirstOrDefault(item => EqualityComparer<TKey>.Default.Equals(item.Key, key));
+            
+            if (group == null)
             {
-                col = new GroupedContinuousCollection<TKey, TSource>(key);
-                this.Output.Add(col);
+                group = new GroupedReadOnlyContinuousCollection<TKey, TSource>(key);
+                this.Output.Add(group);
             }
-            return col;
+            return group;
         }
 
         private void AddNewItems(IEnumerable<TSource> source)
         {
             foreach (TSource item in source)
             {
-                GroupedContinuousCollection<TKey, TSource> col = GetCollectionForKey(this.KeySelector(item));
-                col.Add(item);
+                GroupedReadOnlyContinuousCollection<TKey, TSource> group;
+                if(!this.ItemToGroupIndex.TryGetValue(item, out group))
+                {
+                    group = GetCollectionForKey(this.KeySelector(item));
+                    this.ItemToGroupIndex[item] = group;
+                }
+
+                group.InternalCollection.Add(item);
             }            
         }
 
@@ -63,36 +76,45 @@ namespace ContinuousLinq.Collections
         {
             foreach (TSource item in oldItems)
             {
-                TKey key = this.KeySelector(item);
-                GroupedContinuousCollection<TKey, TSource> col = GetCollectionForKey(key);
-                if (col.Contains(item))
-                    col.Remove(item);
-                if (col.Count == 0)
-                    this.Output.Remove(col);
+                var currentGroup = this.ItemToGroupIndex[item];
+                currentGroup.InternalCollection.Remove(item);
+
+                if (currentGroup.Count == 0)
+                {
+                    this.Output.Remove(currentGroup);
+                }
+
+                if (!this.NotifyCollectionChangedMonitor.ReferenceCountTracker.Contains(item))
+                {
+                    this.ItemToGroupIndex.Remove(item);
+                }
             }
         }
 
         private void Regroup(TSource modifiedItem)
         {
-            TKey key = this.KeySelector(modifiedItem);
-            GroupedContinuousCollection<TKey, TSource> targetCol =
-                this.Output.FirstOrDefault(col => col.Key.Equals(key));
-            GroupedContinuousCollection<TKey, TSource> currentCol =
-                this.Output.FirstOrDefault(col => col.Contains(modifiedItem));
+            var currentGroup = this.ItemToGroupIndex[modifiedItem];
+            
+            TKey newKey = this.KeySelector(modifiedItem);
 
-            if (targetCol == null)
+            if (EqualityComparer<TKey>.Default.Equals(currentGroup.Key, newKey))
             {
-                currentCol.Remove(modifiedItem);
-                GroupedContinuousCollection<TKey, TSource> newCol = new GroupedContinuousCollection<TKey, TSource>(key);
-                newCol.Add(modifiedItem);
-                this.Output.Add(newCol);
+                return;
             }
-            else if (!targetCol.Contains(modifiedItem))
+
+            GroupedReadOnlyContinuousCollection<TKey, TSource> newGroupForModifiedItem = GetCollectionForKey(newKey);
+
+            while (currentGroup.InternalCollection.Remove(modifiedItem)) 
             {
-                currentCol.Remove(modifiedItem);
-                targetCol.Add(modifiedItem);
+                newGroupForModifiedItem.InternalCollection.Add(modifiedItem);
             }
-            // ELSE - item belongs in its current collection - do nothing.
+
+            if (currentGroup.Count == 0)
+            {
+                this.Output.Remove(currentGroup);
+            }
+
+            this.ItemToGroupIndex[modifiedItem] = newGroupForModifiedItem;
         }
 
         #region Source Changed Event Handlers
@@ -115,7 +137,8 @@ namespace ContinuousLinq.Collections
 
         void OnReset()
         {
-            this.Output.Clear();            
+            this.Output.Clear();
+            this.ItemToGroupIndex.Clear();
         }
 
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
@@ -127,36 +150,26 @@ namespace ContinuousLinq.Collections
         #endregion
 
         #region Overrides
+        
         public override int Count
         {
             get { return Output.Count; }
         }
 
-        public override GroupedContinuousCollection<TKey, TSource> this[int index]
+        public override GroupedReadOnlyContinuousCollection<TKey, TSource> this[int index]
         {
-            get
-            {
-                return this.Output[index];
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { return this.Output[index]; }
+            set { throw new NotImplementedException(); }
         }
-        #endregion
-
         
+        #endregion
 
         public IEnumerable<TKey> Keys
         {
             get
             {
-                var q = from GroupedContinuousCollection<TKey, TSource> col in this.Output
+                return from col in this.Output.AsEnumerable()
                         select col.Key;
-                foreach (TKey key in q)
-                {
-                    yield return key;
-                }
             }
         }
     }

@@ -13,10 +13,10 @@ namespace ContinuousLinq
         public PassThroughReadOnlyContinuousCollection(IList<TSource> list)
             : base(list, null)
         {
-            this.NotifyCollectionChangedMonitor.CollectionChanged += OnSourceCollectionchanged;
+            this.NotifyCollectionChangedMonitor.CollectionChanged += OnSourceCollectionChanged;
         }
 
-        void OnSourceCollectionchanged(object sender, NotifyCollectionChangedEventArgs args)
+        void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             base.FireCollectionChanged(args);
         }

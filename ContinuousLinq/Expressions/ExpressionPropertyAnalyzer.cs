@@ -176,9 +176,31 @@ namespace ContinuousLinq
                         }
                     }
                     break;
-
+                case ExpressionType.New:
+                    {
+                        NewExpression newExpression = (NewExpression)expression;
+                        foreach (Expression argument in newExpression.Arguments)
+                        {
+                            BuildBranches(argument, tree, currentNodeBranch, typeFilter);
+                        }
+                    }
+                    break;
+                case ExpressionType.MemberInit:
+                    {
+                        MemberInitExpression memberInitExpression = (MemberInitExpression)expression;
+                        BuildBranches(memberInitExpression.NewExpression, tree, currentNodeBranch, typeFilter);
+                        foreach (var memberBinding in memberInitExpression.Bindings)
+                        {
+                            MemberAssignment assignment = memberBinding as MemberAssignment;
+                            if (assignment != null)
+                            {
+                                BuildBranches(assignment.Expression, tree, currentNodeBranch, typeFilter);
+                            }
+                        }
+                    }
+                    break;
                 default:
-                    throw new InvalidProgramException("Unsupported expression type");
+                    throw new InvalidProgramException(string.Format("CLINQ does not support expressions of type: {0}", expression.NodeType));
             }
         }
 

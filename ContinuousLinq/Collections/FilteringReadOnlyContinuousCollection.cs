@@ -17,12 +17,12 @@ namespace ContinuousLinq.Collections
 
         internal HashSet<TSource> ItemLookup { get; set; }
 
-        internal Func<TSource, bool> Function { get; set; }
+        internal Func<TSource, bool> FilterFunction { get; set; }
 
         public FilteringReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource, bool>> expression)
             : base(list, ExpressionPropertyAnalyzer.Analyze(expression))
         {
-            this.Function = expression.Compile();
+            this.FilterFunction = expression.Compile();
 
             this.Output = new ContinuousCollection<TSource>();
             this.ItemLookup = new HashSet<TSource>();
@@ -53,7 +53,7 @@ namespace ContinuousLinq.Collections
 
         private void Filter(TSource item)
         {
-            if (this.Function(item))
+            if (this.FilterFunction(item))
             {
                 if (!this.ItemLookup.Contains(item))
                 {
@@ -97,25 +97,13 @@ namespace ContinuousLinq.Collections
             foreach (TSource item in newItems)
             {
                 this.SourceCountTracker.Add(item);
-                if (this.Function(item))
+                if (this.FilterFunction(item))
                 {
                     this.Output.Add(item);
                     this.ItemLookup.Add(item);
                 }
             }
         }
-
-        //private void AddItemToOutput(TSource item)
-        //{
-        //    this.Output.Add(item);
-        //    this.ItemLookup.Add(item);
-        //}
-        
-        //private void RemoveItemFromOutput(TSource item)
-        //{
-        //    this.Output.Remove(item);
-        //    this.ItemLookup.Remove(item);
-        //}
 
         private void RemoveOldItems(IEnumerable<TSource> oldItems)
         {

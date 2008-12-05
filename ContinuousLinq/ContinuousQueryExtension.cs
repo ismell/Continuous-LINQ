@@ -195,7 +195,6 @@ namespace ContinuousLinq
             this ObservableCollection<TSource> source, 
             Expression<Func<TSource, TKey>> keySelector) 
             where TSource : INotifyPropertyChanged
-            where TKey : IEquatable<TKey>
         {
             return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
         }
@@ -204,7 +203,6 @@ namespace ContinuousLinq
             this ReadOnlyObservableCollection<TSource> source,
             Expression<Func<TSource, TKey>> keySelector) 
             where TSource : INotifyPropertyChanged
-            where TKey : IEquatable<TKey>
         {
             return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
         }
@@ -213,7 +211,6 @@ namespace ContinuousLinq
             this ReadOnlyContinuousCollection<TSource> source,
             Expression<Func<TSource, TKey>> keySelector)
             where TSource : INotifyPropertyChanged
-            where TKey : IEquatable<TKey>
         {
             return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
         }

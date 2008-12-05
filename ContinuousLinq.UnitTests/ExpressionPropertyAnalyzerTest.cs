@@ -240,10 +240,59 @@ namespace ContinuousLinq.UnitTests
             Assert.IsNull(tree);
         }
 
+        [Test]
+        public void Analyze_ExpressionContainsNewOperatorWithMemberAssignmentInitialization_ReturnsPropertyAccessTree()
+        {
+            Expression<Func<Person, Person>> expression = person => new Person() { Name = person.Name, Age = person.Age};
+
+            var tree = ExpressionPropertyAnalyzer.Analyze(expression);
+
+            Assert.AreEqual(1, tree.Children.Count);
+            PropertyAccessTreeNode parameterNode = tree.Children[0];
+            Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
+            Assert.AreEqual(2, parameterNode.Children.Count);
+
+            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[0];
+            Assert.AreEqual(_nameProperty, nameNode.Property);
+            Assert.AreEqual(0, nameNode.Children.Count);
+
+            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[1];
+            Assert.AreEqual(_ageProperty, ageNode.Property);
+            Assert.AreEqual(0, ageNode.Children.Count);
+        }
+
+        [Test]
+        public void Analyze_ExpressionContainsNewOperatorWithConstructorArguments_ReturnsPropertyAccessTree()
+        {
+            Expression<Func<Person, Person>> expression = person => new Person(person.Name, person.Age);
+
+            var tree = ExpressionPropertyAnalyzer.Analyze(expression);
+
+            Assert.AreEqual(1, tree.Children.Count);
+            PropertyAccessTreeNode parameterNode = tree.Children[0];
+            Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
+            Assert.AreEqual(2, parameterNode.Children.Count);
+
+            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[0];
+            Assert.AreEqual(_nameProperty, nameNode.Property);
+            Assert.AreEqual(0, nameNode.Children.Count);
+
+            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[1];
+            Assert.AreEqual(_ageProperty, ageNode.Property);
+            Assert.AreEqual(0, ageNode.Children.Count);
+        }
+
         #region INotifyPropertyChanged Members
 
-        public event PropertyChangedEventHandler PropertyChanged;        
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        private void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged == null)
+                return;
+
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
         #endregion        
     }
 }
