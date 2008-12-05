@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Aggregation\StdDev.cs" />
     <Compile Include="Collections\DistinctReadOnlyContinuousCollection.cs" />
-    <Compile Include="Collections\GroupedContinuousCollection.cs" />
+    <Compile Include="Collections\GroupedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\GroupingReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\OrderedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
@@ -94,7 +94,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>@echo off
-xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
-xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
+REM xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
+REM xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>
