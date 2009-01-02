@@ -10,6 +10,7 @@ namespace ContinuousLinq.Aggregates
 {
     public static class ContinuousAggregationExtension
     {
+        
         #region SUM
 
         public static ContinuousValue<int> ContinuousSum<T>(

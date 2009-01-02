@@ -21,6 +21,9 @@ namespace ContinuousLinq.OrderBookDemo.Models
         private double _currentMin;
         private ContinuousValue<double> _maxPrice;
         private double _currentMax;
+        private ContinuousValue<double> _vwap;
+        private double _currentVwap;        
+
         private Timer _simulationTimer;
 
         public ModelRoot()
@@ -55,6 +58,9 @@ namespace ContinuousLinq.OrderBookDemo.Models
                                                        newPrice => this.CurrentMin = newPrice);
             _maxPrice = _executions.ContinuousMax(tx => tx.Price,
                                                        newPrice => this.CurrentMax = newPrice);
+
+            _vwap = _executions.ContinuousVwap(tx => tx.Price, tx => tx.Quantity,
+                newVwap => this.CurrentVwap = newVwap);
 
             _simulationTimer = new Timer(1000);
             _simulationTimer.Elapsed += GenerateBogusData;
@@ -166,6 +172,19 @@ namespace ContinuousLinq.OrderBookDemo.Models
             set {
                 _currentMin = value;
                 NotifyChanged("CurrentMin");
+            }
+        }
+
+        public double CurrentVwap
+        {
+            get
+            {
+                return _currentVwap;
+            }
+            set
+            {
+                _currentVwap = value;
+                NotifyChanged("CurrentVwap");
             }
         }
 

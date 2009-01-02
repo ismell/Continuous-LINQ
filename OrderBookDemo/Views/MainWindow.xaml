@@ -152,6 +152,9 @@
             </DockPanel.Resources>
             <Grid DockPanel.Dock="Left">
                 <TextBlock VerticalAlignment="Bottom" Text="{Binding Source={StaticResource ModelRoot}, Path=CurrentMin, Converter={StaticResource PriceConverter}}"/>
+                <TextBlock VerticalAlignment="Bottom" Text="VWAP" Margin="-40,0,0,40"/> 
+                <TextBlock VerticalAlignment="Bottom" Margin="0,0,0,40" Text="{Binding Source={StaticResource ModelRoot}, Path=CurrentVwap, Converter={StaticResource PriceConverter}}"/>
+                
                 <TextBlock VerticalAlignment="Top" Text="{Binding Source={StaticResource ModelRoot}, Path=CurrentMax, Converter={StaticResource PriceConverter}}"/>
             </Grid>
             <Canvas Background="{StaticResource Brushes/GraphBrush}"

@@ -70,6 +70,7 @@
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderCollection.cs" />
     <Compile Include="Models\StockTransaction.cs" />
+    <Compile Include="Models\Vwap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -87,7 +87,7 @@ namespace ContinuousLinq.Aggregates
         #endregion
     }
 
-    internal class ContinuousValue<TSource, TColSelectorResult, TResult> : ContinuousValue<TResult> where TSource : INotifyPropertyChanged
+    public class ContinuousValue<TSource, TColSelectorResult, TResult> : ContinuousValue<TResult> where TSource : INotifyPropertyChanged
     {
         internal IList<TSource> Source { get; set; }
 
@@ -99,7 +99,7 @@ namespace ContinuousLinq.Aggregates
 
         public Action<TResult> AfterEffect { get; set; }
 
-        internal ContinuousValue(
+        public ContinuousValue(
             IList<TSource> input, 
             Expression<Func<TSource, TColSelectorResult>> selectorExpression,
             Func<IList<TSource>, Func<TSource,TColSelectorResult>, TResult> aggregateOperation)
@@ -124,7 +124,7 @@ namespace ContinuousLinq.Aggregates
             Refresh();
         }
 
-        internal ContinuousValue(
+        public ContinuousValue(
             IList<TSource> input,
             Expression<Func<TSource, TColSelectorResult>> selectorExpression,
             Func<IList<TSource>, Func<TSource, TColSelectorResult>, TResult> aggregateOperation,
