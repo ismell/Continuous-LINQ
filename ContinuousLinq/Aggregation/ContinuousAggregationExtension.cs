@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
@@ -9,8 +7,7 @@ using System.Linq.Expressions;
 namespace ContinuousLinq.Aggregates
 {
     public static class ContinuousAggregationExtension
-    {
-        
+    {        
         #region SUM
 
         public static ContinuousValue<int> ContinuousSum<T>(
@@ -775,7 +772,7 @@ namespace ContinuousLinq.Aggregates
         public static ContinuousValue<double> ContinuousMax<T>(
            this ObservableCollection<T> input,
            Expression<Func<T, double>> maxSelector,
-            Action<double> afterEffect) where T : INotifyPropertyChanged
+           Action<double> afterEffect) where T : INotifyPropertyChanged
         {
             return new ContinuousValue<T, double, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : double.MinValue, afterEffect);
         }
@@ -853,7 +850,39 @@ namespace ContinuousLinq.Aggregates
             return new ContinuousValue<T, float, float>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector) : float.MinValue, afterEffect);
         }
         #endregion
-        #endregion        
+
+        #region --Nullables
+
+        public static ContinuousValue<double> ContinuousSum<T>(
+           this ReadOnlyContinuousCollection<T> input,
+           Expression<Func<T, double?>> sumFunc) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double?, double>(input, sumFunc, (list, selector) => list.Sum(selector).GetValueOrDefault());
+        }
+        public static ContinuousValue<double> ContinuousSum<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, double?>> sumFunc,
+            Action<double> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double?, double>(input, sumFunc, (list, selector) => list.Sum(selector).GetValueOrDefault(), afterEffect);
+        }
+
+        public static ContinuousValue<double> ContinuousMax<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, double?>> maxSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double?, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector).GetValueOrDefault() : double.MinValue);
+        }
+        public static ContinuousValue<double> ContinuousMax<T>(
+            this ReadOnlyContinuousCollection<T> input,
+            Expression<Func<T, double?>> maxSelector,
+            Action<double> afterEffect) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double?, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector).GetValueOrDefault() : double.MinValue, afterEffect);
+        }
+
+        #endregion
+        #endregion
 
         #region STDDEV
         #region -- Int

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="AsReadOnlyTest.cs" />
     <Compile Include="ClinqTestFactory.cs" />
+    <Compile Include="ContinuousAggregationExtensionTest.cs" />
     <Compile Include="ContinuousContainsTest.cs" />
     <Compile Include="ContinuousCountTest.cs" />
     <Compile Include="ContinuousSumTest.cs" />
