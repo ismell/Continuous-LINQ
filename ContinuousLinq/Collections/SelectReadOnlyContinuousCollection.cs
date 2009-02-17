@@ -89,8 +89,8 @@ namespace ContinuousLinq
         {
             this.SourceIndex.Add(index, newItems);
             RecordCurrentValues(newItems);
-            IEnumerable<TResult> selectedItems = newItems.Select(this.SelectorFunction);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, selectedItems.ToList(), index));
+            List<TResult> selectedItems = GetCurrentValues(newItems);
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, selectedItems, index));
         }
 
         void OnRemove(int index, IEnumerable<TSource> oldItems)
@@ -122,8 +122,8 @@ namespace ContinuousLinq
         void OnMove(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             this.SourceIndex.Move(oldStartingIndex, newStartingIndex);
-            IEnumerable<TResult> newSelectedItems = newItems.Select(this.SelectorFunction);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newSelectedItems.ToList(), newStartingIndex, oldStartingIndex));
+            List<TResult> newSelectedItems = GetCurrentValues(newItems);
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newSelectedItems, newStartingIndex, oldStartingIndex));
         }
         
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
@@ -132,8 +132,8 @@ namespace ContinuousLinq
             List<TResult> oldValues = GetCurrentValues(oldItems);
             RemoveCurrentValues(oldItems);
             RecordCurrentValues(newItems);
-            IEnumerable<TResult> newSelectedItems = newItems.Select(this.SelectorFunction);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newSelectedItems.ToList(), oldValues, newStartingIndex));
+            List<TResult> newSelectedItems = GetCurrentValues(newItems);
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newSelectedItems, oldValues, newStartingIndex));
         }
     }
 }

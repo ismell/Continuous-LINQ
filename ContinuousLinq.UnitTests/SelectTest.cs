@@ -69,5 +69,27 @@ namespace ContinuousLinq.UnitTests
             GC.Collect();
             Assert.IsFalse(weakReference.IsAlive);
         }
+
+        [Test]
+        public void SelectorCreatesNewObject_Always_ReturnsSameInstance()
+        {
+            var personCollection = from person in _source
+                                   select new Person();
+
+            Person personAtZero = personCollection[0];
+            Assert.AreSame(personAtZero, personCollection[0]);
+        }
+        
+        [Test]
+        public void SelectorCreatesNewObjectAndAdds_Always_ReturnsSameInstance()
+        {
+            var personCollection = from person in _source
+                                   select new Person();
+
+            var personBeforeAdd = personCollection[0];
+            _source.Add(new Person());
+
+            Assert.AreSame(personBeforeAdd, personCollection[0]);
+        }
     }
 }
