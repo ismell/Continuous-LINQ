@@ -7,6 +7,7 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Windows;
 using System.Collections;
+using ContinuousLinq.WeakEvents;
 
 namespace ContinuousLinq
 {
@@ -47,7 +48,12 @@ namespace ContinuousLinq
             for (int i = 0; i < this.AccessNode.Children.Count; i++)
             {
                 PropertyAccessNode propertyNode = (PropertyAccessNode)this.AccessNode.Children[i];
-                PropertyChangedEventManager.AddListener(subject, this, propertyNode.Property.Name);
+
+                WeakPropertyChangedEventManager.Register(
+                    subject,
+                    propertyNode.Property.Name,
+                    this,
+                    (me, sender, args) => me.OnPropertyChanged(sender, args));
             }
 
             if (this.Children != null)
@@ -94,7 +100,8 @@ namespace ContinuousLinq
             for (int i = 0; i < this.AccessNode.Children.Count; i++)
             {
                 PropertyAccessNode propertyNode = (PropertyAccessNode)this.AccessNode.Children[i];
-                PropertyChangedEventManager.RemoveListener(subject, this, propertyNode.Property.Name);
+               
+                WeakPropertyChangedEventManager.Unregister(subject, propertyNode.Property.Name, this);
             }
             
             if (this.Children != null)

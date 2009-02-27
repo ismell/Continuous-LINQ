@@ -84,6 +84,10 @@
     <Compile Include="SubscriptionNodeTest.cs" />
     <Compile Include="SubscriptionTreeTest.cs" />
     <Compile Include="ThenByTest.cs" />
+    <Compile Include="WeakEvents\ListenerStub.cs" />
+    <Compile Include="WeakEvents\WeakEventHandlerTest.cs" />
+    <Compile Include="WeakEvents\WeakPropertyBridgeTest.cs" />
+    <Compile Include="WeakEvents\WeakPropertyChangedEventManagerTest.cs" />
     <Compile Include="WhereTest.cs" />
   </ItemGroup>
   <ItemGroup>

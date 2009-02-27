@@ -177,5 +177,37 @@ namespace PerformanceConsole
             var duration = DateTime.Now - start;
             Console.WriteLine(duration.ToString());
         }
+
+        public void TestDynamicInvoke()
+        {
+            Random rand = new Random();
+            
+            int a = 0;
+            Action del = () => { a++; };
+            Delegate baseDelegate = del;
+
+            TimeSpan duration;
+            DateTime start;
+            
+            start = DateTime.Now;
+
+            for (int i = 0; i < 10000; i++)
+            {
+                del();
+            }
+
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+
+            start = DateTime.Now;
+
+            for (int i = 0; i < 10000; i++)
+            {
+                baseDelegate.DynamicInvoke();
+            }
+
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+        }
     }
 }

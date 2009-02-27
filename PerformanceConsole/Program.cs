@@ -10,12 +10,13 @@ namespace PerformanceConsole
         static void Main(string[] args)
         {
             PerformanceTest performanceTest = new PerformanceTest();
-            performanceTest.SelectTest();
-            performanceTest.SelectLinearUpdateTest();
-            performanceTest.SelectUnrelatedPropertyLinearUpdateTest();
-            performanceTest.WhereTest();
-            performanceTest.ContinuousSumWithoutPausing();
-            performanceTest.ContinuousSumWithPausing();
+            performanceTest.TestDynamicInvoke();
+            //performanceTest.SelectTest();
+            //performanceTest.SelectLinearUpdateTest();
+            //performanceTest.SelectUnrelatedPropertyLinearUpdateTest();
+            //performanceTest.WhereTest();
+            //performanceTest.ContinuousSumWithoutPausing();
+            //performanceTest.ContinuousSumWithPausing();
         }
     }
 }

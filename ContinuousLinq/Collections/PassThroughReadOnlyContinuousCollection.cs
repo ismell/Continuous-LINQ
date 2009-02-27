@@ -8,7 +8,7 @@ using System.Collections.Specialized;
 
 namespace ContinuousLinq
 {
-    internal class PassThroughReadOnlyContinuousCollection<TSource> : ReadOnlyAdapterContinuousCollection<TSource, TSource>
+    public class PassThroughReadOnlyContinuousCollection<TSource> : ReadOnlyAdapterContinuousCollection<TSource, TSource>
     {
         public PassThroughReadOnlyContinuousCollection(IList<TSource> list)
             : base(list, null)

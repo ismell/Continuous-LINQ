@@ -83,6 +83,13 @@
     <Compile Include="Expressions\SubscriptionNode.cs" />
     <Compile Include="Expressions\SubscriptionTree.cs" />
     <Compile Include="ReferenceCountTracker.cs" />
+    <Compile Include="WeakEvents\BaseDictionary.cs" />
+    <Compile Include="WeakEvents\WeakDictionary.cs" />
+    <Compile Include="WeakEvents\WeakDictionaryHelpers.cs" />
+    <Compile Include="WeakEvents\WeakEventHandler.cs" />
+    <Compile Include="WeakEvents\WeakPropertyBridge.cs" />
+    <Compile Include="WeakEvents\WeakPropertyChangedCallback.cs" />
+    <Compile Include="WeakEvents\WeakPropertyChangedEventManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

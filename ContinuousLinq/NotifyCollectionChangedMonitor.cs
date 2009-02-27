@@ -7,6 +7,7 @@ using System.Windows;
 using System.Collections.Specialized;
 using System.Collections;
 using System.Linq.Expressions;
+using ContinuousLinq.WeakEvents;
 
 namespace ContinuousLinq
 {
@@ -53,9 +54,16 @@ namespace ContinuousLinq
             
             SubscribeToItems(_input);
 
-            CollectionChangedEventManager.AddListener(inputAsINotifyCollectionChanged, this);
+            WeakNotifyCollectionChangedEventHandler.Register(
+                inputAsINotifyCollectionChanged,
+                this,
+                (me, sender, args) => me.OnCollectionChanged(sender, args));
         }
 
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs ea)
+        {
+            ReceiveCollectionChangedEvent(ea);
+        }
         private void SubscribeToItems(IEnumerable<T> items)
         {
             if (this.PropertyAccessTree == null)
