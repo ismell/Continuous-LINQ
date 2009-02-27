@@ -112,8 +112,6 @@ namespace ContinuousLinq.UnitTests.WeakEvents
         [Test]
         public void CleanupReferences()
         {
-            Assert.AreEqual(0, WeakPropertyChangedEventManager.SourceToBridgeTable.Count);
-            
             RegisterOnPersonName();
             _person = null;
             
