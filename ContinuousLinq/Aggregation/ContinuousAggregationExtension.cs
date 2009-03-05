@@ -14,43 +14,60 @@ namespace ContinuousLinq.Aggregates
             this ObservableCollection<T> input,
             Expression<Func<T, int>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, int, int>(
+                input, 
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue, 
+                null);
         }
-        public static ContinuousValue<int> ContinuousSum<T>(
-            this ObservableCollection<T> input,
-            Expression<Func<T, int>> sumFunc,
-            Action<int> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
-
+        //public static ContinuousValue<int> ContinuousSum<T>(
+        //    this ObservableCollection<T> input,
+        //    Expression<Func<T, int>> sumFunc,
+        //    Action<int> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
+        //double's can not be online'd because of precision float
         public static ContinuousValue<double> ContinuousSum<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, double>> sumFunc) where T : INotifyPropertyChanged
         {
             return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<double> ContinuousSum<T>(
-            this ObservableCollection<T> input,
-            Expression<Func<T, double>> sumFunc,
-            Action<double> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<double> ContinuousSum<T>(
+        //    this ObservableCollection<T> input,
+        //    Expression<Func<T, double>> sumFunc,
+        //    Action<double> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<decimal> ContinuousSum<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, decimal>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal,decimal>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector));
+
+            return new OnlineCalculationContinuousValue<T, decimal, decimal>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,    
+                null);
         }
-        public static ContinuousValue<decimal> ContinuousSum<T>(
-            this ObservableCollection<T> input,
-            Expression<Func<T, decimal>> sumFunc,
-            Action<decimal> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<decimal> ContinuousSum<T>(
+        //    this ObservableCollection<T> input,
+        //    Expression<Func<T, decimal>> sumFunc,
+        //    Action<decimal> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<float> ContinuousSum<T>(
             this ObservableCollection<T> input,
@@ -58,41 +75,60 @@ namespace ContinuousLinq.Aggregates
         {
             return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<float> ContinuousSum<T>(
-            this ObservableCollection<T> input,
-            Expression<Func<T, float>> sumFunc,
-            Action<float> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<float> ContinuousSum<T>(
+        //    this ObservableCollection<T> input,
+        //    Expression<Func<T, float>> sumFunc,
+        //    Action<float> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<long> ContinuousSum<T>(
             this ObservableCollection<T> input,
             Expression<Func<T, long>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, long, long>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
+
         }
-        public static ContinuousValue<long> ContinuousSum<T>(
-            this ObservableCollection<T> input,
-            Expression<Func<T, long>> sumFunc,
-            Action<long> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<long> ContinuousSum<T>(
+        //    this ObservableCollection<T> input,
+        //    Expression<Func<T, long>> sumFunc,
+        //    Action<long> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<int> ContinuousSum<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, int>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, int, int>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
+
         }
-        public static ContinuousValue<int> ContinuousSum<T>(
-            this ReadOnlyObservableCollection<T> input,
-            Expression<Func<T, int>> sumFunc,
-            Action<int> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<int> ContinuousSum<T>(
+        //    this ReadOnlyObservableCollection<T> input,
+        //    Expression<Func<T, int>> sumFunc,
+        //    Action<int> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<double> ContinuousSum<T>(
             this ReadOnlyObservableCollection<T> input,
@@ -100,28 +136,37 @@ namespace ContinuousLinq.Aggregates
         {
             return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<double> ContinuousSum<T>(
-            this ReadOnlyObservableCollection<T> input,
-            Expression<Func<T, double>> sumFunc,
-            Action<double> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+        
+        //public static ContinuousValue<double> ContinuousSum<T>(
+        //    this ReadOnlyObservableCollection<T> input,
+        //    Expression<Func<T, double>> sumFunc,
+        //    Action<double> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
 
         public static ContinuousValue<decimal> ContinuousSum<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, decimal>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, decimal, decimal>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
         }
-        public static ContinuousValue<decimal> ContinuousSum<T>(
-            this ReadOnlyObservableCollection<T> input,
-            Expression<Func<T, decimal>> sumFunc,
-            Action<decimal> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<decimal> ContinuousSum<T>(
+        //    this ReadOnlyObservableCollection<T> input,
+        //    Expression<Func<T, decimal>> sumFunc,
+        //    Action<decimal> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<float> ContinuousSum<T>(
             this ReadOnlyObservableCollection<T> input,
@@ -129,42 +174,59 @@ namespace ContinuousLinq.Aggregates
         {
             return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<float> ContinuousSum<T>(
-            this ReadOnlyObservableCollection<T> input,
-            Expression<Func<T, float>> sumFunc,
-            Action<float> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<float> ContinuousSum<T>(
+        //    this ReadOnlyObservableCollection<T> input,
+        //    Expression<Func<T, float>> sumFunc,
+        //    Action<float> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<long> ContinuousSum<T>(
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, long>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector));
-        }
-        public static ContinuousValue<long> ContinuousSum<T>(
-            this ReadOnlyObservableCollection<T> input,
-            Expression<Func<T, long>> sumFunc,
-            Action<long> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+            //return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, long, long>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
 
+        }
+        //public static ContinuousValue<long> ContinuousSum<T>(
+        //    this ReadOnlyObservableCollection<T> input,
+        //    Expression<Func<T, long>> sumFunc,
+        //    Action<long> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<int> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, int>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector));
+            
+            return new OnlineCalculationContinuousValue<T, int, int>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
         }
-        public static ContinuousValue<int> ContinuousSum<T>(
-            this ReadOnlyContinuousCollection<T> input,
-            Expression<Func<T, int>> sumFunc,
-            Action<int> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<int> ContinuousSum<T>(
+        //    this ReadOnlyContinuousCollection<T> input,
+        //    Expression<Func<T, int>> sumFunc,
+        //    Action<int> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, int, int>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<double> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
@@ -172,27 +234,35 @@ namespace ContinuousLinq.Aggregates
         {
             return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<double> ContinuousSum<T>(
-            this ReadOnlyContinuousCollection<T> input,
-            Expression<Func<T, double>> sumFunc,
-            Action<double> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+        //public static ContinuousValue<double> ContinuousSum<T>(
+        //    this ReadOnlyContinuousCollection<T> input,
+        //    Expression<Func<T, double>> sumFunc,
+        //    Action<double> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, double, double>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<decimal> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, decimal>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, decimal, decimal>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
         }
-        public static ContinuousValue<decimal> ContinuousSum<T>(
-            this ReadOnlyContinuousCollection<T> input,
-            Expression<Func<T, decimal>> sumFunc,
-            Action<decimal> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<decimal> ContinuousSum<T>(
+        //    this ReadOnlyContinuousCollection<T> input,
+        //    Expression<Func<T, decimal>> sumFunc,
+        //    Action<decimal> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, decimal, decimal>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<float> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
@@ -200,27 +270,35 @@ namespace ContinuousLinq.Aggregates
         {
             return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<float> ContinuousSum<T>(
-            this ReadOnlyContinuousCollection<T> input,
-            Expression<Func<T, float>> sumFunc,
-            Action<float> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+        //public static ContinuousValue<float> ContinuousSum<T>(
+        //    this ReadOnlyContinuousCollection<T> input,
+        //    Expression<Func<T, float>> sumFunc,
+        //    Action<float> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, float, float>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
         public static ContinuousValue<long> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, long>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector));
+            //return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new OnlineCalculationContinuousValue<T, long, long>(
+                input,
+                sumFunc,
+                (itemValue, oldCV) => oldCV + itemValue,
+                (itemValue, oldCV) => oldCV - itemValue,
+                (oldItemValue, newItemValue, oldCV) => oldCV - oldItemValue + newItemValue,
+                null);
         }
-        public static ContinuousValue<long> ContinuousSum<T>(
-            this ReadOnlyContinuousCollection<T> input,
-            Expression<Func<T, long>> sumFunc,
-            Action<long> afterEffect) where T : INotifyPropertyChanged
-        {
-            return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
-        }
+
+        //public static ContinuousValue<long> ContinuousSum<T>(
+        //    this ReadOnlyContinuousCollection<T> input,
+        //    Expression<Func<T, long>> sumFunc,
+        //    Action<long> afterEffect) where T : INotifyPropertyChanged
+        //{
+        //    return new ContinuousValue<T, long, long>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+        //}
 
 
         #endregion

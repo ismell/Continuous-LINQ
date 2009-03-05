@@ -99,17 +99,29 @@ namespace ContinuousLinq.Aggregates
 
         public Action<TResult> AfterEffect { get; set; }
 
+        protected ContinuousValue()
+        { }
         public ContinuousValue(
             IList<TSource> input, 
             Expression<Func<TSource, TColSelectorResult>> selectorExpression,
             Func<IList<TSource>, Func<TSource,TColSelectorResult>, TResult> aggregateOperation)
-        {            
+        {
+            InitializeContinuousValue(input, selectorExpression, aggregateOperation);
+            
+            Refresh();
+        }
+
+        protected void InitializeContinuousValue(
+            IList<TSource> input, 
+            Expression<Func<TSource, TColSelectorResult>> selectorExpression, 
+            Func<IList<TSource>, Func<TSource, TColSelectorResult>, TResult> aggregateOperation)
+        {
             this.Source = input;
 
             this.AggregationOperation = aggregateOperation;
 
             PropertyAccessTree propertyAccessTree = null;
-            
+
             if (selectorExpression != null)
             {
                 this.Selector = selectorExpression.Compile();
@@ -117,13 +129,10 @@ namespace ContinuousLinq.Aggregates
             }
 
             this.NotifyCollectionChangedMonitor = new NotifyCollectionChangedMonitor<TSource>(propertyAccessTree, input);
-            
+
             this.NotifyCollectionChangedMonitor.CollectionChanged += OnCollectionChanged;
             this.NotifyCollectionChangedMonitor.ItemChanged += OnItemChanged;
-            
-            Refresh();
         }
-
         public ContinuousValue(
             IList<TSource> input,
             Expression<Func<TSource, TColSelectorResult>> selectorExpression,
@@ -135,12 +144,12 @@ namespace ContinuousLinq.Aggregates
             this.AfterEffect(this.CurrentValue);
         }
 
-        void OnItemChanged(INotifyPropertyChanged obj)
+        protected virtual void OnItemChanged(INotifyPropertyChanged obj)
         {
             Refresh();
         }
 
-        void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Move)
                 return;
