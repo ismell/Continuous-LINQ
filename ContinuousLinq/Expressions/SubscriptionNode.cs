@@ -11,7 +11,7 @@ using ContinuousLinq.WeakEvents;
 
 namespace ContinuousLinq
 {
-    internal class SubscriptionNode : IWeakEventListener
+    internal class SubscriptionNode 
     {
         private INotifyPropertyChanged _subject;
 
@@ -112,15 +112,5 @@ namespace ContinuousLinq
                 }
             }
         }
-
-        #region IWeakEventListener Members
-
-        public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs args)
-        {
-            OnPropertyChanged(sender, (PropertyChangedEventArgs)args);
-            return true;
-        }
-
-        #endregion
-    }
+      }
 }

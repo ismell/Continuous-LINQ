@@ -11,7 +11,7 @@ using ContinuousLinq.WeakEvents;
 
 namespace ContinuousLinq
 {
-    public class NotifyCollectionChangedMonitor<T> : IWeakEventListener, INotifyCollectionChanged //where T : INotifyPropertyChanged
+    public class NotifyCollectionChangedMonitor<T> : INotifyCollectionChanged //where T : INotifyPropertyChanged
     {
         protected readonly IList<T> _input;
 
@@ -125,16 +125,6 @@ namespace ContinuousLinq
 
             this.Subscriptions.Clear();
             this.ReferenceCountTracker.Clear();
-        }
-
-        public bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
-        {
-            if (managerType == typeof(CollectionChangedEventManager))
-            {
-                ReceiveCollectionChangedEvent(e);
-            }
-
-            return true;
         }
 
         private void SubscribeToNewItems(IList items)
