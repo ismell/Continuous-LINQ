@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections.ObjectModel;
 using ContinuousLinq;
 using ContinuousLinq.Aggregates;
+using ContinuousLinq.Expressions;
 
 namespace PerformanceConsole
 {
@@ -204,6 +205,40 @@ namespace PerformanceConsole
             for (int i = 0; i < 10000; i++)
             {
                 baseDelegate.DynamicInvoke();
+            }
+
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+        }
+
+        public void TestDynamicProperty()
+        {
+            Random rand = new Random();
+            Person person = new Person();
+            person.Brother = new Person();
+
+            TimeSpan duration;
+            DateTime start;
+
+            start = DateTime.Now;
+
+            for (int i = 0; i < 100000; i++)
+            {
+                Person brother = person.Brother;
+                brother.Age++;
+            }
+
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+
+            DynamicProperty brotherProperty = DynamicProperty.Create(typeof(Person), "Brother");
+
+            start = DateTime.Now;
+
+            for (int i = 0; i < 100000; i++)
+            {
+                Person brother = (Person)brotherProperty.GetValue(person);
+                brother.Age++;
             }
 
             duration = DateTime.Now - start;

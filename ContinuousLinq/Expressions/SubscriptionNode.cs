@@ -70,7 +70,15 @@ namespace ContinuousLinq
             if (parentSubject == null)
                 this.Subject = null;
 
-            this.Subject = (INotifyPropertyChanged)this.PropertyAccessNode.Property.GetValue(parentSubject, null);
+            //this.Subject = (INotifyPropertyChanged)this.PropertyAccessNode.Property.GetValue(parentSubject, null);
+            //INotifyPropertyChanged first = (INotifyPropertyChanged)this.PropertyAccessNode.Property.GetValue(parentSubject, null);
+            //INotifyPropertyChanged second = (INotifyPropertyChanged)this.PropertyAccessNode.GetPropertyValue(parentSubject); 
+            //if (first != second)
+            //{
+            //    throw new Exception(string.Format("{0}\n\n{1}", first, second));
+            //}
+
+            this.Subject = (INotifyPropertyChanged)this.PropertyAccessNode.GetPropertyValue(parentSubject);
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)

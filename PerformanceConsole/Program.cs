@@ -10,7 +10,8 @@ namespace PerformanceConsole
         static void Main(string[] args)
         {
             PerformanceTest performanceTest = new PerformanceTest();
-            performanceTest.TestDynamicInvoke();
+            performanceTest.TestDynamicProperty();
+            //performanceTest.TestDynamicInvoke();
             //performanceTest.SelectTest();
             //performanceTest.SelectLinearUpdateTest();
             //performanceTest.SelectUnrelatedPropertyLinearUpdateTest();

@@ -7,12 +7,15 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Windows;
 using System.Collections;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq
 {
     internal class PropertyAccessNode : PropertyAccessTreeNode
     {
         public PropertyInfo Property { get; private set; }
+
+        private DynamicProperty _dynamicProperty;
 
         public PropertyAccessNode(PropertyInfo property)
         {
@@ -38,6 +41,14 @@ namespace ContinuousLinq
             SubscribeToChildren(subscriptionNode, parameter);
 
             return subscriptionNode;
+        }
+
+        public object GetPropertyValue(object obj)
+        {
+            if(_dynamicProperty == null)
+                _dynamicProperty = DynamicProperty.Create(this.Property);
+
+            return _dynamicProperty.GetValue(obj);
         }
 
         public override string ToString()

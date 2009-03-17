@@ -67,6 +67,7 @@
     <Compile Include="Collections\ContinuousCollection.cs" />
     <Compile Include="ContinuousQueryExtension.cs" />
     <Compile Include="Aggregation\ContinuousValue.cs" />
+    <Compile Include="Expressions\DynamicProperty.cs" />
     <Compile Include="Expressions\ExpressionPropertyAnalyzer.cs" />
     <Compile Include="Collections\FilteringReadOnlyContinuousCollection.cs" />
     <Compile Include="Expressions\ParameterNode.cs" />

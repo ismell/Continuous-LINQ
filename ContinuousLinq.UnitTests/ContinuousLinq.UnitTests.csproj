@@ -63,6 +63,7 @@
     <Compile Include="ContinuousSumTest.cs" />
     <Compile Include="DistinctReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="DistinctTest.cs" />
+    <Compile Include="DynamicPropertyTest.cs" />
     <Compile Include="ExpressionPropertyAnalyzerTest.cs" />
     <Compile Include="FilteringReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="FirstOrDefaultTest.cs" />
