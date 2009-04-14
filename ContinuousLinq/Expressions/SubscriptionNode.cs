@@ -70,14 +70,6 @@ namespace ContinuousLinq
             if (parentSubject == null)
                 this.Subject = null;
 
-            //this.Subject = (INotifyPropertyChanged)this.PropertyAccessNode.Property.GetValue(parentSubject, null);
-            //INotifyPropertyChanged first = (INotifyPropertyChanged)this.PropertyAccessNode.Property.GetValue(parentSubject, null);
-            //INotifyPropertyChanged second = (INotifyPropertyChanged)this.PropertyAccessNode.GetPropertyValue(parentSubject); 
-            //if (first != second)
-            //{
-            //    throw new Exception(string.Format("{0}\n\n{1}", first, second));
-            //}
-
             this.Subject = (INotifyPropertyChanged)this.PropertyAccessNode.GetPropertyValue(parentSubject);
         }
 
@@ -85,7 +77,16 @@ namespace ContinuousLinq
         {
             if (this.Children != null)
             {
-                var nodeMatchingPropertyName = this.Children.FirstOrDefault(node => node.PropertyAccessNode.Property.Name == args.PropertyName);
+                SubscriptionNode nodeMatchingPropertyName = null;
+                for (int i = 0; i < this.Children.Count; i++)
+                {
+                    var child = this.Children[i];
+                    if (child.PropertyAccessNode.Property.Name == args.PropertyName)
+                    {
+                        nodeMatchingPropertyName = child;
+                        break;
+                    }
+                }
                 
                 if (nodeMatchingPropertyName == null)
                     return;
@@ -114,9 +115,9 @@ namespace ContinuousLinq
             
             if (this.Children != null)
             {
-                foreach (SubscriptionNode child in this.Children)
+                for (int i = 0; i < this.Children.Count; i++)
                 {
-                    child.Unsubscribe();
+                    this.Children[i].Unsubscribe();
                 }
             }
         }

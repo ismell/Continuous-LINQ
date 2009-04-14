@@ -17,6 +17,8 @@ namespace ContinuousLinq.UnitTests
 
         public int TestProperty { get; set; }
 
+        public Func<string, string> StringPassThrough { get; set; }
+
         #endregion
 
         [SetUp]
@@ -25,7 +27,7 @@ namespace ContinuousLinq.UnitTests
             _ageProperty = typeof(Person).GetProperty("Age");
             _nameProperty = typeof(Person).GetProperty("Name");
             _brotherProperty = typeof(Person).GetProperty("Brother");
-
+            this.StringPassThrough = str => str;
         }
 
         [Test]
@@ -280,6 +282,39 @@ namespace ContinuousLinq.UnitTests
             PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[1];
             Assert.AreEqual(_ageProperty, ageNode.Property);
             Assert.AreEqual(0, ageNode.Children.Count);
+        }
+
+        [Test]
+        public void Analyze_ExpressionContainsDelegate_ReturnsPropertyAccessTree()
+        {
+            Func<Person, string> del = person => person.Name;
+
+            Expression<Func<Person, string>> expression = person => del(person);
+
+            var tree = ExpressionPropertyAnalyzer.Analyze(expression);
+
+            Assert.AreEqual(1, tree.Children.Count);
+            PropertyAccessTreeNode parameterNode = tree.Children[0];
+            Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
+            Assert.AreEqual(0, parameterNode.Children.Count);
+        }
+
+        [Test]
+        public void Analyze_ExpressionContainsDelegateAndPropertyAccess_ReturnsPropertyAccessTree()
+        {
+            Expression<Func<Person, string>> expression = person => this.StringPassThrough(person.Name);
+
+            var tree = ExpressionPropertyAnalyzer.Analyze(expression);
+
+            Assert.AreEqual(2, tree.Children.Count);
+
+            PropertyAccessTreeNode parameterNode = tree.Children[0];
+            Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
+            Assert.AreEqual(1, parameterNode.Children.Count);
+
+            PropertyAccessTreeNode constantNode = tree.Children[1];
+            Assert.IsInstanceOfType(typeof(ConstantNode), constantNode);
+            Assert.AreEqual(1, constantNode.Children.Count);
         }
 
         #region INotifyPropertyChanged Members

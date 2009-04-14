@@ -27,10 +27,11 @@ namespace ContinuousLinq
         {
             for (int i = 0; i < this.Children.Count; i++)
             {
-                if (this.Children[i].Children.Count == 0)
+                PropertyAccessTreeNode child = this.Children[i];
+                if (child.Children.Count == 0)
                     continue;
 
-                SubscriptionNode childSubscriptionNode = this.Children[i].CreateSubscription(parameter);
+                SubscriptionNode childSubscriptionNode = child.CreateSubscription(parameter);
 
                 if (subscriptionNode.Children == null)
                     subscriptionNode.Children = new List<SubscriptionNode>();

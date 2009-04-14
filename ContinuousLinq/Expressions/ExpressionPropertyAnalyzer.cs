@@ -115,6 +115,18 @@ namespace ContinuousLinq
                 return;
             }
 
+            InvocationExpression invocationExpression = expression as InvocationExpression;
+
+            if (invocationExpression != null)
+            {
+                foreach (Expression argument in invocationExpression.Arguments)
+                {
+                    BuildBranches(argument, tree, currentNodeBranch, typeFilter);
+                }
+                BuildBranches(invocationExpression.Expression, tree, currentNodeBranch, typeFilter);
+                return;
+            }
+
             switch (expression.NodeType)
             {
                 case ExpressionType.MemberAccess:

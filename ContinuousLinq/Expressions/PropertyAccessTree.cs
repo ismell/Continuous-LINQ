@@ -22,15 +22,15 @@ namespace ContinuousLinq
         public SubscriptionTree CreateSubscriptionTree(INotifyPropertyChanged parameter)
         {
             List<SubscriptionNode> subscribers = new List<SubscriptionNode>(this.Children.Count);
-            foreach (PropertyAccessTreeNode child in this.Children)
+            for (int i = 0; i < this.Children.Count; i++)
             {
+                PropertyAccessTreeNode child = this.Children[i];
                 if (child.Children.Count > 0)
                 {
                     var subscriptionNode = child.CreateSubscription(parameter);
                     subscribers.Add(subscriptionNode);
                 }
             }
-
             var subscriptionTree = new SubscriptionTree(parameter, subscribers);
             return subscriptionTree;
         }
