@@ -931,18 +931,18 @@ namespace ContinuousLinq.Aggregates
 
         #region --Nullables
 
-        public static ContinuousValue<double> ContinuousSum<T>(
+        public static ContinuousValue<double?> ContinuousSum<T>(
            this ReadOnlyContinuousCollection<T> input,
            Expression<Func<T, double?>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double?, double>(input, sumFunc, (list, selector) => list.Sum(selector).GetValueOrDefault());
+            return new ContinuousValue<T, double?, double?>(input, sumFunc, (list, selector) => list.Sum(selector));
         }
-        public static ContinuousValue<double> ContinuousSum<T>(
+        public static ContinuousValue<double?> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, double?>> sumFunc,
-            Action<double> afterEffect) where T : INotifyPropertyChanged
+            Action<double?> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double?, double>(input, sumFunc, (list, selector) => list.Sum(selector).GetValueOrDefault(), afterEffect);
+            return new ContinuousValue<T, double?, double?>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
         }
 
         public static ContinuousValue<double> ContinuousMax<T>(

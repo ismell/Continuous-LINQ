@@ -42,7 +42,7 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void ContinuousSum_IfNullableDoubleWithAfterEffect_SumsNullsAsZero()
         {
-            double maxValue = 0;
+            double? maxValue = 0;
             var value = _target.ContinuousSum(item => item.TargetValue, max => maxValue = max);
             Assert.AreEqual(36, value.CurrentValue);
             Assert.AreEqual(36, maxValue);
