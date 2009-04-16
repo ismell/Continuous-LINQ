@@ -33,19 +33,30 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
-        public void ContinuousSum_IfNullableDouble_SumsNullsAsZero()
+        public void ContinuousSum_IfNullableDouble_SumsNullsAsNull()
         {
             var value = _target.ContinuousSum(item => item.TargetValue);
-            Assert.AreEqual(36, value.CurrentValue);
+            Assert.IsNull(value.CurrentValue);
         }
 
         [Test]
-        public void ContinuousSum_IfNullableDoubleWithAfterEffect_SumsNullsAsZero()
+        public void ContinuousSum_IfNullableDoubleWithAfterEffect_SumsNullsAsNull()
         {
             double? maxValue = 0;
             var value = _target.ContinuousSum(item => item.TargetValue, max => maxValue = max);
-            Assert.AreEqual(36, value.CurrentValue);
-            Assert.AreEqual(36, maxValue);
+            Assert.IsNull(value.CurrentValue);
+            Assert.IsNull(maxValue);
+        }
+
+        [Test]
+        public void ContinuousSum_IfNullableDouble_SumsNonNullAsValue()
+        {
+            foreach (var item in _list)
+            {
+                item.TargetValue = 10;
+            }
+            var value = _target.ContinuousSum(item => item.TargetValue);
+            Assert.AreEqual(70, value.CurrentValue);
         }
 
         [Test]

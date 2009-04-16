@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
@@ -935,14 +936,14 @@ namespace ContinuousLinq.Aggregates
            this ReadOnlyContinuousCollection<T> input,
            Expression<Func<T, double?>> sumFunc) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double?, double?>(input, sumFunc, (list, selector) => list.Sum(selector));
+            return new ContinuousValue<T, double?, double?>(input, sumFunc, (list, selector) => list.SumNullable(selector));
         }
         public static ContinuousValue<double?> ContinuousSum<T>(
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, double?>> sumFunc,
             Action<double?> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, double?, double?>(input, sumFunc, (list, selector) => list.Sum(selector), afterEffect);
+            return new ContinuousValue<T, double?, double?>(input, sumFunc, (list, selector) => list.SumNullable(selector), afterEffect);
         }
 
         public static ContinuousValue<double> ContinuousMax<T>(
@@ -957,6 +958,21 @@ namespace ContinuousLinq.Aggregates
             Action<double> afterEffect) where T : INotifyPropertyChanged
         {
             return new ContinuousValue<T, double?, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector).GetValueOrDefault() : double.MinValue, afterEffect);
+        }
+
+        private static double? SumNullable<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
+        {
+            return source.Select(selector).SumNullable();
+        }
+
+        private static double? SumNullable(this IEnumerable<double?> source)
+        {
+            double? num = 0;
+            foreach (double? nullable in source)
+            {
+                num += nullable;
+            }
+            return num;
         }
 
         #endregion
