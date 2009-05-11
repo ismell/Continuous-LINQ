@@ -60,6 +60,7 @@
     <Compile Include="ContinuousAggregationExtensionTest.cs" />
     <Compile Include="ContinuousContainsTest.cs" />
     <Compile Include="ContinuousCountTest.cs" />
+    <Compile Include="ContinuousMaxTest.cs" />
     <Compile Include="ContinuousSumTest.cs" />
     <Compile Include="DistinctReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="DistinctTest.cs" />

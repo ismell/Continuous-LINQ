@@ -25,7 +25,10 @@ namespace ContinuousLinq
             this.CurrentValues = new Dictionary<TSource, TResult>(this.Source.Count);
             RecordCurrentValues(this.Source);
 
-            this.SourceIndex = new ListIndexer<TSource>(this.Source);
+            if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
+            {
+                this.SourceIndex = new ListIndexer<TSource>(this.Source);
+            }
 
             this.NotifyCollectionChangedMonitor.Add += OnAdd;
             this.NotifyCollectionChangedMonitor.Remove += OnRemove;
@@ -78,7 +81,7 @@ namespace ContinuousLinq
         {
             foreach (TSource item in items)
             {
-                if (!this.SourceIndex.Contains(item))
+                if (!this.NotifyCollectionChangedMonitor.ReferenceCountTracker.Contains(item))
                 {
                     this.CurrentValues.Remove(item);
                 }
@@ -87,7 +90,11 @@ namespace ContinuousLinq
 
         void OnAdd(int index, IEnumerable<TSource> newItems)
         {
-            this.SourceIndex.Add(index, newItems);
+            if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
+            {
+                this.SourceIndex.Add(index, newItems);
+            }
+
             RecordCurrentValues(newItems);
             List<TResult> selectedItems = GetCurrentValues(newItems);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, selectedItems, index));
@@ -95,7 +102,10 @@ namespace ContinuousLinq
 
         void OnRemove(int index, IEnumerable<TSource> oldItems)
         {
-            this.SourceIndex.Remove(index, oldItems);
+            if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
+            {
+                this.SourceIndex.Remove(index, oldItems);
+            }
             List<TResult> oldValues = GetCurrentValues(oldItems);
             RemoveCurrentValues(oldItems);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldValues, index));
@@ -113,7 +123,10 @@ namespace ContinuousLinq
         
         void OnReset()
         {
-            this.SourceIndex.Reset();
+            if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
+            {
+                this.SourceIndex.Reset();
+            }
             this.CurrentValues.Clear();
             RecordCurrentValues(this.Source);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
@@ -121,14 +134,20 @@ namespace ContinuousLinq
 
         void OnMove(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
-            this.SourceIndex.Move(oldStartingIndex, newStartingIndex);
+            if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
+            {
+                this.SourceIndex.Move(oldStartingIndex, newStartingIndex);
+            }
             List<TResult> newSelectedItems = GetCurrentValues(newItems);
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newSelectedItems, newStartingIndex, oldStartingIndex));
         }
         
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
-            this.SourceIndex.Replace(newStartingIndex, oldItems, newItems);
+            if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
+            {
+                this.SourceIndex.Replace(newStartingIndex, oldItems, newItems);
+            }
             List<TResult> oldValues = GetCurrentValues(oldItems);
             RemoveCurrentValues(oldItems);
             RecordCurrentValues(newItems);

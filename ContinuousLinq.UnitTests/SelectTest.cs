@@ -91,5 +91,18 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreSame(personBeforeAdd, personCollection[0]);
         }
+
+        [Test]
+        public void LetClause()
+        {
+            foreach (var item in _source)
+            {
+                item.Brother = new Person();
+            }
+
+            var personCollection = from person in _source
+                                   select person;
+            
+        }
     }
 }
