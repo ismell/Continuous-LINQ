@@ -13,8 +13,6 @@ namespace ContinuousLinq.Collections
     {
         internal ContinuousCollection<TSource> Output { get; set; }
 
-        internal ReferenceCountTracker<TSource> SourceCountTracker { get; set; }
-
         internal HashSet<TSource> ItemLookup { get; set; }
 
         internal Func<TSource, bool> FilterFunction { get; set; }
@@ -26,7 +24,6 @@ namespace ContinuousLinq.Collections
 
             this.Output = new ContinuousCollection<TSource>();
             this.ItemLookup = new HashSet<TSource>();
-            this.SourceCountTracker = new ReferenceCountTracker<TSource>();
             
             this.Output.CollectionChanged += RefireCollectionChangedFromOutput;
 
@@ -57,7 +54,7 @@ namespace ContinuousLinq.Collections
             {
                 if (!this.ItemLookup.Contains(item))
                 {
-                    int numberOfInstancesInSource = this.SourceCountTracker[item];
+                    int numberOfInstancesInSource = this.NotifyCollectionChangedMonitor.ReferenceCountTracker[item];
                     for (int i = 0; i < numberOfInstancesInSource; i++)
                     {
                         this.Output.Add(item);
@@ -67,12 +64,14 @@ namespace ContinuousLinq.Collections
             }
             else
             {
-                int numberOfInstancesInSource = this.SourceCountTracker[item];
-                for (int i = 0; i < numberOfInstancesInSource; i++)
+                if (this.ItemLookup.Remove(item))
                 {
-                    this.Output.Remove(item);
+                    int numberOfInstancesInSource = this.NotifyCollectionChangedMonitor.ReferenceCountTracker[item];
+                    for (int i = 0; i < numberOfInstancesInSource; i++)
+                    {
+                        this.Output.Remove(item);
+                    }
                 }
-                this.ItemLookup.Remove(item);
             }
         }
 
@@ -96,7 +95,6 @@ namespace ContinuousLinq.Collections
         {
             foreach (TSource item in newItems)
             {
-                this.SourceCountTracker.Add(item);
                 if (this.FilterFunction(item))
                 {
                     this.Output.Add(item);
@@ -109,7 +107,7 @@ namespace ContinuousLinq.Collections
         {
             foreach (TSource item in oldItems)
             {
-                if (this.SourceCountTracker.Remove(item))
+                if (!this.NotifyCollectionChangedMonitor.ReferenceCountTracker.Contains(item))
                 {
                     this.ItemLookup.Remove(item);
                 }
@@ -126,7 +124,6 @@ namespace ContinuousLinq.Collections
         {
             this.Output.Clear();
             this.ItemLookup.Clear();
-            this.SourceCountTracker.Clear();
         }
 
         void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)

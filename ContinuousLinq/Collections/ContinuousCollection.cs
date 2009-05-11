@@ -40,7 +40,7 @@ namespace ContinuousLinq
         public ContinuousCollection(List<T> list)
             : base(list)
         {
-            _dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
+            _dispatcher = Dispatcher.CurrentDispatcher;
         }
 
         public int BinarySearch(T item)

@@ -44,7 +44,7 @@ namespace PerformanceConsole
             Console.WriteLine(duration.ToString());
         }
 
-        
+
         public void SelectTest()
         {
             Random rand = new Random();
@@ -58,8 +58,8 @@ namespace PerformanceConsole
             {
                 int index = rand.Next(_source.Count);
                 _source[index].Age = _source[index].Age > 1500 ? 0 : 1501;
-                
-                if(_source[index].Age != result[index])
+
+                if (_source[index].Age != result[index])
                     throw new Exception();
             }
 
@@ -67,7 +67,7 @@ namespace PerformanceConsole
             Console.WriteLine(duration.ToString());
         }
 
-        
+
         public void SelectLinearUpdateTest()
         {
             Random rand = new Random();
@@ -84,10 +84,10 @@ namespace PerformanceConsole
                     updateIndex = 0;
 
                 _source[updateIndex].Age++;
-                
+
                 if (_source[updateIndex].Age != result[updateIndex])
                     throw new Exception();
-                
+
                 updateIndex++;
             }
 
@@ -95,7 +95,7 @@ namespace PerformanceConsole
             Console.WriteLine(duration.ToString());
         }
 
-        
+
         public void SelectUnrelatedPropertyLinearUpdateTest()
         {
             Random rand = new Random();
@@ -112,10 +112,10 @@ namespace PerformanceConsole
                     updateIndex = 0;
 
                 _source[updateIndex].Age++;
-                
+
                 if (_source[updateIndex].Age != result[updateIndex].Age)
                     throw new Exception();
-                
+
                 updateIndex++;
             }
 
@@ -123,7 +123,7 @@ namespace PerformanceConsole
             Console.WriteLine(duration.ToString());
         }
 
-        
+
         public void ContinuousSumWithoutPausing()
         {
             Random rand = new Random();
@@ -139,8 +139,8 @@ namespace PerformanceConsole
                     updateIndex = 0;
 
                 _source[updateIndex].Age++;
-                
-                if(sum.CurrentValue <= 0)
+
+                if (sum.CurrentValue <= 0)
                     throw new Exception();
 
                 updateIndex++;
@@ -150,7 +150,7 @@ namespace PerformanceConsole
             Console.WriteLine(duration.ToString());
         }
 
-        
+
         public void ContinuousSumWithPausing()
         {
             Random rand = new Random();
@@ -182,14 +182,14 @@ namespace PerformanceConsole
         public void TestDynamicInvoke()
         {
             Random rand = new Random();
-            
+
             int a = 0;
             Action del = () => { a++; };
             Delegate baseDelegate = del;
 
             TimeSpan duration;
             DateTime start;
-            
+
             start = DateTime.Now;
 
             for (int i = 0; i < 10000; i++)
@@ -243,6 +243,80 @@ namespace PerformanceConsole
 
             duration = DateTime.Now - start;
             Console.WriteLine(duration.ToString());
+        }
+
+        public void SortingTest()
+        {
+            Random rand = new Random();
+            int ITEMS = 3000;
+            int MAX = ITEMS * 4;
+            int[] data = new int[ITEMS];
+            
+            for (int i=0; i<data.Length; i++) 
+            {
+                data[i]=rand.Next(MAX);
+            }
+
+            TimeSpan duration;
+            DateTime start;
+
+            start = DateTime.Now;
+
+            Array.Sort(data);
+
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+            
+            data = new int[ITEMS];
+            
+            for (int i=0; i<data.Length; i++) 
+            {
+                data[i]=rand.Next(MAX);
+            }
+
+            start = DateTime.Now;
+
+            QuickSort(data, 0, data.Length - 1);
+            
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+        }
+
+        private int[] QuickSort(int[] a, int i, int j)
+        {
+            if (i < j)
+            {
+                int q = Partition(a, i, j);
+                a = QuickSort(a, i, q);
+                a = QuickSort(a, q + 1, j);
+            }
+            return a;
+        }
+
+        private int Partition(int[] a, int p, int r)
+        {
+            int x = a[p];
+            int i = p - 1;
+            int j = r + 1;
+            int tmp = 0;
+            while (true)
+            {
+                do
+                {
+                    j--;
+                } while (a[j] > x);
+                do
+                {
+                    i++;
+                } while (a[i] < x);
+                if (i < j)
+                {
+                    tmp = a[i];
+                    a[i] = a[j];
+                    a[j] = tmp;
+                }
+                else return j;
+            }
         }
     }
 }

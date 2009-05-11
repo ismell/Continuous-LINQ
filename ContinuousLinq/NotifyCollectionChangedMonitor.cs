@@ -11,11 +11,21 @@ using ContinuousLinq.WeakEvents;
 
 namespace ContinuousLinq
 {
-    public class NotifyCollectionChangedMonitor<T> : INotifyCollectionChanged //where T : INotifyPropertyChanged
+    public class NotifyCollectionChangedMonitor<T> : INotifyCollectionChanged
     {
         protected readonly IList<T> _input;
 
         public PropertyAccessTree PropertyAccessTree { get; set; }
+
+        public bool IsMonitoringChildProperties
+        {
+            get 
+            { 
+                return this.PropertyAccessTree != null && 
+                    this.PropertyAccessTree.Children.Count != 0 &&
+                    this.PropertyAccessTree.Children[0].Children.Count > 0; 
+            }
+        }
 
         internal Dictionary<T, SubscriptionTree> Subscriptions { get; set; }
 
@@ -51,7 +61,7 @@ namespace ContinuousLinq
             this.PropertyAccessTree = propertyAccessTree;
             this.Subscriptions = new Dictionary<T, SubscriptionTree>();
             this.ReferenceCountTracker = new ReferenceCountTracker<T>();
-            
+
             SubscribeToItems(_input);
 
             WeakNotifyCollectionChangedEventHandler.Register(
@@ -67,8 +77,8 @@ namespace ContinuousLinq
         private void SubscribeToItems(IEnumerable<T> items)
         {
             if (this.PropertyAccessTree == null)
-                return; 
-            
+                return;
+
             foreach (T item in items)
             {
                 SubscribeToItem(item);
@@ -79,9 +89,12 @@ namespace ContinuousLinq
         {
             if (this.ReferenceCountTracker.Add(item))
             {
-                SubscriptionTree subscriptionTree = this.PropertyAccessTree.CreateSubscriptionTree((INotifyPropertyChanged)item);
-                subscriptionTree.PropertyChanged += OnAnyPropertyChangeInSubscriptionTree;
-                this.Subscriptions.Add(item, subscriptionTree);
+                if (this.IsMonitoringChildProperties)
+                {
+                    SubscriptionTree subscriptionTree = this.PropertyAccessTree.CreateSubscriptionTree((INotifyPropertyChanged)item);
+                    subscriptionTree.PropertyChanged += OnAnyPropertyChangeInSubscriptionTree;
+                    this.Subscriptions.Add(item, subscriptionTree);
+                }
             }
         }
 
@@ -89,7 +102,7 @@ namespace ContinuousLinq
         {
             if (this.ItemChanged == null)
                 return;
-            
+
             this.ItemChanged(sender.Parameter);
         }
 
@@ -108,21 +121,26 @@ namespace ContinuousLinq
         {
             if (this.ReferenceCountTracker.Remove(item))
             {
-                this.Subscriptions[item].PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
-                this.Subscriptions.Remove(item);
+                if (this.IsMonitoringChildProperties)
+                {
+                    this.Subscriptions[item].PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                    this.Subscriptions.Remove(item);
+                }
             }
         }
 
         private void ClearSubscriptions()
         {
             if (this.PropertyAccessTree == null)
-                return; 
+                return;
 
-            foreach (SubscriptionTree subscriptionTree in this.Subscriptions.Values)
+            if (this.IsMonitoringChildProperties)
             {
-                subscriptionTree.PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                foreach (SubscriptionTree subscriptionTree in this.Subscriptions.Values)
+                {
+                    subscriptionTree.PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                }
             }
-
             this.Subscriptions.Clear();
             this.ReferenceCountTracker.Clear();
         }
@@ -130,7 +148,7 @@ namespace ContinuousLinq
         private void SubscribeToNewItems(IList items)
         {
             if (this.PropertyAccessTree == null)
-                return; 
+                return;
 
             IEnumerable<T> newItems = items.Cast<T>();
             SubscribeToItems(newItems);
@@ -139,7 +157,7 @@ namespace ContinuousLinq
         private void UnsubscribeFromOldItems(IList items)
         {
             if (this.PropertyAccessTree == null)
-                return; 
+                return;
 
             IEnumerable<T> oldItems = items.Cast<T>();
             UnsubscribeFromItems(oldItems);
