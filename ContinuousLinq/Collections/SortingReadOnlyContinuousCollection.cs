@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Diagnostics;
-
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Collections
 {
@@ -24,7 +24,7 @@ namespace ContinuousLinq.Collections
             bool descending)
             : base(list, ExpressionPropertyAnalyzer.Analyze(keySelectorExpression))
         {
-            this.KeySelector = keySelectorExpression.Compile();
+            this.KeySelector = keySelectorExpression.CachedCompile();
             this.KeySorter = new SortsSourceByKey<TSource, TKey>(this.KeySelector, descending);
             SetComparerChain(this.KeySorter);
 

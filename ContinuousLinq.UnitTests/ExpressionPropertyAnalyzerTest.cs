@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace ContinuousLinq.UnitTests
 {
@@ -316,6 +317,16 @@ namespace ContinuousLinq.UnitTests
             Assert.IsInstanceOfType(typeof(ConstantNode), constantNode);
             Assert.AreEqual(1, constantNode.Children.Count);
         }
+
+        //[Test]
+        //public void Test()
+        //{
+        //    Expression<Func<Person, string>> nameAccessorZero = p => p.Name;
+        //    Expression<Func<Person, string>> nameAccessorOne = p => p.Name;
+        //    Assert.AreEqual(nameAccessorZero, nameAccessorOne);
+        //    //Assert.AreSame(typeof(Person).GetProperty("Name").Name, typeof(Person).GetProperty("Name").Name);
+        //    //Assert.AreSame("Name", typeof(Person).GetProperty("Name").Name);
+        //}
 
         #region INotifyPropertyChanged Members
 

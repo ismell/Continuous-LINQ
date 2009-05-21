@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Collections
 {
@@ -23,7 +24,7 @@ namespace ContinuousLinq.Collections
             Expression<Func<TSource, TKey>> keySelectorExpression) 
             : base(list, ExpressionPropertyAnalyzer.Analyze(keySelectorExpression))
         {
-            this.KeySelector = keySelectorExpression.Compile();
+            this.KeySelector = keySelectorExpression.CachedCompile();
             this.Output = new ContinuousCollection<GroupedReadOnlyContinuousCollection<TKey, TSource>>();
 
             this.ItemToGroupIndex = new Dictionary<TSource, GroupedReadOnlyContinuousCollection<TKey, TSource>>();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Collections.Specialized;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Aggregates
 {
@@ -124,7 +125,7 @@ namespace ContinuousLinq.Aggregates
 
             if (selectorExpression != null)
             {
-                this.Selector = selectorExpression.Compile();
+                this.Selector = CompiledExpressionCache.CachedCompile(selectorExpression);
                 propertyAccessTree = ExpressionPropertyAnalyzer.Analyze(selectorExpression);
             }
 

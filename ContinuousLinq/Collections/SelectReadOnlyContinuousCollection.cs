@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq
 {
@@ -20,7 +21,7 @@ namespace ContinuousLinq
         public SelectReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource,TResult>> selectorExpression)
             : base(list, ExpressionPropertyAnalyzer.Analyze(selectorExpression))
         {
-            this.SelectorFunction = selectorExpression.Compile();
+            this.SelectorFunction = selectorExpression.CachedCompile();
 
             this.CurrentValues = new Dictionary<TSource, TResult>(this.Source.Count);
             RecordCurrentValues(this.Source);

@@ -57,6 +57,9 @@
   <ItemGroup>
     <Compile Include="AsReadOnlyTest.cs" />
     <Compile Include="ClinqTestFactory.cs" />
+    <Compile Include="ClosureToStaticExpressionFactoryTest.cs" />
+    <Compile Include="ClosureToStaticExpressionTransformerTest.cs" />
+    <Compile Include="CompiledExpressionCacheTest.cs" />
     <Compile Include="ContinuousAggregationExtensionTest.cs" />
     <Compile Include="ContinuousContainsTest.cs" />
     <Compile Include="ContinuousCountTest.cs" />
@@ -65,6 +68,7 @@
     <Compile Include="DistinctReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="DistinctTest.cs" />
     <Compile Include="DynamicPropertyTest.cs" />
+    <Compile Include="ExpressionEqualityComparerTest.cs" />
     <Compile Include="ExpressionPropertyAnalyzerTest.cs" />
     <Compile Include="FilteringReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="FirstOrDefaultTest.cs" />

@@ -80,14 +80,6 @@ namespace ContinuousLinq.Expressions
                 if (getterMethodInfo == null)
                     throw new InvalidOperationException("No getter method found on property");
 
-                //Type delegateType = typeof(Func<,>);
-
-                //Type specificDelegateType = delegateType.MakeGenericType(new Type[] { _property.DeclaringType, _property.PropertyType });
-
-                //Delegate del = Delegate.CreateDelegate(specificDelegateType, getterMethodInfo);
-                
-                //_getterDelegate = (Func<object, object>)Delegate.CreateDelegate(typeof(Func<object, object>), getterMethodInfo);
-
                 DynamicMethod dynamicMethod = new DynamicMethod(
                     string.Format("_dynamicGet{0}{1}{2}", _property.DeclaringType, _property.Name, Guid.NewGuid()),
                     typeof(object),

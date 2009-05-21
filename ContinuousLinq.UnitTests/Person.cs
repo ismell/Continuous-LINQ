@@ -121,6 +121,18 @@ namespace ContinuousLinq.UnitTests
                    select person;
         }
 
+        public int AddYearsToAge(int amount)
+        {
+            this.Age += amount;
+            return this.Age; ;
+        }
+
+        public int SubtractYearsFromAge(int amount)
+        {
+            this.Age -= amount;
+            return this.Age; ;
+        }
+
         #endregion
     }
 }

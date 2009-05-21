@@ -116,6 +116,9 @@ namespace ContinuousLinq.UnitTests.WeakEvents
             _person = null;
             
             GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+
             WeakPropertyChangedEventManager.RemoveCollectedEntries();
 
             Assert.AreEqual(0, WeakPropertyChangedEventManager.SourceToBridgeTable.Count);

@@ -62,14 +62,24 @@
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SortingReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\ThenByReadOnlyContinuousCollection.cs" />
+    <Compile Include="Expressions\ClosureToStaticExpressionFactory.cs" />
+    <Compile Include="Expressions\ClosureToStaticExpressionTransformer.cs" />
+    <Compile Include="Expressions\CompiledExpressionCache.cs" />
     <Compile Include="Expressions\ConstantNode.cs" />
     <Compile Include="Aggregation\ContinuousAggregationExtension.cs" />
     <Compile Include="Collections\ContinuousCollection.cs" />
     <Compile Include="ContinuousQueryExtension.cs" />
     <Compile Include="Aggregation\ContinuousValue.cs" />
+    <Compile Include="Expressions\Curry.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Curry.tt</DependentUpon>
+    </Compile>
     <Compile Include="Expressions\DynamicProperty.cs" />
+    <Compile Include="Expressions\ExpressionEqualityComparer.cs" />
     <Compile Include="Expressions\ExpressionPropertyAnalyzer.cs" />
     <Compile Include="Collections\FilteringReadOnlyContinuousCollection.cs" />
+    <Compile Include="Expressions\ExpressionVisitor.cs" />
     <Compile Include="Expressions\ParameterNode.cs" />
     <Compile Include="Collections\PassThroughReadOnlyContinuousCollection.cs" />
     <Compile Include="Aggregation\PausedAggregation.cs" />
@@ -92,6 +102,15 @@
     <Compile Include="WeakEvents\WeakPropertyBridge.cs" />
     <Compile Include="WeakEvents\WeakPropertyChangedCallback.cs" />
     <Compile Include="WeakEvents\WeakPropertyChangedEventManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Expressions\Curry.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Curry.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

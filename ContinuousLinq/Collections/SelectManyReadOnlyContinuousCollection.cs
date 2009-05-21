@@ -5,6 +5,7 @@ using System.Text;
 using System.Linq.Expressions;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Collections
 {
@@ -17,8 +18,7 @@ namespace ContinuousLinq.Collections
             Expression<Func<TSource, IEnumerable<TResult>>> manySelector) :
             base(list, ExpressionPropertyAnalyzer.Analyze(manySelector))
         {
-            
-            this.SelectorFunction = manySelector.Compile();
+            this.SelectorFunction = manySelector.CachedCompile();
             this.CurrentValues = new Dictionary<TSource, IEnumerable<TResult>>(this.Source.Count);
             RecordCurrentValues(this.Source);
 

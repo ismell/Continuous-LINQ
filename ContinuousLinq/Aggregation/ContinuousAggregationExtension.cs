@@ -4,6 +4,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Aggregates
 {
@@ -1260,7 +1261,7 @@ namespace ContinuousLinq.Aggregates
             this ObservableCollection<T> input,
             Expression<Func<T, bool>> predicate) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()));
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.CachedCompile()));
         }
         public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
             this ObservableCollection<T> input,
@@ -1273,7 +1274,7 @@ namespace ContinuousLinq.Aggregates
             Expression<Func<T, bool>> predicate,
             Action<T> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()), afterEffect);
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.CachedCompile()), afterEffect);
         }
 
 
@@ -1286,7 +1287,7 @@ namespace ContinuousLinq.Aggregates
             this ReadOnlyObservableCollection<T> input,
             Expression<Func<T, bool>> predicate) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()));
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.CachedCompile()));
         }
         public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
             this ReadOnlyObservableCollection<T> input,
@@ -1299,7 +1300,7 @@ namespace ContinuousLinq.Aggregates
             Expression<Func<T, bool>> predicate,
             Action<T> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()), afterEffect);
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.CachedCompile()), afterEffect);
         }
 
         public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
@@ -1311,7 +1312,7 @@ namespace ContinuousLinq.Aggregates
             this ReadOnlyContinuousCollection<T> input,
             Expression<Func<T, bool>> predicate) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()));
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.CachedCompile()));
         }
         public static ContinuousValue<T> ContinuousFirstOrDefault<T>(
             this ReadOnlyContinuousCollection<T> input,
@@ -1324,7 +1325,7 @@ namespace ContinuousLinq.Aggregates
             Expression<Func<T, bool>> predicate,
             Action<T> afterEffect) where T : INotifyPropertyChanged
         {
-            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.Compile()), afterEffect);
+            return new ContinuousValue<T, bool, T>(input, predicate, (list, selector) => list.FirstOrDefault(predicate.CachedCompile()), afterEffect);
         }
         #endregion
     }

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
+using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Collections
 {
@@ -20,7 +21,7 @@ namespace ContinuousLinq.Collections
         public FilteringReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource, bool>> expression)
             : base(list, ExpressionPropertyAnalyzer.Analyze(expression))
         {
-            this.FilterFunction = expression.Compile();
+            this.FilterFunction = expression.CachedCompile();
 
             this.Output = new ContinuousCollection<TSource>();
             this.ItemLookup = new HashSet<TSource>();
