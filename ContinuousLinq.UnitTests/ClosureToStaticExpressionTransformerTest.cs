@@ -11,64 +11,64 @@ namespace ContinuousLinq.UnitTests
     [TestFixture]
     public class ClosedToOpenExpressionTransformerTest
     {
-        //[SetUp]
-        //public void Setup()
-        //{
-        //}
+        [SetUp]
+        public void Setup()
+        {
+        }
 
-        //[Test]
-        //public void Transform_AlreadyOpen_ReturnsOriginalExpression()
-        //{
-        //    Expression<Func<Person, string>> original = person => person.Name;
-        //    var target = new ClosedToOpenExpressionTransformer(original);
+        [Test]
+        public void Transform_AlreadyOpen_ReturnsOriginalExpression()
+        {
+            Expression<Func<Person, string>> original = person => person.Name;
+            var target = new ClosedToOpenExpressionTransformer(original);
 
-        //    Assert.AreSame(original, target.OpenVersion);
-        //}
+            Assert.AreSame(original, target.OpenVersion);
+        }
 
-        //[Test]
-        //public void WasAlreadyOpen_OriginalOpen_True()
-        //{
-        //    Expression<Func<Person, string>> original = person => person.Name;
-        //    var target = new ClosedToOpenExpressionTransformer(original);
+        [Test]
+        public void WasAlreadyOpen_OriginalOpen_True()
+        {
+            Expression<Func<Person, string>> original = person => person.Name;
+            var target = new ClosedToOpenExpressionTransformer(original);
 
-        //    Assert.IsTrue(target.WasAlreadyOpen);
-        //}
+            Assert.IsTrue(target.WasAlreadyOpen);
+        }
 
-        //[Test]
-        //public void WasAlreadyStatic_OriginalClosed_False()
-        //{
-        //    float closedValue = 5.8f;
-        //    Expression<Func<Person, bool>> original = person => person.Age == closedValue;
-        //    var target = new ClosedToOpenExpressionTransformer(original);
+        [Test]
+        public void WasAlreadyStatic_OriginalClosed_False()
+        {
+            float closedValue = 5.8f;
+            Expression<Func<Person, bool>> original = person => person.Age == closedValue;
+            var target = new ClosedToOpenExpressionTransformer(original);
 
-        //    Assert.IsFalse(target.WasAlreadyOpen);
-        //}
+            Assert.IsFalse(target.WasAlreadyOpen);
+        }
 
-        //[Test]
-        //public void OpenVersion_OriginalHasClosedVariable_OpenVersionHasTransformRootExpression()
-        //{
-        //    float closedValue = 5.8f;
-        //    Expression<Func<Person, bool>> original = person => person.Age == closedValue;
+        [Test]
+        public void OpenVersion_OriginalHasClosedVariable_OpenVersionHasTransformRootExpression()
+        {
+            float closedValue = 5.8f;
+            Expression<Func<Person, bool>> original = person => person.Age == closedValue;
 
-        //    var target = new ClosedToOpenExpressionTransformer(original);
+            var target = new ClosedToOpenExpressionTransformer(original);
 
-        //    Assert.AreEqual(2, target.OpenVersion.Parameters.Count);
-            
-        //    //Can't really test that the static version of the function takes the compiler generated closure...
-        //    //Assert.AreEqual(typeof(ContinuousLinq.UnitTests.ClosureToStaticExpressionTransformerTest+<>c__DisplayClass0), target.StaticVersion.Parameters[0].Type);
-        //    Assert.AreEqual(typeof(Person), target.OpenVersion.Parameters[1].Type);
-        //    Assert.AreEqual(typeof(Func<,,>), target.OpenVersion.Type.GetGenericTypeDefinition());
-        //}
+            Assert.AreEqual(2, target.OpenVersion.Parameters.Count);
 
-        //[Test]
-        //public void OpenVersion_OriginalIsOpenAndHasConstantDefinedInExpression_DoesNotTransform()
-        //{
-        //    Expression<Func<Person, bool>> original = person => person.Age == 5.84f;
+            //Can't really test that the static version of the function takes the compiler generated closure...
+            //Assert.AreEqual(typeof(ContinuousLinq.UnitTests.ClosureToStaticExpressionTransformerTest+<>c__DisplayClass0), target.StaticVersion.Parameters[0].Type);
+            Assert.AreEqual(typeof(Person), target.OpenVersion.Parameters[1].Type);
+            Assert.AreEqual(typeof(Func<,,>), target.OpenVersion.Type.GetGenericTypeDefinition());
+        }
 
-        //    var target = new ClosedToOpenExpressionTransformer(original);
+        [Test]
+        public void OpenVersion_OriginalIsOpenAndHasConstantDefinedInExpression_DoesNotTransform()
+        {
+            Expression<Func<Person, bool>> original = person => person.Age == 5.84f;
 
-        //    Assert.AreSame(original, target.OpenVersion);
-        //}
+            var target = new ClosedToOpenExpressionTransformer(original);
+
+            Assert.AreSame(original, target.OpenVersion);
+        }
 
         [Test]
         [Ignore("Performance metrics")]
