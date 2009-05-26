@@ -11,70 +11,70 @@ namespace ContinuousLinq.UnitTests
     [TestFixture]
     public class ClosedToOpenExpressionTransformerTest
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
+        //[SetUp]
+        //public void Setup()
+        //{
+        //}
 
-        [Test]
-        public void Transform_AlreadyOpen_ReturnsOriginalExpression()
-        {
-            Expression<Func<Person, string>> original = person => person.Name;
-            var target = new ClosedToOpenExpressionTransformer(original);
+        //[Test]
+        //public void Transform_AlreadyOpen_ReturnsOriginalExpression()
+        //{
+        //    Expression<Func<Person, string>> original = person => person.Name;
+        //    var target = new ClosedToOpenExpressionTransformer(original);
 
-            Assert.AreSame(original, target.OpenVersion);
-        }
+        //    Assert.AreSame(original, target.OpenVersion);
+        //}
 
-        [Test]
-        public void WasAlreadyOpen_OriginalOpen_True()
-        {
-            Expression<Func<Person, string>> original = person => person.Name;
-            var target = new ClosedToOpenExpressionTransformer(original);
+        //[Test]
+        //public void WasAlreadyOpen_OriginalOpen_True()
+        //{
+        //    Expression<Func<Person, string>> original = person => person.Name;
+        //    var target = new ClosedToOpenExpressionTransformer(original);
 
-            Assert.IsTrue(target.WasAlreadyOpen);
-        }
+        //    Assert.IsTrue(target.WasAlreadyOpen);
+        //}
 
-        [Test]
-        public void WasAlreadyStatic_OriginalClosed_False()
-        {
-            float closedValue = 5.8f;
-            Expression<Func<Person, bool>> original = person => person.Age == closedValue;
-            var target = new ClosedToOpenExpressionTransformer(original);
+        //[Test]
+        //public void WasAlreadyStatic_OriginalClosed_False()
+        //{
+        //    float closedValue = 5.8f;
+        //    Expression<Func<Person, bool>> original = person => person.Age == closedValue;
+        //    var target = new ClosedToOpenExpressionTransformer(original);
 
-            Assert.IsFalse(target.WasAlreadyOpen);
-        }
+        //    Assert.IsFalse(target.WasAlreadyOpen);
+        //}
 
-        [Test]
-        public void OpenVersion_OriginalHasClosedVariable_OpenVersionHasTransformRootExpression()
-        {
-            float closedValue = 5.8f;
-            Expression<Func<Person, bool>> original = person => person.Age == closedValue;
+        //[Test]
+        //public void OpenVersion_OriginalHasClosedVariable_OpenVersionHasTransformRootExpression()
+        //{
+        //    float closedValue = 5.8f;
+        //    Expression<Func<Person, bool>> original = person => person.Age == closedValue;
 
-            var target = new ClosedToOpenExpressionTransformer(original);
+        //    var target = new ClosedToOpenExpressionTransformer(original);
 
-            Assert.AreEqual(2, target.OpenVersion.Parameters.Count);
+        //    Assert.AreEqual(2, target.OpenVersion.Parameters.Count);
             
-            //Can't really test that the static version of the function takes the compiler generated closure...
-            //Assert.AreEqual(typeof(ContinuousLinq.UnitTests.ClosureToStaticExpressionTransformerTest+<>c__DisplayClass0), target.StaticVersion.Parameters[0].Type);
-            Assert.AreEqual(typeof(Person), target.OpenVersion.Parameters[1].Type);
-            Assert.AreEqual(typeof(Func<,,>), target.OpenVersion.Type.GetGenericTypeDefinition());
-        }
+        //    //Can't really test that the static version of the function takes the compiler generated closure...
+        //    //Assert.AreEqual(typeof(ContinuousLinq.UnitTests.ClosureToStaticExpressionTransformerTest+<>c__DisplayClass0), target.StaticVersion.Parameters[0].Type);
+        //    Assert.AreEqual(typeof(Person), target.OpenVersion.Parameters[1].Type);
+        //    Assert.AreEqual(typeof(Func<,,>), target.OpenVersion.Type.GetGenericTypeDefinition());
+        //}
 
-        [Test]
-        public void OpenVersion_OriginalIsOpenAndHasConstantDefinedInExpression_DoesNotTransform()
-        {
-            Expression<Func<Person, bool>> original = person => person.Age == 5.84f;
+        //[Test]
+        //public void OpenVersion_OriginalIsOpenAndHasConstantDefinedInExpression_DoesNotTransform()
+        //{
+        //    Expression<Func<Person, bool>> original = person => person.Age == 5.84f;
 
-            var target = new ClosedToOpenExpressionTransformer(original);
+        //    var target = new ClosedToOpenExpressionTransformer(original);
 
-            Assert.AreSame(original, target.OpenVersion);
-        }
+        //    Assert.AreSame(original, target.OpenVersion);
+        //}
 
         [Test]
         [Ignore("Performance metrics")]
         public void ComparePerformanceOfExpressionCompileVersusCreateMetaClosure()
         {
-            const int ITERATIONS = 100000;
+            const int ITERATIONS = 300000;
 
             int xx = 2;
             System.Linq.Expressions.Expression<Func<int, int, int>> multiplierByClosureConstantExpression = (y, z) => xx * (y + z);
@@ -83,22 +83,24 @@ namespace ContinuousLinq.UnitTests
 
             start = DateTime.Now;
 
-            for (int i = 0; i < ITERATIONS; i++)
-            {
-                multiplierByClosureConstantExpression.Compile();
-            }
+            //for (int i = 0; i < ITERATIONS; i++)
+            //{
+            //    multiplierByClosureConstantExpression.Compile();
+            //}
 
             duration = DateTime.Now - start;
             
-            Console.WriteLine(duration);
+            //Console.WriteLine(duration);
 
             ClosedToOpenExpressionTransformer target = null;
             
             start = DateTime.Now;
 
+            Type[] types = new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) };
             for (int i = 0; i < ITERATIONS; i++)
             {
                 target = new ClosedToOpenExpressionTransformer(multiplierByClosureConstantExpression);
+                //Type specificFunctionType = typeof(Func<,,,>).MakeGenericType(types);
             }
 
             duration = DateTime.Now - start;

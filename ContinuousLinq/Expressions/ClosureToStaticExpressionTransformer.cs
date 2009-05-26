@@ -58,7 +58,8 @@ namespace ContinuousLinq.Expressions
             LambdaExpression finalOpenVersion;
             if (body != lambda.Body)
             {
-                Type[] parameterTypes = new Type[this.ConstantParameters.Count + lambda.Parameters.Count + 1];
+                System.Collections.ObjectModel.ReadOnlyCollection<ParameterExpression> lambdaParameters = lambda.Parameters;
+                Type[] parameterTypes = new Type[this.ConstantParameters.Count + lambdaParameters.Count + 1];
 
                 int lastTypeIndex = 0;
 
@@ -75,7 +76,7 @@ namespace ContinuousLinq.Expressions
                 parameterTypes[lastTypeIndex++] = lambda.Body.Type;
 
                 IEnumerable<ParameterExpression> openVersionParameterList = this.ConstantParameters.Concat(lambda.Parameters);
-                
+
                 Type openLambdaType = GetSpecificFuncTypeFromParameters(parameterTypes);
                 finalOpenVersion = Expression.Lambda(openLambdaType, body, openVersionParameterList);
             }
@@ -173,6 +174,9 @@ namespace ContinuousLinq.Expressions
                     break;
                 case 19:
                     matchingFuncType = typeof(Func<,,,,,,,,,,,,,,,,,,,>);
+                    break;
+                case 20:
+                    matchingFuncType = typeof(Func<,,,,,,,,,,,,,,,,,,,,>);
                     break;
                 default:
                     throw new InvalidProgramException();

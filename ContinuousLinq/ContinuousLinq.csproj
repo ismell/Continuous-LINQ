@@ -122,7 +122,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>@echo off
-xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
-xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
+REM xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
+REM xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

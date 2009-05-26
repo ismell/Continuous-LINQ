@@ -11,82 +11,82 @@ namespace ContinuousLinq.UnitTests
     [TestFixture]
     public class CompiledExpressionCacheTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            CompiledExpressionCache._cache.Clear();
-        }
+        //[SetUp]
+        //public void Setup()
+        //{
+        //    CompiledExpressionCache._cache.Clear();
+        //}
 
-        [TearDown]
-        public void TearDown()
-        {
-            CompiledExpressionCache._cache.Clear();
-        }
+        //[TearDown]
+        //public void TearDown()
+        //{
+        //    CompiledExpressionCache._cache.Clear();
+        //}
 
-        [Test]
-        public void GetCompiledExpression_ExpressionsEqual_SameDelegate()
-        {
-            Expression<Func<Person, string>> expressionZero = person => person.Name;
-            Expression<Func<Person, string>> expressionOne = person => person.Name;
+        //[Test]
+        //public void GetCompiledExpression_ExpressionsEqual_SameDelegate()
+        //{
+        //    Expression<Func<Person, string>> expressionZero = person => person.Name;
+        //    Expression<Func<Person, string>> expressionOne = person => person.Name;
 
-            Func<Person, string> cachedZero = CompiledExpressionCache.CachedCompile(expressionZero);
-            Func<Person, string> cachedOne = CompiledExpressionCache.CachedCompile(expressionOne);
+        //    Func<Person, string> cachedZero = CompiledExpressionCache.CachedCompile(expressionZero);
+        //    Func<Person, string> cachedOne = CompiledExpressionCache.CachedCompile(expressionOne);
 
-            Assert.AreEqual(cachedZero, cachedOne);
-        }
+        //    Assert.AreEqual(cachedZero, cachedOne);
+        //}
 
-        [Test]
-        public void GetCompiledExpression_ClosureInExpression_DifferentDelegate()
-        {
-            Person comparsionPerson = new Person();
+        //[Test]
+        //public void GetCompiledExpression_ClosureInExpression_DifferentDelegate()
+        //{
+        //    Person comparsionPerson = new Person();
 
-            Expression<Func<Person, bool>> expressionZero = person => person.Name == comparsionPerson.Name;
-            Expression<Func<Person, bool>> expressionOne = person => person.Name == comparsionPerson.Name;
+        //    Expression<Func<Person, bool>> expressionZero = person => person.Name == comparsionPerson.Name;
+        //    Expression<Func<Person, bool>> expressionOne = person => person.Name == comparsionPerson.Name;
 
-            Func<Person, bool> cachedZero = expressionZero.CachedCompile();
-            Func<Person, bool> cachedOne = expressionOne.CachedCompile();
+        //    Func<Person, bool> cachedZero = expressionZero.CachedCompile();
+        //    Func<Person, bool> cachedOne = expressionOne.CachedCompile();
 
-            Assert.AreNotEqual(cachedZero, cachedOne);
-        }
+        //    Assert.AreNotEqual(cachedZero, cachedOne);
+        //}
 
-        [Test]
-        public void GetCompiledExpressionAndExecuteBoth_ClosureInExpression_SameResult()
-        {
-            Person comparsonPerson = new Person("Bob", 200);
+        //[Test]
+        //public void GetCompiledExpressionAndExecuteBoth_ClosureInExpression_SameResult()
+        //{
+        //    Person comparsonPerson = new Person("Bob", 200);
 
-            Expression<Func<Person, bool>> expressionZero = person => person.Name == comparsonPerson.Name;
-            Expression<Func<Person, bool>> expressionOne = person => person.Name == comparsonPerson.Name;
+        //    Expression<Func<Person, bool>> expressionZero = person => person.Name == comparsonPerson.Name;
+        //    Expression<Func<Person, bool>> expressionOne = person => person.Name == comparsonPerson.Name;
 
-            Func<Person, bool> cachedZero = expressionZero.CachedCompile();
-            Func<Person, bool> cachedOne = expressionOne.CachedCompile();
+        //    Func<Person, bool> cachedZero = expressionZero.CachedCompile();
+        //    Func<Person, bool> cachedOne = expressionOne.CachedCompile();
 
-            Person personToTestAgainstZero = new Person("Bob", 123);
-            Assert.IsTrue(cachedZero(personToTestAgainstZero));
+        //    Person personToTestAgainstZero = new Person("Bob", 123);
+        //    Assert.IsTrue(cachedZero(personToTestAgainstZero));
             
-            Person personToTestAgainstOne = new Person("Bob", 4564);
-            Assert.IsTrue(cachedOne(personToTestAgainstOne));
-        }
+        //    Person personToTestAgainstOne = new Person("Bob", 4564);
+        //    Assert.IsTrue(cachedOne(personToTestAgainstOne));
+        //}
 
         [Test]
-        //[Ignore("Performance metrics")]
+        [Ignore("Performance metrics")]
         public void ComparePerformanceOfExpressionCompileVersusCreateMetaClosure()
         {
-            const int ITERATIONS = 10000;
+            const int ITERATIONS = 100000;
 
             int xx = 2;
             System.Linq.Expressions.Expression<Func<int, int, int>> multiplierByClosureConstantExpression = (y, z) => xx * (y + z);
             DateTime start;
             TimeSpan duration;
 
-            start = DateTime.Now;
-            
-            for (int i = 0; i < ITERATIONS; i++)
-            {
-                multiplierByClosureConstantExpression.Compile();
-            }
+            //start = DateTime.Now;
 
-            duration = DateTime.Now - start;
-            Console.WriteLine(duration);
+            //for (int i = 0; i < ITERATIONS; i++)
+            //{
+            //    multiplierByClosureConstantExpression.Compile();
+            //}
+
+            //duration = DateTime.Now - start;
+            //Console.WriteLine(duration);
 
             start = DateTime.Now;
             for (int i = 0; i < ITERATIONS; i++)
@@ -103,9 +103,10 @@ namespace ContinuousLinq.UnitTests
         [Ignore("Performance metrics")]
         public void ComparePerformanceOfExpressionCompileVersusOpenCachedCompile()
         {
-            const int ITERATIONS = 1000000;
+            const int ITERATIONS = 100000;
 
-            System.Linq.Expressions.Expression<Func<int, int, int>> multiplierByOpenConstantExpression = (y, z) => 2 * (y + z);
+            System.Linq.Expressions.Expression<Func<int, int, int>> multiplierByOpenConstantExpression = (y, z) => y + z;
+
             DateTime start;
             TimeSpan duration;
 
@@ -132,6 +133,60 @@ namespace ContinuousLinq.UnitTests
         private static double PerSecond(int count, TimeSpan duration)
         {
             return count / duration.TotalSeconds;
+        }
+
+
+        public class LightExpression
+        {
+            
+            public LightExpression()
+            {
+                
+            }
+        }
+
+        [Test]
+        public void Test()
+        {
+            GenerateLightVersionOfClass(typeof(Expression));
+            GenerateLightVersionOfClass(typeof(BinaryExpression));
+        }
+
+        private void GenerateLightVersionOfClass(Type type)
+        {
+            System.Reflection.PropertyInfo[] properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+                if (InheritsFromOtherType(property.PropertyType, typeof(Expression)))
+                {
+                    Console.WriteLine("Light" + property.PropertyType.Name + " " + property.Name);
+                }
+                else
+                {
+                    Console.WriteLine(property.PropertyType.Name + " " + property.Name);
+                }
+            }
+        }
+
+        private bool InheritsFromOtherType(Type type, Type baseType)
+        {
+            Type currentBaseType = type;
+            while (currentBaseType != null)
+            {
+                if (currentBaseType == baseType)
+                    return true;
+
+                currentBaseType = currentBaseType.BaseType;
+            }
+            return false;
+        }
+
+        private void DeclareProperty(Type type, string name)
+        {
+            Console.WriteLine(string.Format("public {0} {1}", type.Name, name));
+            Console.WriteLine(string.Format("{", type.Name, name));
+            Console.WriteLine(string.Format("{", type.Name, name));
         }
     }
 }
