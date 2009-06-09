@@ -78,6 +78,7 @@
     <Compile Include="PausedAggregationTest.cs" />
     <Compile Include="PropertyAccessNodeTest.cs" />
     <Compile Include="PropertyAccessTreeTest.cs" />
+    <Compile Include="Reactive\ReactiveObjectTest.cs" />
     <Compile Include="ReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="ReferenceCountTrackerTest.cs" />
     <Compile Include="SelectReadOnlyContinuousCollectionDuplicatesTest.cs" />

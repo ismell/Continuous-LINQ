@@ -94,6 +94,9 @@
     <Compile Include="Collections\SelectReadOnlyContinuousCollection.cs" />
     <Compile Include="Expressions\SubscriptionNode.cs" />
     <Compile Include="Expressions\SubscriptionTree.cs" />
+    <Compile Include="Reactive\DependsOn.cs" />
+    <Compile Include="Reactive\DependsOnMethod.cs" />
+    <Compile Include="Reactive\ReactiveObject.cs" />
     <Compile Include="ReferenceCountTracker.cs" />
     <Compile Include="WeakEvents\BaseDictionary.cs" />
     <Compile Include="WeakEvents\WeakDictionary.cs" />
