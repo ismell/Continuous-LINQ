@@ -61,6 +61,7 @@
     <Compile Include="ClosureToStaticExpressionTransformerTest.cs" />
     <Compile Include="CompiledExpressionCacheTest.cs" />
     <Compile Include="ContinuousAggregationExtensionTest.cs" />
+    <Compile Include="ContinuousCollectionTest.cs" />
     <Compile Include="ContinuousContainsTest.cs" />
     <Compile Include="ContinuousCountTest.cs" />
     <Compile Include="ContinuousMaxTest.cs" />

@@ -1,5 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Threading;
 using System.Threading;
 
@@ -29,7 +34,7 @@ namespace ContinuousLinq
         /// to the dispatcher.
         /// </summary>
         public ContinuousCollection()
-        {            
+        {
             _dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
         }
 
@@ -63,34 +68,66 @@ namespace ContinuousLinq
 
         public void AddRange(IEnumerable<T> collection)
         {
-            foreach (T item in collection)
-            {
-                Add(item);
-            }
+            int index = this.Count;
+            this.InsertRange(index, collection);
         }
 
         public void InsertRange(int index, IEnumerable<T> collection)
         {
+            this.CheckReentrancy();
+
+            int indexToInsertAt = index;
+
             foreach (T item in collection)
             {
-                Insert(index++, item);
+                this.Items.Insert(indexToInsertAt++, item);
             }
+
+            this.OnPropertyChanged("Count");
+            this.OnPropertyChanged("Item[]");
+
+            var addedItems = new List<T>(collection);
+            this.OnCollectionChanged(NotifyCollectionChangedAction.Add, addedItems, index);
         }
 
         public void RemoveRange(int index, int count)
         {
-            for (; count > 0; count--)
+            this.CheckReentrancy();
+
+            var removedItems = new List<T>();
+
+            for (int i = 0; i < count; i++)
             {
-                this.RemoveAt(index);
+                removedItems.Add(this[index]);
+                this.Items.RemoveAt(index);
             }
+
+            this.OnPropertyChanged("Count");
+            this.OnPropertyChanged("Item[]");
+
+            this.OnCollectionChanged(NotifyCollectionChangedAction.Remove, removedItems, index);
         }
 
         public void ReplaceRange(int index, IEnumerable<T> collection)
         {
+            this.CheckReentrancy();
+
+            int indexToReplaceAt = index;
+            var oldItems = new List<T>();
+
             foreach (T item in collection)
             {
-                this[index++] = item;
+                oldItems.Add(this[indexToReplaceAt]);
+                this.Items[indexToReplaceAt] = item;
+
+                indexToReplaceAt++;
             }
+
+            this.OnPropertyChanged("Count");
+            this.OnPropertyChanged("Item[]");
+
+            var newItems = new List<T>(collection);
+            this.OnCollectionReplaced(NotifyCollectionChangedAction.Replace, newItems, oldItems, index);
         }
 
         /// <summary>
@@ -189,6 +226,21 @@ namespace ContinuousLinq
                 _dispatcher.Invoke(DispatcherPriority.Normal,
                     new IndexItemDelegate(SetItem), index, item);
             }
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            this.OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnCollectionChanged(NotifyCollectionChangedAction action, IList list, int index)
+        {
+            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, list, index));
+        }
+
+        private void OnCollectionReplaced(NotifyCollectionChangedAction action, IList newItems, IList oldItems, int index)
+        {
+            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItems, oldItems, index));
         }
     }
 }
