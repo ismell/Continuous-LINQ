@@ -78,15 +78,18 @@ namespace ContinuousLinq
 
             int indexToInsertAt = index;
 
+            var addedItems = new List<T>();
+
             foreach (T item in collection)
             {
+                addedItems.Add(item);
                 this.Items.Insert(indexToInsertAt++, item);
             }
 
             this.OnPropertyChanged("Count");
             this.OnPropertyChanged("Item[]");
 
-            var addedItems = new List<T>(collection);
+            
             this.OnCollectionChanged(NotifyCollectionChangedAction.Add, addedItems, index);
         }
 
