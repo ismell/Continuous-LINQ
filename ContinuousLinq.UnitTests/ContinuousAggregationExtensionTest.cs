@@ -74,6 +74,13 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(23, value.CurrentValue);
             Assert.AreEqual(23, maxValue);
         }
+        
+        [Test]
+        public void ContinuousMin_IfNullableDouble_ReturnsMinValueThatsNotNull()
+        {
+            var value = _target.ContinuousMin(item => item.TargetValue);
+            Assert.AreEqual(1d, value.CurrentValue);
+        }
 
         private class PropertyChangedClass : INotifyPropertyChanged
         {

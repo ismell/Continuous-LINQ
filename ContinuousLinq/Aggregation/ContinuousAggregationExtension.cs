@@ -960,7 +960,14 @@ namespace ContinuousLinq.Aggregates
         {
             return new ContinuousValue<T, double?, double>(input, maxSelector, (list, selector) => list.Count > 0 ? list.Max(selector).GetValueOrDefault() : double.MinValue, afterEffect);
         }
-
+        
+        public static ContinuousValue<double> ContinuousMin<T>(
+           this ReadOnlyContinuousCollection<T> input,
+           Expression<Func<T, double?>> minSelector) where T : INotifyPropertyChanged
+        {
+            return new ContinuousValue<T, double?, double>(input, minSelector, (list, selector) => list.Count > 0 ? list.Min(selector).GetValueOrDefault() : double.MaxValue);
+        }
+    
         private static double? SumNullable<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
         {
             return source.Select(selector).SumNullable();
