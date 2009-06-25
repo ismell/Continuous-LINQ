@@ -69,6 +69,7 @@
     <Compile Include="DistinctReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="DistinctTest.cs" />
     <Compile Include="DynamicPropertyTest.cs" />
+    <Compile Include="ExceptReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="ExpressionEqualityComparerTest.cs" />
     <Compile Include="ExpressionPropertyAnalyzerTest.cs" />
     <Compile Include="FilteringReadOnlyContinuousCollectionTest.cs" />

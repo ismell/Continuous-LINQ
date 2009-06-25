@@ -18,6 +18,16 @@ namespace ContinuousLinq
             this.ReferenceCounts = new Dictionary<TSource, int>();
         }
 
+        public ReferenceCountTracker(IEnumerable<TSource> collection)
+        {
+            this.ReferenceCounts = new Dictionary<TSource, int>();
+
+            foreach (TSource item in collection)
+            {
+                Add(item);
+            }
+        }
+
         public int this[TSource item]
         {
             get { return this.ReferenceCounts[item]; }

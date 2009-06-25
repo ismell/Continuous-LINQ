@@ -232,5 +232,24 @@ namespace ContinuousLinq
 
         #endregion
 
+        #region Except
+
+        public static ReadOnlyContinuousCollection<TSource> Except<TSource>(this ObservableCollection<TSource> first, ObservableCollection<TSource> second)
+        {
+            return new ExceptReadOnlyContinuousCollection<TSource>(first, second);
+        }
+
+        public static ReadOnlyContinuousCollection<TSource> Except<TSource>(this ReadOnlyObservableCollection<TSource> first, ReadOnlyObservableCollection<TSource> second)
+        {
+            return new ExceptReadOnlyContinuousCollection<TSource>(first, second);
+        }
+
+        public static ReadOnlyContinuousCollection<TSource> Except<TSource>(this ReadOnlyContinuousCollection<TSource> first, ReadOnlyContinuousCollection<TSource> second)
+        {
+            return new ExceptReadOnlyContinuousCollection<TSource>(first, second);
+        }
+
+        #endregion
+
     }
 }
