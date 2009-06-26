@@ -15,13 +15,13 @@ namespace ContinuousLinq.UnitTests
         {
             _list = new ContinuousCollection<PropertyChangedClass>
                           {
-                              new PropertyChangedClass { TargetValue = 10 },
-                              new PropertyChangedClass { TargetValue = 23 },
-                              new PropertyChangedClass { TargetValue = null },
-                              new PropertyChangedClass { TargetValue = 2 },
-                              new PropertyChangedClass { TargetValue = null },
-                              new PropertyChangedClass { TargetValue = null },
-                              new PropertyChangedClass { TargetValue = 1 },                              
+                              new PropertyChangedClass { DecimalTargetValue = 10, TargetValue = 10 },
+                              new PropertyChangedClass { DecimalTargetValue = 23, TargetValue = 23 },
+                              new PropertyChangedClass { DecimalTargetValue = null, TargetValue = null },
+                              new PropertyChangedClass { DecimalTargetValue = 2, TargetValue = 2 },
+                              new PropertyChangedClass { DecimalTargetValue = null, TargetValue = null },
+                              new PropertyChangedClass { DecimalTargetValue = null, TargetValue = null },
+                              new PropertyChangedClass { DecimalTargetValue = 1, TargetValue = 1 },                              
                           };
             _target = _list.AsReadOnly();
         }
@@ -74,6 +74,13 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(23, value.CurrentValue);
             Assert.AreEqual(23, maxValue);
         }
+
+        [Test]
+        public void ContinuousMax_IfNullableDecimal_TreatsNullsAsZero()
+        {
+            ContinuousValue<decimal> value = _target.ContinuousMax(item => item.DecimalTargetValue);
+            Assert.AreEqual(23, value.CurrentValue);
+        }
         
         [Test]
         public void ContinuousMin_IfNullableDouble_ReturnsMinValueThatsNotNull()
@@ -82,11 +89,19 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1d, value.CurrentValue);
         }
 
+        [Test]
+        public void ContinuousMin_IfNullableDecimal_ReturnsMinValueThatIsNotNull()
+        {
+            ContinuousValue<decimal> value = _target.ContinuousMin(item => item.DecimalTargetValue);
+            Assert.AreEqual(1, value.CurrentValue);
+        }
+
         private class PropertyChangedClass : INotifyPropertyChanged
         {
             #region Fields
 
             private double? _targetValue;
+            private decimal? _decimalTargetValue;
 
             #endregion
 
@@ -106,6 +121,23 @@ namespace ContinuousLinq.UnitTests
                         return;
 
                     PropertyChanged(this, new PropertyChangedEventArgs("TargetValue"));
+                }
+            }
+
+            public decimal? DecimalTargetValue
+            {
+                get { return _decimalTargetValue; }
+                set
+                {
+                    if (value == _decimalTargetValue)
+                        return;
+
+                    _decimalTargetValue = value;
+
+                    if (this.PropertyChanged == null)
+                        return;
+
+                    PropertyChanged(this, new PropertyChangedEventArgs("DecimalTargetValue"));
                 }
             }
 
