@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Aggregation\OnlineCalculationContinuousValue.cs" />
     <Compile Include="Aggregation\StdDev.cs" />
+    <Compile Include="Collections\ContinuousLinqHelperException.cs" />
     <Compile Include="Collections\DistinctReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\ExceptReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\GroupedReadOnlyContinuousCollection.cs" />
@@ -127,7 +128,7 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>@echo off
-REM xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq /q /y /i
-REM xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
+REM xcopy "$(TargetPath)" C:\depot\src\release\ProgramTrading\thirdparty\ContinuousLinq /q /y /i
+REM xcopy "$(TargetDir)*.pdb" C:\depot\src\release\ProgramTrading\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

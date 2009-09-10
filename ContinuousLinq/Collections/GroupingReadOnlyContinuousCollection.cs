@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using ContinuousLinq.Expressions;
+using ContinuousLinq;
 
 namespace ContinuousLinq.Collections
 {
@@ -18,6 +19,21 @@ namespace ContinuousLinq.Collections
         internal Func<TSource, TKey> KeySelector { get; set; }
 
         internal Dictionary<TSource, GroupedReadOnlyContinuousCollection<TKey, TSource>> ItemToGroupIndex { get; set; }
+
+        private ReadOnlyContinuousCollection<TKey> _keys;
+
+        public ReadOnlyContinuousCollection<TKey> Keys
+        {
+            get
+            {
+                if (_keys == null)
+                {
+                    _keys = from col in this.Output
+                            select col.Key;
+                }
+                return _keys;
+            }
+        }
 
         internal GroupingReadOnlyContinuousCollection(
             IList<TSource> list,
@@ -165,13 +181,6 @@ namespace ContinuousLinq.Collections
         
         #endregion
 
-        public IEnumerable<TKey> Keys
-        {
-            get
-            {
-                return from col in this.Output.AsEnumerable()
-                        select col.Key;
-            }
-        }
+
     }
 }

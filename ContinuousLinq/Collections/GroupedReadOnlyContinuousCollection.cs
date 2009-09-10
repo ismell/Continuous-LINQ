@@ -28,7 +28,19 @@ namespace ContinuousLinq.Collections
 
         #region IGrouping<TKey,TSource> Members
 
-        public TKey Key { get; private set; }
+        private TKey _key;
+        public TKey Key
+        {
+            get { return _key; }
+            set
+            {
+                if (EqualityComparer<TKey>.Default.Equals(value, _key))
+                    return;
+
+                _key = value;
+                OnPropertyChanged("Key");
+            }
+        }
 
         #endregion
 

@@ -24,11 +24,6 @@ namespace ContinuousLinq.Aggregates
             ContinuousValue.GlobalPause();
         }
 
-        ~PausedAggregation()
-        {
-            Dispose();
-        }
-
         #region IDisposable Members
 
         public void Dispose()
