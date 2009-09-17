@@ -18,9 +18,16 @@ namespace ContinuousLinq.Collections
 
         internal Func<TSource, bool> FilterFunction { get; set; }
 
+#if DEBUG
+        Expression<Func<TSource, bool>> Expr { get; set;}
+#endif
+
         public FilteringReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource, bool>> expression)
             : base(list, ExpressionPropertyAnalyzer.Analyze(expression))
         {
+#if DEBUG            
+            this.Expr = expression;
+#endif
             this.FilterFunction = expression.CachedCompile();
 
             this.Output = new ContinuousCollection<TSource>();
@@ -35,6 +42,8 @@ namespace ContinuousLinq.Collections
             this.NotifyCollectionChangedMonitor.Reset += OnReset;
             this.NotifyCollectionChangedMonitor.Replace += OnReplace;
             this.NotifyCollectionChangedMonitor.ItemChanged += OnItemChanged;
+
+
         }
 
         void RefireCollectionChangedFromOutput(object sender, NotifyCollectionChangedEventArgs args)
