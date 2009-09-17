@@ -312,14 +312,14 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void ClearOnFirst_Always_RaisesNotifyCollectionChangedWithResetAction()
         {
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _first.Clear();
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset),
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset), eventArgsList[0]);
         }
 
         [Test]
@@ -327,14 +327,14 @@ namespace ContinuousLinq.UnitTests
         {
             _second.Add(_person1);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _second.Clear();
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset),
-                                                eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset), eventArgsList[0]);
         }
 
         [Test]
@@ -342,14 +342,14 @@ namespace ContinuousLinq.UnitTests
         {
             var person = new Person();
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _first.Add(person);
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[]{person}, 2),
-                                                eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { person }, 2), eventArgsList[0]);
         }
 
         [Test]
@@ -360,27 +360,27 @@ namespace ContinuousLinq.UnitTests
 
             var people = new List<Person> { new Person(), new Person() };
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             continuousFirstCollection.AddRange(people);
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, people, 2),
-                                                eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, people, 2), eventArgsList[0]);
         }
 
         [Test]
         public void RemoveFromFirst_Always_RaisesNotifyCollectionChangedWithRemoveActionAndCorrectValues()
         {
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _first.Remove(_person1);
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0),
-                                                eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
         }
 
         [Test]
@@ -389,17 +389,17 @@ namespace ContinuousLinq.UnitTests
             var continuousFirstCollection = new ContinuousCollection<Person>(_first.ToList());
             _target = new ExceptReadOnlyContinuousCollection<Person>(continuousFirstCollection, _second);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             continuousFirstCollection.RemoveRange(0, 2);
 
             Assert.AreEqual(2, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0),
-                                                 eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person2 }, 0),
-                                                 eventArgsList[1]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person2 }, 0), eventArgsList[1]);
         }
 
         [Test]
@@ -407,17 +407,17 @@ namespace ContinuousLinq.UnitTests
         {
             var person = new Person();
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _first[0] = person;
 
             Assert.AreEqual(2, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0),
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { person }, 1),
-                                                  eventArgsList[1]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { person }, 1), eventArgsList[1]);
         }
 
         [Test]
@@ -428,33 +428,33 @@ namespace ContinuousLinq.UnitTests
 
             var people = new List<Person> { new Person(), new Person() };
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             continuousFirstCollection.ReplaceRange(0, people);
 
             Assert.AreEqual(3, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[]{_person1}, 0),
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person2 }, 0),
-                                                  eventArgsList[1]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person2 }, 0), eventArgsList[1]);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, people, 0),
-                                                  eventArgsList[2]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, people, 0), eventArgsList[2]);
         }
 
         [Test]
         public void AddToSecond_Always_RaisesNotifyCollectionChangedWithRemoveActionAndCorrectValues()
         {
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _second.Add(_person1);
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[]{_person1}, 0),
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
         }
 
         [Test]
@@ -463,17 +463,17 @@ namespace ContinuousLinq.UnitTests
             var continuousSecondCollection = new ContinuousCollection<Person>();
             _target = new ExceptReadOnlyContinuousCollection<Person>(_first, continuousSecondCollection);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             continuousSecondCollection.AddRange(_first);
 
             Assert.AreEqual(2, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,new[]{_person1}, 0),
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person2 }, 0),
-                                                  eventArgsList[1]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person2 }, 0), eventArgsList[1]);
         }
 
         [Test]
@@ -481,14 +481,14 @@ namespace ContinuousLinq.UnitTests
         {
             _second.Add(_person1);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _second.Remove(_person1);
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[]{_person1}, 1),
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { _person1 }, 1), eventArgsList[0]);
         }
 
         [Test]
@@ -497,14 +497,14 @@ namespace ContinuousLinq.UnitTests
             var continuousSecondCollection = new ContinuousCollection<Person>(_first.ToList());
             _target = new ExceptReadOnlyContinuousCollection<Person>(_first, continuousSecondCollection);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             continuousSecondCollection.RemoveRange(0, 2);
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _first, 0), 
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _first, 0),  eventArgsList[0]);
         }
 
         [Test]
@@ -512,17 +512,17 @@ namespace ContinuousLinq.UnitTests
         {
             _second.Add(_person1);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             _second[0] = _person2;
 
             Assert.AreEqual(2, eventArgsList.Count);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[]{_person1}, 1), 
-                                                  eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { _person1 }, 1),  eventArgsList[0]);
 
-            AssertCollectionChangedEventArgsEqual(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {_person2}, 0), 
-                                                  eventArgsList[1]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(
+                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {_person2}, 0),  eventArgsList[1]);
         }
 
         [Test]
@@ -535,62 +535,20 @@ namespace ContinuousLinq.UnitTests
 
             _target = new ExceptReadOnlyContinuousCollection<Person>(_first, continuousSecondCollection);
 
-            var eventArgsList = GetCollectionChangedEventArgsList(_target);
+            var eventArgsList = TestUtilities.GetCollectionChangedEventArgsList(_target);
 
             continuousSecondCollection.ReplaceRange(0, people);
 
             Assert.AreEqual(3, eventArgsList.Count);
 
             var expectedEventArg1 = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { _person1, _person2 }, 2);
-            AssertCollectionChangedEventArgsEqual(expectedEventArg1, eventArgsList[0]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(expectedEventArg1, eventArgsList[0]);
 
             var expectedEventArg2 = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] {people[0]}, 0);
-            AssertCollectionChangedEventArgsEqual(expectedEventArg2, eventArgsList[1]);
+            TestUtilities.AssertCollectionChangedEventArgsEqual(expectedEventArg2, eventArgsList[1]);
 
             var expectedEventArg3 = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { people[1] }, 0);
-            AssertCollectionChangedEventArgsEqual(expectedEventArg3, eventArgsList[2]);
-        }
-
-        private static List<NotifyCollectionChangedEventArgs> GetCollectionChangedEventArgsList(INotifyCollectionChanged target)
-        {
-            var eventArgsList = new List<NotifyCollectionChangedEventArgs>();
-            target.CollectionChanged += (sender, e) => eventArgsList.Add(e);
-            return eventArgsList;
-        }
-
-        private static void AssertCollectionChangedEventArgsEqual(NotifyCollectionChangedEventArgs expectedEventArgs, NotifyCollectionChangedEventArgs actualEventArgs)
-        {
-            Assert.AreEqual(expectedEventArgs.Action, actualEventArgs.Action);
-            
-            if (actualEventArgs.NewItems == null)
-                Assert.IsNull(expectedEventArgs.NewItems);
-            else
-                CollectionAssert.AreEquivalent(expectedEventArgs.NewItems, actualEventArgs.NewItems);
-
-            Assert.AreEqual(expectedEventArgs.NewStartingIndex, actualEventArgs.NewStartingIndex);
-
-            if (actualEventArgs.OldItems == null)
-                Assert.IsNull(expectedEventArgs.OldItems);
-            else
-                CollectionAssert.AreEquivalent(expectedEventArgs.OldItems, actualEventArgs.OldItems);
-
-            Assert.AreEqual(expectedEventArgs.OldStartingIndex, actualEventArgs.OldStartingIndex);
-        }
-    }
-
-    public class TestContinuousCollection<T> : ContinuousCollection<T>
-    {
-        public TestContinuousCollection()
-        {
-        }
-
-        public TestContinuousCollection(List<T> list) : base(list)
-        {
-        }
-
-        public void FireReset()
-        {
-            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            TestUtilities.AssertCollectionChangedEventArgsEqual(expectedEventArg3, eventArgsList[2]);
         }
     }
 }

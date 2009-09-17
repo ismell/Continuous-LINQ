@@ -56,12 +56,13 @@
     <Compile Include="Aggregation\OnlineCalculationContinuousValue.cs" />
     <Compile Include="Aggregation\StdDev.cs" />
     <Compile Include="Collections\ContinuousLinqHelperException.cs" />
+    <Compile Include="Collections\ConcatReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\DistinctReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\ExceptReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\GroupedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\GroupingReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\OrderedReadOnlyContinuousCollection.cs" />
-    <Compile Include="Collections\ReadOnlySetOperationContinuousCollection.cs" />
+    <Compile Include="Collections\ReadOnlyTwoCollectionOperationContinuousCollection.cs" />
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\SortingReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\ThenByReadOnlyContinuousCollection.cs" />

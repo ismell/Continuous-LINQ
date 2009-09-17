@@ -60,6 +60,7 @@
     <Compile Include="ClosureToStaticExpressionFactoryTest.cs" />
     <Compile Include="ClosureToStaticExpressionTransformerTest.cs" />
     <Compile Include="CompiledExpressionCacheTest.cs" />
+    <Compile Include="ConcatReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="ContinuousAggregationExtensionTest.cs" />
     <Compile Include="ContinuousCollectionTest.cs" />
     <Compile Include="ContinuousContainsTest.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="SortTest.cs" />
     <Compile Include="SubscriptionNodeTest.cs" />
     <Compile Include="SubscriptionTreeTest.cs" />
+    <Compile Include="TestUtilities.cs" />
     <Compile Include="ThenByTest.cs" />
     <Compile Include="WeakEvents\ListenerStub.cs" />
     <Compile Include="WeakEvents\WeakEventHandlerTest.cs" />

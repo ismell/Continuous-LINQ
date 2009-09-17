@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace ContinuousLinq
 {
-    public abstract class ReadOnlySetOperationContinuousCollection<TSource> : ReadOnlyContinuousCollection<TSource>
+    public abstract class ReadOnlyTwoCollectionOperationContinuousCollection<TSource> : ReadOnlyContinuousCollection<TSource>
     {
         protected IList<TSource> First { get; set; }
         protected IList<TSource> Second { get; set; }
@@ -10,7 +10,7 @@ namespace ContinuousLinq
         internal NotifyCollectionChangedMonitor<TSource> NotifyCollectionChangedMonitorForFirst { get; set; }
         internal NotifyCollectionChangedMonitor<TSource> NotifyCollectionChangedMonitorForSecond { get; set; }
 
-        internal ReadOnlySetOperationContinuousCollection(IList<TSource> first, IList<TSource> second)
+        internal ReadOnlyTwoCollectionOperationContinuousCollection(IList<TSource> first, IList<TSource> second)
         {
             this.First = first;
             this.NotifyCollectionChangedMonitorForFirst = new NotifyCollectionChangedMonitor<TSource>(null, first);

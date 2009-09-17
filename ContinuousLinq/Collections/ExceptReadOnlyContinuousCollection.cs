@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 
 namespace ContinuousLinq.Collections
 {
-    public class ExceptReadOnlyContinuousCollection<TSource> : ReadOnlySetOperationContinuousCollection<TSource>
+    public class ExceptReadOnlyContinuousCollection<TSource> : ReadOnlyTwoCollectionOperationContinuousCollection<TSource>
     {
         public ExceptReadOnlyContinuousCollection(IList<TSource> first, IList<TSource> second) : base(first, second)
         {

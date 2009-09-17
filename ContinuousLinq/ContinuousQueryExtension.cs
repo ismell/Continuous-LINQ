@@ -251,5 +251,24 @@ namespace ContinuousLinq
 
         #endregion
 
+        #region Concat
+
+        public static ReadOnlyContinuousCollection<TSource> Concat<TSource>(this ObservableCollection<TSource> first, ObservableCollection<TSource> second)
+        {
+            return new ConcatReadOnlyContinuousCollection<TSource>(first, second);
+        }
+
+        public static ReadOnlyContinuousCollection<TSource> Concat<TSource>(this ReadOnlyObservableCollection<TSource> first, ReadOnlyObservableCollection<TSource> second)
+        {
+            return new ConcatReadOnlyContinuousCollection<TSource>(first, second);
+        }
+
+        public static ReadOnlyContinuousCollection<TSource> Concat<TSource>(this ReadOnlyContinuousCollection<TSource> first, ReadOnlyContinuousCollection<TSource> second)
+        {
+            return new ConcatReadOnlyContinuousCollection<TSource>(first, second);
+        }
+
+        #endregion
+
     }
 }
