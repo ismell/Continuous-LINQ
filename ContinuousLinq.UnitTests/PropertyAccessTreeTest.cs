@@ -12,10 +12,10 @@ namespace ContinuousLinq.UnitTests
 
         private PropertyInfo _ageProperty;
         private PropertyAccessNode _agePropertyAccessNode;
-        
-        private PropertyInfo _brotherProperty; 
+
+        private PropertyInfo _brotherProperty;
         private PropertyAccessNode _brotherPropertyAccessNode;
-       
+
         [SetUp]
         public void Setup()
         {
@@ -27,7 +27,7 @@ namespace ContinuousLinq.UnitTests
 
         private void InitializeTargetJustAgeAccess()
         {
-            ParameterNode parameterNode = new ParameterNode();
+            ParameterNode parameterNode = new ParameterNode(typeof(Person));
             _target.Children.Add(parameterNode);
 
             _agePropertyAccessNode = new PropertyAccessNode(_ageProperty);
@@ -36,12 +36,12 @@ namespace ContinuousLinq.UnitTests
 
         private void InitializeTargetBrothersAgeAccess()
         {
-            ParameterNode parameterNode = new ParameterNode();
+            ParameterNode parameterNode = new ParameterNode(typeof(Person));
             _target.Children.Add(parameterNode);
 
             _brotherPropertyAccessNode = new PropertyAccessNode(_brotherProperty);
-            parameterNode.Children.Add(_brotherPropertyAccessNode); 
-            
+            parameterNode.Children.Add(_brotherPropertyAccessNode);
+
             _agePropertyAccessNode = new PropertyAccessNode(_ageProperty);
             _brotherPropertyAccessNode.Children.Add(_agePropertyAccessNode);
         }
@@ -67,7 +67,7 @@ namespace ContinuousLinq.UnitTests
             SubscriptionTree subscriptionTree = _target.CreateSubscriptionTree(_person);
 
             Assert.AreEqual(1, subscriptionTree.Children.Count);
-            
+
             SubscriptionNode root = subscriptionTree.Children[0];
             Assert.AreEqual(_person, root.Subject);
             Assert.AreEqual(1, root.Children.Count);
@@ -173,6 +173,20 @@ namespace ContinuousLinq.UnitTests
             _target = new PropertyAccessTree();
 
             Assert.AreEqual(string.Empty, _target.GetParameterPropertyAccessString());
+        }
+
+        [Test]
+        public void DoesEntireTreeSupportINotifyPropertyChanging_OneLevelAndDoesNot_ReturnsFalse()
+        {
+            InitializeTargetJustAgeAccess();
+            Assert.IsFalse(_target.DoesEntireTreeSupportINotifyPropertyChanging);
+        }
+
+        [Test]
+        public void DoesEntireTreeSupportINotifyPropertyChanging_TwoLevelAndDoesNot_ReturnsFalse()
+        {
+            InitializeTargetBrothersAgeAccess();
+            Assert.IsFalse(_target.DoesEntireTreeSupportINotifyPropertyChanging);
         }
 
         [Test]

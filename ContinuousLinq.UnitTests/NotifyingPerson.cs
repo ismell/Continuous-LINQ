@@ -1,53 +1,30 @@
-//#define USE_NOTIFYING_VERSION
-
-
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 
-
 namespace ContinuousLinq.UnitTests
 {
     [DebuggerDisplay("Name: {Name}, Age: {Age}")]
-    public class Person :
-        INotifyPropertyChanged
-#if USE_NOTIFYING_VERSION
-        ,INotifyPropertyChanging
-#endif
+    public class NotifyingPerson : INotifyPropertyChanged, INotifyPropertyChanging
     {
-        #region Fields
-
         private string _name;
         private int _age;
-        private Person _brother;
-        private ObservableCollection<Person> _parents;
-
-        #endregion
-
-        #region Events
+        private NotifyingPerson _brother;
+        private ObservableCollection<NotifyingPerson> _parents;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-#if USE_NOTIFYING_VERSION
         public event PropertyChangingEventHandler PropertyChanging;
-#endif
-        #endregion
 
-        #region Constructors
-
-        public Person()
+        public NotifyingPerson()
         {
         }
 
-        public Person(string name, int age)
+        public NotifyingPerson(string name, int age)
         {
             _name = name;
             _age = age;
         }
 
-        #endregion
-
-        #region Properties
 
         public string Name
         {
@@ -60,10 +37,7 @@ namespace ContinuousLinq.UnitTests
 
                 if (_name == value)
                     return;
-#if USE_NOTIFYING_VERSION
                 OnPropertyChanging("Name");
-#endif
-
                 _name = value;
                 OnPropertyChanged("Name");
             }
@@ -79,51 +53,38 @@ namespace ContinuousLinq.UnitTests
             {
                 if (_age == value)
                     return;
-
-#if USE_NOTIFYING_VERSION
                 OnPropertyChanging("Age");
-#endif
-
                 _age = value;
                 OnPropertyChanged("Age");
             }
         }
 
-        public Person Brother
+        public NotifyingPerson Brother
         {
             get { return _brother; }
             set
             {
                 if (value == _brother)
                     return;
-#if USE_NOTIFYING_VERSION
                 OnPropertyChanging("Brother");
-#endif
-
                 _brother = value;
                 OnPropertyChanged("Brother");
             }
         }
 
-        public ObservableCollection<Person> Parents
+        public ObservableCollection<NotifyingPerson> Parents
         {
             get { return _parents; }
             set
             {
                 if (value == _parents)
                     return;
-#if USE_NOTIFYING_VERSION
                 OnPropertyChanging("Parents");
-#endif
-
                 _parents = value;
                 OnPropertyChanged("Parents");
             }
         }
 
-        #endregion
-
-        #region Methods
 
         private void OnPropertyChanged(string property)
         {
@@ -133,8 +94,6 @@ namespace ContinuousLinq.UnitTests
             this.PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
 
-#if USE_NOTIFYING_VERSION
-
         private void OnPropertyChanging(string property)
         {
             if (this.PropertyChanging == null)
@@ -142,7 +101,6 @@ namespace ContinuousLinq.UnitTests
 
             this.PropertyChanging(this, new PropertyChangingEventArgs(property));
         }
-#endif
 
         public ReadOnlyContinuousCollection<Person> GetPeopleWithSameAge(ObservableCollection<Person> people)
         {
@@ -170,6 +128,5 @@ namespace ContinuousLinq.UnitTests
             return this.Age; ;
         }
 
-        #endregion
     }
 }

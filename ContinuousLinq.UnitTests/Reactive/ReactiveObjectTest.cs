@@ -115,6 +115,7 @@ namespace ContinuousLinq.UnitTests.Reactive
             Assert.AreEqual(2, _target.OnBrotherAgeChangedCalledCount);
         }
 
+
         //[Test]
         ////[ExpectedException(typeof(InvalidProgramException))]
         //public void ConstructDerivedClass_DerivedClassMethodSignatureMissingCorrectArguments_ThrowsException()
@@ -129,7 +130,154 @@ namespace ContinuousLinq.UnitTests.Reactive
         //    }
         //}
 
-        private class ReactivePerson : ReactiveObject
+        [Test]
+        public void DependsOn_ReactiveBrotherSetToNewValue_OnReactiveBrotherChangedCalledOnce()
+        {
+            _target.ReactiveBrother = new ReactivePerson();
+            Assert.AreEqual(1, _target.OnReactiveBrotherChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_ReactiveBrotherSetToNewValue_OnReactiveBrotherAgeChangedCalledOnce()
+        {
+            _target.ReactiveBrother = new ReactivePerson();
+            Assert.AreEqual(1, _target.OnReactiveBrotherAgeChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_ReactiveBrotherAgeSetToNewValue_OnReactiveBrotherAgeChangedCalledTwice()
+        {
+            _target.ReactiveBrother = new ReactivePerson();
+            _target.ReactiveBrother.Age = 10;
+            Assert.AreEqual(2, _target.OnReactiveBrotherAgeChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_ReactiveBrotherAgeSetToNewValue_OnReactiveBrotherChangedCalledOnce()
+        {
+            _target.ReactiveBrother = new ReactivePerson();
+            _target.ReactiveBrother.Age = 10;
+            Assert.AreEqual(1, _target.OnReactiveBrotherChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_ReactiveBrotherSetToNewValueThenBackToNull_OnReactiveBrotherChangedCalledTwice()
+        {
+            _target.ReactiveBrother = new ReactivePerson();
+            _target.ReactiveBrother = null;
+            Assert.AreEqual(2, _target.OnReactiveBrotherChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_ReactiveBrotherSetToNewValueThenBackToNull_OnReactiveBrotherAgeChangedCalledTwice()
+        {
+            _target.ReactiveBrother = new ReactivePerson();
+            _target.ReactiveBrother = null;
+            Assert.AreEqual(2, _target.OnReactiveBrotherAgeChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_ReactiveBrotherSetToNewValueThenBackToNullAndAgeChangedAfterward_DoesNotTriggerAnyDependsOnMethods()
+        {
+            ReactivePerson ReactiveBrother = new ReactivePerson();
+            _target.ReactiveBrother = ReactiveBrother;
+            _target.ReactiveBrother = null;
+            ReactiveBrother.Age = 10;
+            Assert.AreEqual(2, _target.OnReactiveBrotherChangedCalledCount);
+            Assert.AreEqual(2, _target.OnReactiveBrotherAgeChangedCalledCount);
+        }
+
+        [Test]
+        public void DependsOn_TwoLevelTreeWithVaryingTypes_FiresUpdatesProperly()
+        {
+            var root = new ReactiveType0();
+            var child = new ReactiveType1();
+            var person = new ReactivePerson();
+
+            root.ChildReactiveType1 = child;
+            child.ChildReactivePerson = person;
+            person.Name = "Jim";
+            //child.Name = "Bob";
+            
+            Assert.AreEqual(3, root.Updates);
+        }
+
+        public class ReactiveType0 : ReactiveObject
+        {
+            private string _name;
+            public string Name
+            {
+                get { return _name; }
+                set
+                {
+                    if (value == _name)
+                        return;
+
+                    OnPropertyChanging("Name");
+                    _name = value;
+                    OnPropertyChanged("Name");
+                }
+            }
+
+            private ReactiveType1 _childReactiveType1;
+            public ReactiveType1 ChildReactiveType1
+            {
+                get { return _childReactiveType1; }
+                set
+                {
+                    if (value == _childReactiveType1)
+                        return;
+
+                    OnPropertyChanging("ChildReactiveType1");
+                    _childReactiveType1 = value;
+                    OnPropertyChanged("ChildReactiveType1");
+                }
+            }
+
+            public int Updates { get; set; }
+
+            static ReactiveType0()
+            {
+                var dependsOn = Register<ReactiveType0>();
+                dependsOn.Call(obj => obj.Updates++)
+                    .OnChanged(obj => obj.ChildReactiveType1.ChildReactivePerson.Name);
+            }
+        }
+
+        public class ReactiveType1 : ReactiveObject
+        {
+            private string _name;
+            public string Name
+            {
+                get { return _name; }
+                set
+                {
+                    if (value == _name)
+                        return;
+
+                    OnPropertyChanging("Name");
+                    _name = value;
+                    OnPropertyChanged("Name");
+                }
+            }
+
+            private ReactivePerson _childReactivePerson;
+            public ReactivePerson ChildReactivePerson
+            {
+                get { return _childReactivePerson; }
+                set
+                {
+                    if (value == _childReactivePerson)
+                        return;
+
+                    OnPropertyChanging("ChildReactivePerson");
+                    _childReactivePerson = value;
+                    OnPropertyChanged("ChildReactivePerson");
+                }
+            }
+        }
+
+        public class ReactivePerson : ReactiveObject
         {
             private int _age;
             private string _name;
@@ -142,6 +290,7 @@ namespace ContinuousLinq.UnitTests.Reactive
                     if (value == _name)
                         return;
 
+                    OnPropertyChanging("Name");
                     _name = value;
                     OnPropertyChanged("Name");
                 }
@@ -154,7 +303,7 @@ namespace ContinuousLinq.UnitTests.Reactive
                 {
                     if (value == _age)
                         return;
-
+                    OnPropertyChanging("Age");
                     _age = value;
                     OnPropertyChanged("Age");
                 }
@@ -172,6 +321,12 @@ namespace ContinuousLinq.UnitTests.Reactive
 
                 dependsOn.Call(obj => obj.OnBrotherAgeChanged())
                     .OnChanged(obj => obj.Brother.Age);
+
+                dependsOn.Call(obj => obj.OnReactiveBrotherChanged())
+                    .OnChanged(obj => obj.ReactiveBrother);
+
+                dependsOn.Call(obj => obj.OnReactiveBrotherAgeChanged())
+                    .OnChanged(obj => obj.ReactiveBrother.Age);
             }
 
             private Person _brother;
@@ -183,9 +338,23 @@ namespace ContinuousLinq.UnitTests.Reactive
                     if (value == _brother)
                         return;
 
+                    OnPropertyChanging("Brother");
                     _brother = value;
-
                     OnPropertyChanged("Brother");
+                }
+            }
+
+            private ReactivePerson _reactiveBrother;
+            public ReactivePerson ReactiveBrother
+            {
+                get { return _reactiveBrother; }
+                set
+                {
+                    if (value == _reactiveBrother)
+                        return;
+                    OnPropertyChanging("ReactiveBrother");
+                    _reactiveBrother = value;
+                    OnPropertyChanged("ReactiveBrother");
                 }
             }
 
@@ -205,6 +374,18 @@ namespace ContinuousLinq.UnitTests.Reactive
             private void OnBrotherAgeChanged()
             {
                 this.OnBrotherAgeChangedCalledCount++;
+            }
+
+            public int OnReactiveBrotherChangedCalledCount { get; set; }
+            private void OnReactiveBrotherChanged()
+            {
+                this.OnReactiveBrotherChangedCalledCount++;
+            }
+
+            public int OnReactiveBrotherAgeChangedCalledCount { get; set; }
+            private void OnReactiveBrotherAgeChanged()
+            {
+                this.OnReactiveBrotherAgeChangedCalledCount++;
             }
         }
 

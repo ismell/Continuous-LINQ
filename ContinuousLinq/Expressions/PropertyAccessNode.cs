@@ -15,6 +15,13 @@ namespace ContinuousLinq
     {
         public PropertyInfo Property { get; private set; }
 
+        public string PropertyName { get { return this.Property.Name; } }
+
+        public override Type Type
+        {
+            get { return this.Property.PropertyType; }
+        }
+
         private DynamicProperty _dynamicProperty;
 
         public PropertyAccessNode(PropertyInfo property)
@@ -45,7 +52,7 @@ namespace ContinuousLinq
 
         public object GetPropertyValue(object obj)
         {
-            if(_dynamicProperty == null)
+            if (_dynamicProperty == null)
                 _dynamicProperty = DynamicProperty.Create(this.Property);
 
             return _dynamicProperty.GetValue(obj);

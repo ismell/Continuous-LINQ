@@ -12,14 +12,36 @@ namespace ContinuousLinq
 {
     internal abstract class PropertyAccessTreeNode
     {
+
+        public abstract bool IsRedundantVersion(PropertyAccessTreeNode other);
+        public abstract Type Type { get; }
+        
         public List<PropertyAccessTreeNode> Children { get; set; }
+
+        public bool DoesEntireSubtreeSupportINotifyPropertyChanging
+        {
+            get
+            {
+                if (this.Children.Count == 0)
+                    return true;
+
+                if (!typeof(INotifyPropertyChanging).IsAssignableFrom(this.Type))
+                    return false;
+
+                for (int i = 0; i < this.Children.Count; i++)
+                {
+                    if (!this.Children[i].DoesEntireSubtreeSupportINotifyPropertyChanging)
+                        return false;
+                }
+
+                return true;
+            }
+        }
 
         public PropertyAccessTreeNode()
         {
             this.Children = new List<PropertyAccessTreeNode>();
         }
-
-        public abstract bool IsRedundantVersion(PropertyAccessTreeNode other);
 
         public abstract SubscriptionNode CreateSubscription(INotifyPropertyChanged parent);
 

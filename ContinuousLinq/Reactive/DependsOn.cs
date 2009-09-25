@@ -8,7 +8,7 @@ namespace ContinuousLinq.Reactive
 {
     internal interface IDependsOn
     {
-        void CreateSubscriptions(INotifyPropertyChanged subject, List<SubscriptionTree> listToAppendTo);
+        void CreateSubscriptions(INotifyPropertyChanged subject, ref List<SubscriptionTree> listToAppendTo);
     }
 
     public class DependsOn<T> : IDependsOn where T : class, INotifyPropertyChanged
@@ -30,11 +30,11 @@ namespace ContinuousLinq.Reactive
 
         #region Methods
 
-        public void CreateSubscriptions(INotifyPropertyChanged subject, List<SubscriptionTree> listToAppendTo)
+        public void CreateSubscriptions(INotifyPropertyChanged subject, ref List<SubscriptionTree> listToAppendTo)
         {
             foreach (var dependsOnMethod in this.Methods)
             {
-                dependsOnMethod.CreateSubscriptions(subject, listToAppendTo);
+                dependsOnMethod.CreateSubscriptions(subject, ref listToAppendTo);
             }
         }
 

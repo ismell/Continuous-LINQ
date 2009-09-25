@@ -9,6 +9,70 @@ using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq.Collections
 {
+    public class CollectionFlatteningSelectManyReadOnlyContinuousCollection<TSource, TCollection, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult>
+    {
+        internal Func<TSource, IEnumerable<TCollection>> CollectionSelector { get; set; }
+
+        public CollectionFlatteningSelectManyReadOnlyContinuousCollection(
+            IList<TSource> source,
+            Expression<Func<TSource, IEnumerable<TCollection>>> collectionSelector,
+            Expression<Func<TSource, TCollection, TResult>> resultSelector) :
+            base(source, ExpressionPropertyAnalyzer.Analyze(collectionSelector))
+        {
+            this.CollectionSelector = collectionSelector.CachedCompile();
+
+            //this.CurrentValues = new Dictionary<TSource, IEnumerable<TResult>>(this.Source.Count);
+            //RecordCurrentValues(this.Source);
+
+            this.NotifyCollectionChangedMonitor.Add += OnAdd;
+            this.NotifyCollectionChangedMonitor.Remove += OnRemove;
+            this.NotifyCollectionChangedMonitor.Reset += OnReset;
+            this.NotifyCollectionChangedMonitor.Move += OnMove;
+            this.NotifyCollectionChangedMonitor.Replace += OnReplace;
+            this.NotifyCollectionChangedMonitor.ItemChanged += OnItemChanged;
+        }
+
+        public override int Count
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override TResult this[int index]
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set { throw new InvalidOperationException(); }
+        }
+
+        void OnItemChanged(INotifyPropertyChanged sender)
+        {
+            TSource senderAsTSource = (TSource)sender;
+        }
+
+        void OnAdd(int index, IEnumerable<TSource> newItems)
+        {
+        }
+
+        void OnRemove(int index, IEnumerable<TSource> oldItems)
+        {
+        }
+
+        void OnReset()
+        {
+        }
+
+        void OnMove(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        {
+        }
+
+        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        {
+        }
+
+    }
+
     public class SelectManyReadOnlyContinuousCollection<TSource, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult> 
     {
         internal Func<TSource, IEnumerable<TResult>> SelectorFunction { get; set; }        

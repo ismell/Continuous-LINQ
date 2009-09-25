@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace ContinuousLinq.UnitTests
 {
+
     [TestFixture]
     public class SelectTest
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -51,6 +51,34 @@ namespace ContinuousLinq
             this ReadOnlyContinuousCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
         {
             return new SelectManyReadOnlyContinuousCollection<TSource, TResult>(source, manySelector);
+        }
+
+        //public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TCollection, TResult>(
+        //    this ObservableCollection<TSource> source,
+        //    Expression<Func<TSource, ObservableCollection<TCollection>>> collectionSelector,
+        //    Expression<Func<TSource, TCollection, TResult>> resultSelector)
+        //{
+        //    //return new CollectionFlatteningSelectManyReadOnlyContinuousCollection<TSource, TCollection, TResult>(source, collectionSelector, resultSelector);
+        //    throw new Exception();
+        //}
+
+        #endregion
+
+        #region GroupJoin
+
+        public static ReadOnlyContinuousCollection<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
+            this ObservableCollection<TOuter> outer,
+            IList<TInner> inner,
+            Expression<Func<TOuter, TKey>> outerKeySelector,
+            Expression<Func<TInner, TKey>> innerKeySelector,
+            Expression<Func<TOuter, ReadOnlyContinuousCollection<TInner>, TResult>> resultSelector)
+        {
+            return new GroupJoinReadOnlyContinuousCollection<TOuter, TInner, TKey, TResult>(
+                outer,
+                inner,
+                outerKeySelector,
+                innerKeySelector,
+                resultSelector);
         }
 
         #endregion
@@ -144,7 +172,7 @@ namespace ContinuousLinq
 
         #region ThenBy
 
-        public static ReadOnlyContinuousCollection<TSource> ThenBy<TSource, TKey>(      
+        public static ReadOnlyContinuousCollection<TSource> ThenBy<TSource, TKey>(
             this OrderedReadOnlyContinuousCollection<TSource> source,
             Expression<Func<TSource, TKey>> keySelector)
             where TSource : INotifyPropertyChanged
@@ -152,7 +180,7 @@ namespace ContinuousLinq
         {
             return new ThenByReadOnlyContinuousCollection<TSource, TKey>(source, keySelector, false);
         }
-        
+
         #endregion
 
         #region ThenByDescending
@@ -192,8 +220,8 @@ namespace ContinuousLinq
 
         #region GroupBy
         public static GroupingReadOnlyContinuousCollection<TKey, TSource> GroupBy<TKey, TSource>(
-            this ObservableCollection<TSource> source, 
-            Expression<Func<TSource, TKey>> keySelector) 
+            this ObservableCollection<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector)
             where TSource : INotifyPropertyChanged
         {
             return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);
@@ -201,7 +229,7 @@ namespace ContinuousLinq
 
         public static GroupingReadOnlyContinuousCollection<TKey, TSource> GroupBy<TKey, TSource>(
             this ReadOnlyObservableCollection<TSource> source,
-            Expression<Func<TSource, TKey>> keySelector) 
+            Expression<Func<TSource, TKey>> keySelector)
             where TSource : INotifyPropertyChanged
         {
             return new GroupingReadOnlyContinuousCollection<TKey, TSource>(source, keySelector);

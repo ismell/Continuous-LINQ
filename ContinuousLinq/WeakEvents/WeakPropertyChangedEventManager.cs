@@ -6,48 +6,67 @@ namespace ContinuousLinq.WeakEvents
 {
     public static class WeakPropertyChangedEventManager
     {
-        internal static WeakDictionary<INotifyPropertyChanged, WeakReference<WeakPropertyBridge>> SourceToBridgeTable { get; private set; }
-        
+        internal static WeakDictionary<INotifyPropertyChanged, WeakPropertyBridge> SourceToBridgeTable { get; private set; }
+
         static WeakPropertyChangedEventManager()
         {
-            SourceToBridgeTable = new WeakDictionary<INotifyPropertyChanged, WeakReference<WeakPropertyBridge>>();
+            SourceToBridgeTable = new WeakDictionary<INotifyPropertyChanged, WeakPropertyBridge>();
         }
 
         public static void Register<TListener>(
             INotifyPropertyChanged source,
             string propertyName,
             TListener listener,
-            Action<TListener, object, PropertyChangedEventArgs> forwardingAction)
+            Action<TListener, object, PropertyChangedEventArgs> propertyChangedCallback)
         {
-            WeakReference<WeakPropertyBridge> bridgeRef;
             WeakPropertyBridge bridge;
+            bridge = GetBridgeForSource(source);
 
-            if (!SourceToBridgeTable.TryGetValue(source, out bridgeRef))
-            {
-                AddNewPropertyBridge(source, out bridgeRef, out bridge);
-            }
-            else
-            {
-                bridge = bridgeRef.Target;
-
-                //Can happen if the GC does it's magic 
-                if (bridge == null)
-                {
-                    AddNewPropertyBridge(source, out bridgeRef, out bridge);
-                }
-            }
-            
-            bridge.AddListener(propertyName, listener, forwardingAction);
+            bridge.AddListener(propertyName, listener, propertyChangedCallback);
         }
 
-        private static void AddNewPropertyBridge(
+        public static void Register<TListener>(
             INotifyPropertyChanged source,
-            out WeakReference<WeakPropertyBridge> bridgeRef,
-            out WeakPropertyBridge bridge)
+            object rootSource, 
+            string propertyName,
+            TListener listener,
+            Action<TListener, object, object, PropertyChangingEventArgs> propertyChangingCallback,
+            Action<TListener, object, object, PropertyChangedEventArgs> propertyChangedCallback)
         {
-            bridge = new WeakPropertyBridge(source);
-            bridgeRef = WeakReference<WeakPropertyBridge>.Create(bridge);
-            SourceToBridgeTable[source] = bridgeRef;
+            WeakPropertyBridge bridge;
+            bridge = GetBridgeForSource(source);
+
+            bridge.AddListener(
+                propertyName, 
+                listener, 
+                rootSource,
+                propertyChangingCallback,
+                propertyChangedCallback);
+        }
+
+        private static WeakPropertyBridge GetBridgeForSource(INotifyPropertyChanged source)
+        {
+            WeakPropertyBridge bridge;
+
+            if (!SourceToBridgeTable.TryGetValue(source, out bridge))
+            {
+                bridge = AddNewPropertyBridgeToTable(source);
+            }
+
+            //Can happen if the GC does it's magic
+            if (bridge == null)
+            {
+                bridge = AddNewPropertyBridgeToTable(source);
+            }
+            return bridge;
+        }
+
+        private static WeakPropertyBridge AddNewPropertyBridgeToTable(
+            INotifyPropertyChanged source)
+        {
+            WeakPropertyBridge bridge = new WeakPropertyBridge(source);
+            SourceToBridgeTable[source] = bridge;
+            return bridge;
         }
 
         private static void OnAllListenersForSourceUnsubscribed(INotifyPropertyChanged source)
@@ -57,14 +76,13 @@ namespace ContinuousLinq.WeakEvents
 
         public static void Unregister(INotifyPropertyChanged source, string propertyName, object listener)
         {
-            WeakReference<WeakPropertyBridge> bridgeRef;
+            WeakPropertyBridge bridge;
 
-            if (!SourceToBridgeTable.TryGetValue(source, out bridgeRef))
+            if (!SourceToBridgeTable.TryGetValue(source, out bridge))
             {
                 return;
             }
 
-            WeakPropertyBridge bridge = bridgeRef.Target;
             if (bridge == null)
             {
                 SourceToBridgeTable.Remove(source);

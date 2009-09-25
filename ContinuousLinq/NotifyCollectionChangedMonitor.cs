@@ -13,18 +13,14 @@ namespace ContinuousLinq
 {
     public class NotifyCollectionChangedMonitor<T> : INotifyCollectionChanged
     {
+        private IPropertyAccessTreeSubscriber<NotifyCollectionChangedMonitor<T>> _propertyChangedSubscription;
         protected readonly IList<T> _input;
 
         public PropertyAccessTree PropertyAccessTree { get; set; }
 
         public bool IsMonitoringChildProperties
         {
-            get 
-            { 
-                return this.PropertyAccessTree != null && 
-                    this.PropertyAccessTree.Children.Count != 0 &&
-                    this.PropertyAccessTree.Children[0].Children.Count > 0; 
-            }
+            get { return this.PropertyAccessTree != null && this.PropertyAccessTree.IsMonitoringChildProperties; }
         }
 
         internal Dictionary<T, SubscriptionTree> Subscriptions { get; set; }
@@ -59,8 +55,10 @@ namespace ContinuousLinq
             _input = input;
 
             this.PropertyAccessTree = propertyAccessTree;
-            this.Subscriptions = new Dictionary<T, SubscriptionTree>();
+
             this.ReferenceCountTracker = new ReferenceCountTracker<T>();
+
+            SetupPropertyChangeSubscription();
 
             SubscribeToItems(_input);
 
@@ -70,62 +68,101 @@ namespace ContinuousLinq
                 (me, sender, args) => me.OnCollectionChanged(sender, args));
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs ea)
-        {
-            ReceiveCollectionChangedEvent(ea);
-        }
-        private void SubscribeToItems(IEnumerable<T> items)
+        #region PropertyChangeSubscriptions
+        
+        private void SetupPropertyChangeSubscription()
         {
             if (this.PropertyAccessTree == null)
                 return;
 
-            foreach (T item in items)
+            if (this.PropertyAccessTree.DoesEntireTreeSupportINotifyPropertyChanging)
             {
-                SubscribeToItem(item);
+                _propertyChangedSubscription = this.PropertyAccessTree.CreateCallbackSubscription<NotifyCollectionChangedMonitor<T>>(OnAnyPropertyChange);
+            }
+            else
+            {
+                this.Subscriptions = new Dictionary<T, SubscriptionTree>();
+            }
+        }
+
+        private void SubscribeToItems(IList items)
+        {
+            if (this.PropertyAccessTree == null)
+                return;
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                SubscribeToItem((T)items[i]);
+            }
+        }
+
+        private void SubscribeToItems(IList<T> items)
+        {
+            if (this.PropertyAccessTree == null)
+                return;
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                SubscribeToItem(items[i]);
             }
         }
 
         private void SubscribeToItem(T item)
         {
-            if (this.ReferenceCountTracker.Add(item))
+            bool wasFirstTimeAddedToCollection = this.ReferenceCountTracker.Add(item);
+            if (!wasFirstTimeAddedToCollection || !this.IsMonitoringChildProperties)
+                return;
+            
+            if (_propertyChangedSubscription != null)
             {
-                if (this.IsMonitoringChildProperties)
-                {
-                    SubscriptionTree subscriptionTree = this.PropertyAccessTree.CreateSubscriptionTree((INotifyPropertyChanged)item);
-                    subscriptionTree.PropertyChanged += OnAnyPropertyChangeInSubscriptionTree;
-                    this.Subscriptions.Add(item, subscriptionTree);
-                }
+                _propertyChangedSubscription.SubscribeToChanges((INotifyPropertyChanged)item, this);
             }
+            else
+            {
+                SubscriptionTree subscriptionTree = this.PropertyAccessTree.CreateSubscriptionTree((INotifyPropertyChanged)item);
+                subscriptionTree.PropertyChanged += OnAnyPropertyChangeInSubscriptionTree;
+                this.Subscriptions.Add(item, subscriptionTree);
+            }
+        }
+
+        static void OnAnyPropertyChange(NotifyCollectionChangedMonitor<T> monitor, object itemThatChanged)
+        {
+            if (monitor.ItemChanged == null)
+                return;
+
+            monitor.ItemChanged((INotifyPropertyChanged)itemThatChanged);
         }
 
         void OnAnyPropertyChangeInSubscriptionTree(SubscriptionTree sender)
         {
-            if (this.ItemChanged == null)
-                return;
-
-            this.ItemChanged(sender.Parameter);
+            OnAnyPropertyChange(this, sender.Parameter);
         }
 
-        private void UnsubscribeFromItems(IEnumerable<T> items)
+        private void UnsubscribeFromItems(IList items)
         {
             if (this.PropertyAccessTree == null)
                 return;
 
-            foreach (T item in items)
+            for (int i = 0; i < items.Count; i++)
             {
-                UnsubscribeFromItem(item);
+                UnsubscribeFromItem((T)items[i]);
             }
         }
 
         private void UnsubscribeFromItem(T item)
         {
-            if (this.ReferenceCountTracker.Remove(item))
+            bool wasLastInstanceOfItemRemovedFromCollection = this.ReferenceCountTracker.Remove(item);
+            if (!wasLastInstanceOfItemRemovedFromCollection || !this.IsMonitoringChildProperties)
+                return;
+
+            if (_propertyChangedSubscription != null)
             {
-                if (this.IsMonitoringChildProperties)
-                {
-                    this.Subscriptions[item].PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
-                    this.Subscriptions.Remove(item);
-                }
+                _propertyChangedSubscription.UnsubscribeFromChanges((INotifyPropertyChanged)item, this);
+            }
+            else
+            {
+                this.Subscriptions[item].PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                this.Subscriptions.Remove(item);
             }
         }
 
@@ -136,31 +173,29 @@ namespace ContinuousLinq
 
             if (this.IsMonitoringChildProperties)
             {
-                foreach (SubscriptionTree subscriptionTree in this.Subscriptions.Values)
+                if (_propertyChangedSubscription != null)
                 {
-                    subscriptionTree.PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                    foreach (T item in this.ReferenceCountTracker.Items)
+                    {
+                        _propertyChangedSubscription.UnsubscribeFromChanges((INotifyPropertyChanged)item, this);
+                    }
+                }
+                else
+                {
+                    foreach (var subscriptionTree in this.Subscriptions.Values)
+                    {
+                        subscriptionTree.PropertyChanged -= OnAnyPropertyChangeInSubscriptionTree;
+                    }
                 }
             }
-            this.Subscriptions.Clear();
             this.ReferenceCountTracker.Clear();
         }
 
-        private void SubscribeToNewItems(IList items)
+        #endregion
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs ea)
         {
-            if (this.PropertyAccessTree == null)
-                return;
-
-            IEnumerable<T> newItems = items.Cast<T>();
-            SubscribeToItems(newItems);
-        }
-
-        private void UnsubscribeFromOldItems(IList items)
-        {
-            if (this.PropertyAccessTree == null)
-                return;
-
-            IEnumerable<T> oldItems = items.Cast<T>();
-            UnsubscribeFromItems(oldItems);
+            ReceiveCollectionChangedEvent(ea);
         }
 
         private void ReceiveCollectionChangedEvent(EventArgs e)
@@ -169,22 +204,22 @@ namespace ContinuousLinq
             switch (collectionArgs.Action)
             {
                 case NotifyCollectionChangedAction.Remove:
-                    UnsubscribeFromOldItems(collectionArgs.OldItems);
+                    UnsubscribeFromItems(collectionArgs.OldItems);
                     if (Remove != null)
                     {
                         Remove(collectionArgs.OldStartingIndex, collectionArgs.OldItems.Cast<T>());
                     }
                     break;
                 case NotifyCollectionChangedAction.Add:
-                    SubscribeToNewItems(collectionArgs.NewItems);
+                    SubscribeToItems(collectionArgs.NewItems);
                     if (Add != null)
                     {
                         Add(collectionArgs.NewStartingIndex, collectionArgs.NewItems.Cast<T>());
                     }
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    UnsubscribeFromOldItems(collectionArgs.OldItems);
-                    SubscribeToNewItems(collectionArgs.NewItems);
+                    UnsubscribeFromItems(collectionArgs.OldItems);
+                    SubscribeToItems(collectionArgs.NewItems);
                     if (Replace != null)
                     {
                         Replace(collectionArgs.OldStartingIndex,

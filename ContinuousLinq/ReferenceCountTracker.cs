@@ -28,6 +28,11 @@ namespace ContinuousLinq
             }
         }
 
+        public IEnumerable<TSource> Items
+        {
+            get { return this.ReferenceCounts.Keys; }
+        }
+
         public int this[TSource item]
         {
             get { return this.ReferenceCounts[item]; }

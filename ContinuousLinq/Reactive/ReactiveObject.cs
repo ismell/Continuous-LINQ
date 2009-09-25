@@ -8,7 +8,7 @@ using System.Windows.Threading;
 
 namespace ContinuousLinq.Reactive
 {
-    public interface IReactiveObject : INotifyPropertyChanged
+    public interface IReactiveObject : INotifyPropertyChanged, INotifyPropertyChanging
     {
     }
 
@@ -17,7 +17,9 @@ namespace ContinuousLinq.Reactive
         #region Events & Delegates
 
         public event PropertyChangedEventHandler PropertyChanged;
-
+        
+        public event PropertyChangingEventHandler PropertyChanging;
+        
         #endregion
 
         #region Constructors
@@ -30,7 +32,6 @@ namespace ContinuousLinq.Reactive
         protected ReactiveObject()
         {
             this.Dispatcher = Dispatcher.CurrentDispatcher;
-            this.SubscriptionTrees = new List<SubscriptionTree>();
 
             Type type = this.GetType();
 
@@ -43,7 +44,7 @@ namespace ContinuousLinq.Reactive
 
         private static Dictionary<Type, IDependsOn> DependsOn { get; set; }
 
-        private List<SubscriptionTree> SubscriptionTrees { get; set; }
+        private List<SubscriptionTree> _subscriptionTrees;
 
         public bool SuppressPropertyChanged { get; set; }
 
@@ -63,7 +64,7 @@ namespace ContinuousLinq.Reactive
             IDependsOn dependsOn;
             if (DependsOn.TryGetValue(type, out dependsOn))
             {
-                dependsOn.CreateSubscriptions(this, this.SubscriptionTrees);
+                dependsOn.CreateSubscriptions(this, ref _subscriptionTrees);
             }
         }
 
@@ -90,9 +91,15 @@ namespace ContinuousLinq.Reactive
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        [DebuggerNonUserCode]
+        protected void OnPropertyChanging(string propertyName)
+        {
+            if (PropertyChanging == null || this.SuppressPropertyChanged)
+                return;
+
+            PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+        }
+
         #endregion
     }
-
-
-
 }

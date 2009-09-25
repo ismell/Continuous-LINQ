@@ -8,28 +8,36 @@ namespace ContinuousLinq.WeakEvents
     public class WeakPropertyBridge
     {
         private INotifyPropertyChanged _source;
-        public HybridDictionary Callbacks { get; set; }
+        private HybridDictionary _propertyNameToCallbacks;
 
-        public bool HasActiveListeners 
+        public bool HasActiveListeners
         {
-            get { return this.Callbacks.Count > 0; } 
+            get { return _propertyNameToCallbacks.Count > 0; }
         }
 
         public WeakPropertyBridge(INotifyPropertyChanged source)
         {
             _source = source;
-            this.Callbacks = new HybridDictionary();
+            _propertyNameToCallbacks = new HybridDictionary();
 
             source.PropertyChanged += OnPropertyChanged;
+
+            INotifyPropertyChanging sourceAsINotifyPropertyChanging = source as INotifyPropertyChanging;
+            if (sourceAsINotifyPropertyChanging != null)
+            {
+                sourceAsINotifyPropertyChanging.PropertyChanging += OnPropertyChanging;
+            }
+        }
+
+        public WeakPropertyBridge(INotifyPropertyChanged rootSource, INotifyPropertyChanged source)
+            : this(source)
+        {
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            LinkedList<WeakPropertyChangedCallback> callbacksForProperty;
-
-            callbacksForProperty = (LinkedList<WeakPropertyChangedCallback>)this.Callbacks[args.PropertyName];
-            //if (!this.Callbacks.TryGetValue(args.PropertyName, out callbacksForProperty))
-            if(callbacksForProperty == null)
+            var callbacksForProperty = LookupCallbacksForProperty(args.PropertyName);
+            if (callbacksForProperty == null)
             {
                 return;
             }
@@ -42,13 +50,10 @@ namespace ContinuousLinq.WeakEvents
             {
                 var nextNode = currentNode.Next;
 
-                WeakPropertyChangedCallback callback = currentNode.Value;
+                IWeakEventCallback<PropertyChangedEventArgs> callback = (IWeakEventCallback<PropertyChangedEventArgs>)currentNode.Value;
                 object listener = callback.ListenerReference.Target;
-                if (listener != null)
-                {
-                    callback.Callback(listener, sender, args);
-                }
-                else
+
+                if (!callback.Invoke(sender, args))
                 {
                     callbacksForProperty.Remove(currentNode);
                 }
@@ -59,11 +64,11 @@ namespace ContinuousLinq.WeakEvents
             CheckForUnsubscribe(callbacksForProperty, args.PropertyName);
         }
 
-        private void CheckForUnsubscribe(LinkedList<WeakPropertyChangedCallback> callbacksForProperty, string propertyName)
+        private void CheckForUnsubscribe(LinkedList<IWeakCallback> callbacksForProperty, string propertyName)
         {
             if (callbacksForProperty.Count == 0)
             {
-                this.Callbacks.Remove(propertyName);
+                _propertyNameToCallbacks.Remove(propertyName);
             }
 
             UnsubscribeIfNoMoreListeners();
@@ -75,6 +80,12 @@ namespace ContinuousLinq.WeakEvents
             {
                 WeakPropertyChangedEventManager.UnregisterSource(_source);
                 _source.PropertyChanged -= OnPropertyChanged;
+
+                INotifyPropertyChanging sourceAsINotifyPropertyChanging = _source as INotifyPropertyChanging;
+                if (sourceAsINotifyPropertyChanging != null)
+                {
+                    sourceAsINotifyPropertyChanging.PropertyChanging -= OnPropertyChanging;
+                }
             }
         }
 
@@ -82,11 +93,8 @@ namespace ContinuousLinq.WeakEvents
             object listener,
             string propertyName)
         {
-            LinkedList<WeakPropertyChangedCallback> callbacksForProperty;
+            var callbacksForProperty = LookupCallbacksForProperty(propertyName);
 
-            callbacksForProperty = (LinkedList<WeakPropertyChangedCallback>)this.Callbacks[propertyName];
-
-            //if (!this.Callbacks.TryGetValue(propertyName, out callbacksForProperty))
             if (callbacksForProperty == null)
             {
                 return;
@@ -97,7 +105,7 @@ namespace ContinuousLinq.WeakEvents
             {
                 var nextNode = currentNode.Next;
 
-                WeakPropertyChangedCallback callback = currentNode.Value;
+                IWeakEventCallback<PropertyChangedEventArgs> callback = (IWeakEventCallback<PropertyChangedEventArgs>)currentNode.Value;
                 object listenerForCallback = callback.ListenerReference.Target;
 
                 if (listenerForCallback == null ||
@@ -112,26 +120,79 @@ namespace ContinuousLinq.WeakEvents
             CheckForUnsubscribe(callbacksForProperty, propertyName);
         }
 
+        private void OnPropertyChanging(object sender, PropertyChangingEventArgs args)
+        {
+            var callbacksForProperty = LookupCallbacksForProperty(args.PropertyName);
+            if (callbacksForProperty == null)
+            {
+                return;
+            }
+
+            var currentNode = callbacksForProperty.First;
+            while (currentNode != null)
+            {
+                var nextNode = currentNode.Next;
+
+                IWeakEventCallback<PropertyChangingEventArgs> callback = currentNode.Value as IWeakEventCallback<PropertyChangingEventArgs>;
+                if (callback != null)
+                {
+                    object listener = callback.ListenerReference.Target;
+
+                    if (!callback.Invoke(sender, args))
+                    {
+                        callbacksForProperty.Remove(currentNode);
+                    }
+                }
+                currentNode = nextNode;
+            }
+        }
+
         public void AddListener<TListener>(
             string propertyName,
             TListener listener,
-            Action<TListener, object, PropertyChangedEventArgs> forwardingAction)
+            Action<TListener, object, PropertyChangedEventArgs> propertyChangedCallback)
         {
-            LinkedList<WeakPropertyChangedCallback> callbacks;
+            var callbacksForProperty = LookupOrCreateCallbacksForProperty(propertyName);
+            var callback = new WeakEventCallback<TListener, PropertyChangedEventArgs>(listener, propertyChangedCallback);
+            callbacksForProperty.AddLast(callback);
+        }
 
-            callbacks = (LinkedList<WeakPropertyChangedCallback>)this.Callbacks[propertyName];
+        public void AddListener<TListener>(
+            string propertyName,
+            TListener listener,
+            object rootSource,
+            Action<TListener, object, object, PropertyChangingEventArgs> propertyChangingCallback,
+            Action<TListener, object, object, PropertyChangedEventArgs> propertyChangedCallback)
+        {
+            var callbacksForProperty = LookupOrCreateCallbacksForProperty(propertyName);
 
-            //if (!this.Callbacks.TryGetValue(propertyName, out callbacks))
-            if (callbacks == null)
+            var callback = new WeakPropertyChangingCallback<TListener>(
+                listener,
+                rootSource,
+                propertyChangingCallback,
+                propertyChangedCallback);
+
+            callbacksForProperty.AddLast(callback);
+        }
+
+        private LinkedList<IWeakCallback> LookupOrCreateCallbacksForProperty(string propertyName)
+        {
+            var callbacksForProperty = LookupCallbacksForProperty(propertyName);
+
+            if (callbacksForProperty == null)
             {
-                callbacks = new LinkedList<WeakPropertyChangedCallback>();
-                this.Callbacks.Add(propertyName, callbacks);
+                callbacksForProperty = new LinkedList<IWeakCallback>();
+                _propertyNameToCallbacks.Add(propertyName, callbacksForProperty);
             }
+            return callbacksForProperty;
+        }
 
-            Action<object, object, PropertyChangedEventArgs> callback = (listenerForForward, sender, args) =>
-                forwardingAction((TListener)listenerForForward, sender, args);
+        private LinkedList<IWeakCallback> LookupCallbacksForProperty(string propertyName)
+        {
+            LinkedList<IWeakCallback> callbacksForProperty;
 
-            callbacks.AddLast(new WeakPropertyChangedCallback(listener, callback));
+            callbacksForProperty = (LinkedList<IWeakCallback>)_propertyNameToCallbacks[propertyName];
+            return callbacksForProperty;
         }
     }
 }

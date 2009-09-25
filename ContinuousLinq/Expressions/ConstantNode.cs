@@ -14,6 +14,11 @@ namespace ContinuousLinq
     {
         public INotifyPropertyChanged Value { get; set; }
 
+        public override Type Type
+        {
+            get { return this.Value.GetType(); }
+        }
+
         public ConstantNode(INotifyPropertyChanged value)
         {
             this.Value = value;

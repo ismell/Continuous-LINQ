@@ -61,6 +61,7 @@
     <Compile Include="Collections\ExceptReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\GroupedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\GroupingReadOnlyContinuousCollection.cs" />
+    <Compile Include="Collections\GroupJoinReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\OrderedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\ReadOnlyTwoCollectionOperationContinuousCollection.cs" />
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
@@ -129,7 +130,10 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>@echo off
-REM xcopy "$(TargetPath)" C:\depot\src\release\ProgramTrading\thirdparty\ContinuousLinq /q /y /i
-REM xcopy "$(TargetDir)*.pdb" C:\depot\src\release\ProgramTrading\thirdparty\ContinuousLinq /q /y /i</PostBuildEvent>
+xcopy "$(TargetPath)" C:\depot\src\release\ProgramTrading\thirdparty\ContinuousLinq /q /y /i
+xcopy "$(TargetDir)*.pdb" C:\depot\src\release\ProgramTrading\thirdparty\ContinuousLinq /q /y /i
+
+xcopy "$(TargetPath)" C:\depot\src\thirdparty\ContinuousLinq\2.1.0.6 /q /y /i
+xcopy "$(TargetDir)*.pdb" C:\depot\src\thirdparty\ContinuousLinq\2.1.0.6 /q /y /i</PostBuildEvent>
   </PropertyGroup>
 </Project>

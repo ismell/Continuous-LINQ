@@ -72,7 +72,7 @@ namespace ContinuousLinq
 
         private static bool DoesTypeImplementINotifyPropertyChanged(Type type)
         {
-            return type.GetInterface(typeof(INotifyPropertyChanged).Name) != null;
+            return typeof(INotifyPropertyChanged).IsAssignableFrom(type);
         }
 
         private static void BuildBranches(Expression expression, PropertyAccessTree tree, Stack<PropertyAccessTreeNode> currentNodeBranch, Predicate<Type> typeFilter)
@@ -167,7 +167,7 @@ namespace ContinuousLinq
                     break;
 
                 case ExpressionType.Parameter:
-                    ParameterNode parameterNode = new ParameterNode();
+                    ParameterNode parameterNode = new ParameterNode(expression.Type);
                     currentNodeBranch.Push(parameterNode);
                     AddBranch(tree, currentNodeBranch);
                     break;

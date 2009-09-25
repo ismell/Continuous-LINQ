@@ -10,7 +10,10 @@ namespace PerformanceConsole
         static void Main(string[] args)
         {
             PerformanceTest performanceTest = new PerformanceTest();
-            performanceTest.SortingTest();
+            performanceTest.CompareQueryCreation();
+            //performanceTest.GetInterfaceTest();
+            //performanceTest.MemoryTest();
+            //performanceTest.SortingTest();
             //performanceTest.TestDynamicProperty();
             //performanceTest.TestDynamicInvoke();
             //performanceTest.SelectTest();

@@ -105,9 +105,6 @@ namespace ContinuousLinq.UnitTests
                                 where person.Age > 10
                                 select person;
 
-            // LINQ execution is deferred.  This will execute query.
-            int count = ageCollection.Count();
-
             var weakReference = new WeakReference(ageCollection);
             Assert.IsTrue(weakReference.IsAlive);
 
