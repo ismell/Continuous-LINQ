@@ -17,9 +17,31 @@ namespace ContinuousLinq.UnitTests
             };
         }
 
+        public static ObservableCollection<Person> CreateTwoPersonSourceWithParents()
+        {
+            var source = CreateTwoPersonSource();
+            InitializeParents(source[0]);
+            InitializeParents(source[1]);
+
+            return source;
+        }
+
+        public static void InitializeParents(Person person)
+        {
+            person.Parents = CreateParents(person);
+        }
+
+        public static ObservableCollection<Person> CreateParents(Person person)
+        {
+            return new ObservableCollection<Person>()
+            {
+                new Person(person.Name + "Parent0", 40),
+                new Person(person.Name + "Parent1", 41),
+            };
+        }
         public static ObservableCollection<Person> CreateSixPersonSource()
         {
-            ObservableCollection<Person> source = new ObservableCollection<Person>() ;
+            ObservableCollection<Person> source = new ObservableCollection<Person>();
             for (int i = 0; i < 6; i++)
             {
                 source.Add(new Person(i.ToString(), i * 10));
@@ -54,8 +76,8 @@ namespace ContinuousLinq.UnitTests
                 {
                     Person p = new Person()
                     {
-                         Age = x * 20 + 5,
-                         Name = "Person " + x.ToString() + " " + y.ToString()
+                        Age = x * 20 + 5,
+                        Name = "Person " + x.ToString() + " " + y.ToString()
                     };
                     col.Add(p);
                 }

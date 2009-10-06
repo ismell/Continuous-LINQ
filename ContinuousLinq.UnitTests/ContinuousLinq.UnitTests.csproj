@@ -87,6 +87,7 @@
     <Compile Include="Reactive\ReactiveObjectTest.cs" />
     <Compile Include="ReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="ReferenceCountTrackerTest.cs" />
+    <Compile Include="SelectManyTest.cs" />
     <Compile Include="SelectManyTest1.cs" />
     <Compile Include="SelectReadOnlyContinuousCollectionDuplicatesTest.cs" />
     <Compile Include="SelectReadOnlyContinuousCollectionTest.cs" />
@@ -94,11 +95,13 @@
     <Compile Include="Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NotifyCollectionChangedMonitorTest.cs" />
+    <Compile Include="SkipListTest.cs" />
     <Compile Include="SortTest.cs" />
     <Compile Include="SubscriptionNodeTest.cs" />
     <Compile Include="SubscriptionTreeTest.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="ThenByTest.cs" />
+    <Compile Include="VersionedLinkedListTest.cs" />
     <Compile Include="WeakEvents\ListenerStub.cs" />
     <Compile Include="WeakEvents\WeakEventHandlerTest.cs" />
     <Compile Include="WeakEvents\WeakPropertyBridgeTest.cs" />
