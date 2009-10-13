@@ -51,9 +51,10 @@ namespace ContinuousLinq.WeakEvents
         public bool Invoke(object sender, PropertyChangedEventArgs args)
         {
             TListener listenerForCallback = (TListener)ListenerReference.Target;
-            if (listenerForCallback != null)
+            object rootSource = _rootSource.Target;
+            if (listenerForCallback != null && rootSource != null)
             {
-                _propertyChangedCallback(listenerForCallback, sender, _rootSource.Target, args);
+                _propertyChangedCallback(listenerForCallback, sender, rootSource, args);
                 return true;
             }
             return false;
