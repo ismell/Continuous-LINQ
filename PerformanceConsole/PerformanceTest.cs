@@ -11,7 +11,6 @@ using System.ComponentModel;
 
 namespace PerformanceConsole
 {
-
     public class PerformanceTest
     {
         ObservableCollection<Person> _source;
@@ -368,7 +367,6 @@ namespace PerformanceConsole
             }
         }
 
-
         public void CreateNotifyingPeople(int OUTER_LIST_COUNT, int INNER_LIST_COUNT)
         {
             _notifyingPeople = new List<List<NotifyingPerson>>();
@@ -502,5 +500,282 @@ namespace PerformanceConsole
             Console.WriteLine(duration.ToString());
             Console.WriteLine(result);
         }
+
+        private void TimeIt(int numberOfTimes, Action action)
+        {
+            TimeSpan duration;
+            DateTime start;
+
+            start = DateTime.Now;
+
+            for (int i = 0; i < numberOfTimes; i++)
+            {
+                action();
+            }
+
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.ToString());
+        }
+
+        Stack<int> _recursiveStack = new Stack<int>();
+
+        public void RecursiveFunctionVsStack()
+        {
+            const int trials = 1000000;
+            TimeIt(trials, () => 
+            {
+                const int iterations = 20;
+
+                for (int i = 0; i < iterations; i++)
+                {
+                    _recursiveStack.Push(i);
+                }
+
+                for (int i = 0; i < iterations; i++)
+                {
+                    _lastUpdated = _recursiveStack.Pop();
+                }
+            });
+
+            TimeIt(trials, () =>
+            {
+                int foo;
+                RecursiveCall(0, out foo);
+            });
+        }
+
+        int _lastUpdated = 0;
+        private void RecursiveCall(int i, out int foo)
+        {
+            if (i < 20)
+            {
+                foo = 20;
+                return;
+            }
+            
+            _lastUpdated = i;
+
+            RecursiveCall(i++, out foo);
+        }
+
+        private static int[] CreateRandomSetOfKeys(int items)
+        {
+            Random rand = new Random();
+
+            int[] keys = new int[items];
+            for (int i = 0; i < items; i++)
+            {
+                keys[i] = i;
+            }
+
+            for (int i = 0; i < items; i++)
+            {
+                int firstIndex = rand.Next(items);
+                int secondIndex = rand.Next(items);
+                int temp = keys[firstIndex];
+                keys[firstIndex] = keys[secondIndex];
+                keys[secondIndex] = temp;
+            }
+            return keys;
+        }
+
+        const int TRIALS = 1;
+        const int ITEMS = 1000000;
+        
+        public void SkipListVsSortedDictionaryAdds()
+        {
+            Console.WriteLine("SkipListVsSortedDictionaryAdds");
+
+            int[] keys = CreateRandomSetOfKeys(ITEMS);
+            Console.WriteLine("SkipList");
+            //Console.ReadLine();
+            SkipList<int, int> skipList = new SkipList<int, int>();
+            TimeIt(TRIALS, () =>
+            {
+                for (int i = 0; i < ITEMS; i++)
+                {
+                    skipList.Add(keys[i], i);
+                }
+            });
+
+            Console.WriteLine("SortedDictionary");
+            SortedDictionary<int, int> sortedDictionary = new SortedDictionary<int, int>();
+            TimeIt(TRIALS, () =>
+            {
+                for (int i = 0; i < ITEMS; i++)
+                {
+                    sortedDictionary.Add(keys[i], i);
+                }
+            });
+        }
+
+        public void SkipListVsSortedDictionaryLookups()
+        {
+            Console.WriteLine("SkipListVsSortedDictionaryLookups");
+            int[] keys = CreateRandomSetOfKeys(ITEMS);
+
+            Console.WriteLine("SortedDictionary");
+            SortedDictionary<int, int> sortedDictionary = new SortedDictionary<int, int>();
+            for (int i = 0; i < ITEMS; i++)
+            {
+                sortedDictionary.Add(keys[i], i);
+            }
+
+            TimeIt(TRIALS, () =>
+            {
+                int val;
+                for (int i = 0; i < ITEMS; i++)
+                {
+                    val = sortedDictionary[keys[i]];
+                }
+            });
+
+            Console.WriteLine("SkipList");
+            SkipList<int, int> skipList = new SkipList<int, int>();
+            for (int i = 0; i < ITEMS; i++)
+            {
+                skipList.Add(keys[i], i);
+            }
+
+            TimeIt(TRIALS, () =>
+            {
+                int val;
+                for (int i = 0; i < ITEMS; i++)
+                {
+                    val = skipList.GetValue(keys[i]);
+                }
+            });
+        }
+
+        //public void MySkipListVsLomontAdds()
+        //{
+        //    Console.WriteLine("MySkipListVsLomontAdds");
+ 
+        //    int[] keys = CreateRandomSetOfKeys(ITEMS);
+
+        //    Console.WriteLine("SkipList");
+        //    SkipList<int, int> skipList = new SkipList<int, int>();
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            skipList.Add(keys[i], i);
+        //        }
+        //    });
+
+        //    Console.WriteLine("Lomont");
+        //    Lomont.LomontSkipList<int, int> lomontSkipList = new Lomont.LomontSkipList<int, int>();
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            lomontSkipList.Add(keys[i], i);
+        //        }
+        //    });
+        //}
+
+        //public void MySkipListVsLomontLookups()
+        //{
+        //    Console.WriteLine("MySkipListVsLomontLookups");
+
+        //    int[] keys = CreateRandomSetOfKeys(ITEMS);
+
+        //    Console.WriteLine("SkipList");
+        //    SkipList<int, int> skipList = new SkipList<int, int>();
+        //    for (int i = 0; i < ITEMS; i++)
+        //    {
+        //        skipList.Add(keys[i], i);
+        //    }
+
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        int val;
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            val = skipList.GetValue(keys[i]);
+        //        }
+        //    });
+
+        //    Console.WriteLine("Lomont");
+        //    Lomont.LomontSkipList<int, int> lomont = new Lomont.LomontSkipList<int, int>();
+        //    for (int i = 0; i < ITEMS; i++)
+        //    {
+        //        lomont.Add(i, i);
+        //    }
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        int val;
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            val = lomont[keys[i]];
+        //        }
+        //    });
+        //}
+
+
+        //public void LlrbtVsSortedDictionaryAdds()
+        //{
+        //    Console.WriteLine("LlrbtVsSortedDictionaryAdds");
+
+        //    int[] keys = CreateRandomSetOfKeys(ITEMS);
+        //    Console.WriteLine("LLRBT");
+        //    //Console.ReadLine();
+        //    LeftLeaningRedBlackTree<int, int> llrbt = new LeftLeaningRedBlackTree<int, int>(Comparer<int>.Default.Compare);
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            llrbt.Add(keys[i], i);
+        //        }
+        //    });
+
+        //    Console.WriteLine("SortedDictionary");
+        //    SortedDictionary<int, int> sortedDictionary = new SortedDictionary<int, int>();
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            sortedDictionary.Add(keys[i], i);
+        //        }
+        //    });
+        //}
+
+        //public void LlrbtVsSortedDictionaryLookups()
+        //{
+        //    Console.WriteLine("LlrbtVsSortedDictionaryLookups");
+        //    int[] keys = CreateRandomSetOfKeys(ITEMS);
+
+        //    Console.WriteLine("SortedDictionary");
+        //    SortedDictionary<int, int> sortedDictionary = new SortedDictionary<int, int>();
+        //    for (int i = 0; i < ITEMS; i++)
+        //    {
+        //        sortedDictionary.Add(keys[i], i);
+        //    }
+
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        int val;
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            val = sortedDictionary[keys[i]];
+        //        }
+        //    });
+
+        //    Console.WriteLine("LLRBT");
+        //    LeftLeaningRedBlackTree<int, int> llrbt = new LeftLeaningRedBlackTree<int, int>(Comparer<int>.Default.Compare);
+        //    for (int i = 0; i < ITEMS; i++)
+        //    {
+        //        llrbt.Add(keys[i], i);
+        //    }
+
+        //    TimeIt(TRIALS, () =>
+        //    {
+        //        int val;
+        //        for (int i = 0; i < ITEMS; i++)
+        //        {
+        //            val = llrbt.GetValueForKey(keys[i]);
+        //        }
+        //    });
+        //}
     }
 }

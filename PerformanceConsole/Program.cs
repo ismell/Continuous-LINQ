@@ -10,7 +10,14 @@ namespace PerformanceConsole
         static void Main(string[] args)
         {
             PerformanceTest performanceTest = new PerformanceTest();
-            performanceTest.CompareQueryCreation();
+            //performanceTest.MySkipListVsLomontLookups();
+            //performanceTest.MySkipListVsLomontAdds();
+            //performanceTest.SkipListVsSortedDictionaryAdds();
+            //performanceTest.SkipListVsSortedDictionaryLookups();
+            //performanceTest.LlrbtVsSortedDictionaryAdds();
+            //performanceTest.LlrbtVsSortedDictionaryLookups();
+            //performanceTest.RecursiveFunctionVsStack();
+            //performanceTest.CompareQueryCreation();
             //performanceTest.GetInterfaceTest();
             //performanceTest.MemoryTest();
             //performanceTest.SortingTest();

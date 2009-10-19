@@ -6,21 +6,33 @@ using System.Linq.Expressions;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using ContinuousLinq.Expressions;
+using System.Collections;
+using ContinuousLinq.WeakEvents;
 
 namespace ContinuousLinq.Collections
 {
-    public class SelectManyReadOnlyContinuousCollection<TSource, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult> 
+    public class SelectManyReadOnlyContinuousCollection<TSource, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult>
     {
-        internal Func<TSource, IEnumerable<TResult>> SelectorFunction { get; set; }        
-        internal Dictionary<TSource, IEnumerable<TResult>> CurrentValues { get; set; }
+        private Dictionary<TSource, List<IndexingSkipList<IList<TResult>>.Node>> _sourceToCollectionNode;
+        private Dictionary<IList<TResult>, List<IndexingSkipList<IList<TResult>>.Node>> _collectionToNode;
+        private Dictionary<IList<TResult>, WeakEventHandler> _weakEventHandlers;
 
-        public SelectManyReadOnlyContinuousCollection(IList<TSource> list,
-            Expression<Func<TSource, IEnumerable<TResult>>> manySelector) :
+        IndexingSkipList<IList<TResult>> _collectionIndex;
+
+        private Func<TSource, IList<TResult>> _selectorFunction;
+
+        public SelectManyReadOnlyContinuousCollection(
+            IList<TSource> list,
+            Expression<Func<TSource, IList<TResult>>> manySelector) :
             base(list, ExpressionPropertyAnalyzer.Analyze(manySelector))
         {
-            this.SelectorFunction = manySelector.CachedCompile();
-            this.CurrentValues = new Dictionary<TSource, IEnumerable<TResult>>(this.Source.Count);
-            RecordCurrentValues(this.Source);
+            _sourceToCollectionNode = new Dictionary<TSource, List<IndexingSkipList<IList<TResult>>.Node>>();
+            _collectionToNode = new Dictionary<IList<TResult>, List<IndexingSkipList<IList<TResult>>.Node>>();
+            _weakEventHandlers = new Dictionary<IList<TResult>, WeakEventHandler>();
+            _collectionIndex = new IndexingSkipList<IList<TResult>>();
+
+            _selectorFunction = manySelector.CachedCompile();
+            RecordCurrentValues(_collectionIndex.TopLeft, this.Source);
 
             this.NotifyCollectionChangedMonitor.Add += OnAdd;
             this.NotifyCollectionChangedMonitor.Remove += OnRemove;
@@ -32,121 +44,372 @@ namespace ContinuousLinq.Collections
 
         public override TResult this[int index]
         {
-            /// Needs to return the value at the normalized index
-            /// relative to the _output_. e.g. if we have 5 source items,
-            /// we can still receive a request for item at index 32.
             get
             {
-                int tempIndex = 0;
-                foreach (IEnumerable<TResult> resultItems in this.CurrentValues.Values)
-                {
-                    if (index <= resultItems.Count() + tempIndex)
-                    {
-                        return resultItems.ElementAt(index - tempIndex);
-                    }
-                    tempIndex += resultItems.Count();
-                }
-                return default(TResult);
+                int indexInCollection;
+                var collectionContainingItem = _collectionIndex.GetLeaf(index, out indexInCollection).Value;
+                return collectionContainingItem[indexInCollection];
             }
-            set
-            {
-                throw new AccessViolationException();
-            }
+            set { throw new AccessViolationException(); }
         }
 
         public override int Count
         {
-            get 
-            {
-                return this.CurrentValues.Sum(v => v.Value.Count());
-            }
+            get { return _collectionIndex.TotalItems; }
         }
 
-        #region Private Utilities
-        private void RecordCurrentValues(IEnumerable<TSource> items)
+        private void RecordCurrentValues(IndexingSkipList<IList<TResult>>.Node nodeBefore, IList<TSource> items)
         {
-            this.CurrentValues.Clear();
-            foreach (TSource item in items)
+            IndexingSkipList<IList<TResult>>.Node lastCollectionNodeAdded = nodeBefore;
+            for (int i = 0; i < items.Count; i++)
             {
-                this.CurrentValues[item] = this.SelectorFunction(item);
+                var item = items[i];
+                var collection = _selectorFunction(item);
+
+                var newNode = RecordItem(lastCollectionNodeAdded, item, collection);
+
+                lastCollectionNodeAdded = newNode;
             }
         }
 
-        private int TrueIndexOf(TSource targetItem)
+        private static int GetCount(IList<TResult> collection)
         {
-            int realIndex = 0;
-            foreach (TSource currentItem in this.CurrentValues.Keys)
-            {
-                if (EqualityComparer<TSource>.Default.Equals(currentItem, targetItem))
-                    return realIndex;
-
-                realIndex += this.CurrentValues[currentItem].Count();
-            }
-            return realIndex;
+            int count = collection != null ? collection.Count : 0;
+            return count;
         }
-        #endregion
+
+        private IndexingSkipList<IList<TResult>>.Node RecordItem(IndexingSkipList<IList<TResult>>.Node nodeBefore, TSource item, IList<TResult> collection)
+        {
+            int count = GetCount(collection);
+            var newNode = _collectionIndex.AddAfter(nodeBefore, count, collection);
+
+            RecordNodeForItemInLookupTables(item, collection, newNode);
+
+            if (collection != null && !_weakEventHandlers.ContainsKey(collection))
+            {
+                WeakEventHandler weakEventHandler = WeakNotifyCollectionChangedEventHandler.Register(
+                    (INotifyCollectionChanged)collection,
+                    this,
+                    (me, sender, args) => me.OnSubCollectionChanged(sender, args));
+
+                _weakEventHandlers.Add(collection, weakEventHandler);
+            }
+
+            return newNode;
+        }
+
+        private void RemoveItem(IndexingSkipList<IList<TResult>>.Node node, TSource item, IList<TResult> collection)
+        {
+            _collectionIndex.Remove(node);
+
+            int numberOfInstancesOfCollectionLeft = RemoveNodeFromLookupTable(_collectionToNode, collection, node);
+            RemoveNodeFromLookupTable(_sourceToCollectionNode, item, node);
+
+            if (collection != null && numberOfInstancesOfCollectionLeft == 0)
+            {
+                _weakEventHandlers.Remove(collection);
+            }
+        }
+
+        private void RecordNodeForItemInLookupTables(TSource source, IList<TResult> collection, IndexingSkipList<IList<TResult>>.Node node)
+        {
+            AddNodeToLookupTable(_sourceToCollectionNode, source, node);
+            if (collection != null)
+            {
+                AddNodeToLookupTable(_collectionToNode, collection, node);
+            }
+        }
+
+        private static void AddNodeToLookupTable<TKey>(Dictionary<TKey, List<IndexingSkipList<IList<TResult>>.Node>> dictionary, TKey key, IndexingSkipList<IList<TResult>>.Node node)
+        {
+            var nodesForItem = dictionary.GetOrCreate(key, () => new List<IndexingSkipList<IList<TResult>>.Node>(1));
+            nodesForItem.Add(node);
+        }
+
+        private static int RemoveNodeFromLookupTable<TKey>(Dictionary<TKey, List<IndexingSkipList<IList<TResult>>.Node>> dictionary, TKey key, IndexingSkipList<IList<TResult>>.Node node)
+        {
+            var nodesForItem = dictionary[key];
+            nodesForItem.Remove(node);
+            if (nodesForItem.Count == 0)
+            {
+                dictionary.Remove(key);
+            }
+
+            return nodesForItem.Count;
+        }
 
         #region Collection Change Handlers
 
-        void OnItemChanged(INotifyPropertyChanged sender)
+        public void OnSubCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            TSource senderAsTSource = (TSource)sender;
+            IList<TResult> collection = (IList<TResult>)sender;
 
-            IEnumerable<TResult> oldItems = this.CurrentValues[senderAsTSource];
-            // Cannot infer whether items list resulting from previous version of source item
-            // is the same as list resulting from modified item, so have to re-run selector func
-            // every time it changes - thankfully smart notify keeps us from being notified of
-            // irrelevant prop changes.
-            IEnumerable<TResult> resultItems = this.SelectorFunction(senderAsTSource);
-
-            this.CurrentValues.Remove(senderAsTSource);
-            this.CurrentValues.Add(senderAsTSource, resultItems);
-
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace,
-                resultItems, oldItems));
-
-        }
-
-        void OnAdd(int index, IEnumerable<TSource> newItems)
-        {
-            foreach (TSource newItem in newItems)
+            var nodesForCollection = _collectionToNode[collection];
+            for (int i = 0; i < nodesForCollection.Count; i++)
             {
-                IEnumerable<TResult> itemsToAdd = this.SelectorFunction(newItem);
-                this.CurrentValues.Add(newItem, itemsToAdd);
-                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add,
-                itemsToAdd, TrueIndexOf(newItem)));
-            }                        
-        }
+                _collectionIndex.UpdateItemsInNode(nodesForCollection[i], collection.Count);
+            }
 
-        void OnRemove(int index, IEnumerable<TSource> oldItems)
-        {
-            foreach (TSource oldItem in oldItems)
+            if (nodesForCollection.Count == 1)
             {
-                IEnumerable<TResult> itemsToRemove = this.CurrentValues[oldItem];
-                this.CurrentValues.Remove(oldItem);
-                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
-                    itemsToRemove));
+                var nodeForCollection = _collectionToNode[collection][0];
+                int indexOfNodeInOutput = _collectionIndex.GetIndex(nodeForCollection);
+                switch (args.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        FireAdd(args.NewItems, indexOfNodeInOutput + args.NewStartingIndex);
+                        break;
+                    case NotifyCollectionChangedAction.Move:
+                        FireMove(args.NewItems, indexOfNodeInOutput + args.NewStartingIndex, indexOfNodeInOutput + args.OldStartingIndex);
+                        break;
+                    case NotifyCollectionChangedAction.Remove:
+                        FireRemove(args.OldItems, indexOfNodeInOutput + args.OldStartingIndex);
+                        break;
+                    case NotifyCollectionChangedAction.Replace:
+                        FireReplace(args.NewItems, args.OldItems, indexOfNodeInOutput + args.NewStartingIndex);
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        FireReset();
+                        break;
+                }
+            }
+            else
+            {
+                FireReset();
             }
         }
 
-        void OnReset()
+        void OnItemChanged(object sender, INotifyPropertyChanged itemThatChanged)
         {
-            /// TODO
-            RecordCurrentValues(this.Source);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            TSource item = (TSource)itemThatChanged;
+
+            var nodesForSource = _sourceToCollectionNode[item];
+
+            if (nodesForSource.Count > 1)
+            {
+                ClearAndReset();
+                return;
+            }
+
+            var nodeForItem = nodesForSource[0];
+            var previousNode = nodeForItem.Previous;
+
+            var oldCollection = nodeForItem.Value;
+            int indexInFlattenedCollection = _collectionIndex.GetIndex(nodeForItem);
+            RemoveItem(nodeForItem, item, oldCollection);
+
+            var newCollection = _selectorFunction(item);
+            RecordItem(previousNode, item, newCollection);
+
+            if (oldCollection != null && newCollection != null && oldCollection.Count > 0 && newCollection.Count > 0)
+            {
+                FireReplace(newCollection, oldCollection, indexInFlattenedCollection);
+            }
+            else if (oldCollection != null && oldCollection.Count > 0)
+            {
+                FireRemove(oldCollection as IList ?? oldCollection.ToList(), indexInFlattenedCollection);
+            }
+            else if (newCollection.Count > 0)
+            {
+                FireAdd(newCollection as IList ?? newCollection.ToList(), indexInFlattenedCollection);
+            }
         }
 
-        void OnMove(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        private List<TResult> AddItems(IEnumerable<TSource> newItems, IndexingSkipList<IList<TResult>>.Node previousNode)
         {
-            // could possibly be more efficient, but this is very straightforward.
-            OnRemove(oldStartingIndex, oldItems);
-            OnAdd(newStartingIndex, newItems);
+            List<TResult> newResults = new List<TResult>();
+
+            IndexingSkipList<IList<TResult>>.Node lastCollectionNodeAdded = previousNode;
+
+            foreach (var item in newItems)
+            {
+                var collection = _selectorFunction(item);
+
+                if (collection != null)
+                {
+                    newResults.AddRange(collection);
+                }
+
+                var newNode = RecordItem(lastCollectionNodeAdded, item, collection);
+
+                lastCollectionNodeAdded = newNode;
+            }
+            return newResults;
         }
 
-        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnAdd(object sender, int index, IEnumerable<TSource> newItems)
         {
-            OnMove(oldStartingIndex, oldItems, newStartingIndex, newItems);
+            IndexingSkipList<IList<TResult>>.Node previousNode;
+
+            if (!TryGetPreviousNode(index, out previousNode))
+            {
+                ClearAndReset();
+                return;
+            }
+
+            List<TResult> newResults = AddItems(newItems, previousNode);
+
+            if (newResults.Count > 0)
+            {
+                int startingIndexInFlattenedCollection = _collectionIndex.GetIndex(previousNode.Next);
+                FireAdd(newResults, startingIndexInFlattenedCollection);
+            }
         }
+
+        private bool TryGetPreviousNode(int indexInSource, out IndexingSkipList<IList<TResult>>.Node previousNode)
+        {
+            previousNode = null;
+
+            if (indexInSource > 0)
+            {
+                List<IndexingSkipList<IList<TResult>>.Node> nodesForSource;
+
+                TSource previousItemInSource = this.Source[indexInSource - 1];
+                nodesForSource = _sourceToCollectionNode[previousItemInSource];
+
+                if (nodesForSource.Count > 1)
+                {
+                    return false;
+                }
+
+                previousNode = nodesForSource[0];
+            }
+            else
+            {
+                previousNode = _collectionIndex.BottomLeft;
+            }
+
+            return true;
+        }
+
+        private List<TResult> RemoveItems(IEnumerable<TSource> oldItems, IndexingSkipList<IList<TResult>>.Node previousNode, out int oldStartingIndex)
+        {
+            var oldResults = new List<TResult>();
+
+            var firstNodeToRemove = previousNode.Next;
+            var currentNode = firstNodeToRemove;
+
+            oldStartingIndex = _collectionIndex.GetIndex(firstNodeToRemove);
+
+            foreach (var item in oldItems)
+            {
+                var collection = currentNode.Value;
+
+                oldResults.AddRange(collection);
+
+                var nextNode = currentNode.Next;
+
+                RemoveItem(currentNode, item, collection);
+
+                currentNode = nextNode;
+            }
+
+            return oldResults;
+        }
+
+        void OnRemove(object sender, int index, IEnumerable<TSource> oldItems)
+        {
+            IndexingSkipList<IList<TResult>>.Node previousNode;
+
+            if (!TryGetPreviousNode(index, out previousNode))
+            {
+                ClearAndReset();
+                return;
+            }
+
+            int oldStartingIndex;
+            var oldResults = RemoveItems(oldItems, previousNode, out oldStartingIndex);
+
+            if (oldResults.Count > 0)
+            {
+                FireRemove(oldResults, oldStartingIndex);
+            }
+        }
+
+        void OnReset(object sender)
+        {
+            ClearAndReset();
+        }
+
+        private void ClearAndReset()
+        {
+            _collectionIndex.Clear();
+            _weakEventHandlers.Clear();
+            _collectionToNode.Clear();
+            _sourceToCollectionNode.Clear();
+
+            RecordCurrentValues(_collectionIndex.TopLeft, this.Source);
+            FireReset();
+        }
+
+        void OnMove(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        {
+            IndexingSkipList<IList<TResult>>.Node oldPreviousNode;
+
+            if (!TryGetPreviousNode(oldStartingIndex, out oldPreviousNode))
+            {
+                ClearAndReset();
+                return;
+            }
+
+            int oldStartingIndexInFlattenedCollection;
+            List<TResult> oldResults = RemoveItems(oldItems, oldPreviousNode, out oldStartingIndexInFlattenedCollection);
+
+            IndexingSkipList<IList<TResult>>.Node newPreviousNode;
+            if (!TryGetPreviousNode(newStartingIndex, out newPreviousNode))
+            {
+                ClearAndReset();
+                return;
+            }
+
+            List<TResult> newResults = AddItems(newItems, newPreviousNode);
+            
+            if (oldResults.Count > 0 && newResults.Count > 0)
+            {
+                int newStartingIndexInFlattenedCollection = _collectionIndex.GetIndex(newPreviousNode.Next);
+                FireMove(newResults, newStartingIndexInFlattenedCollection, oldStartingIndexInFlattenedCollection);
+            }
+        }
+
+        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        {
+            IndexingSkipList<IList<TResult>>.Node previousNode;
+
+            if (!TryGetPreviousNode(newStartingIndex, out previousNode))
+            {
+                ClearAndReset();
+                return;
+            }
+
+            int oldStartingIndexInFlattenedCollection;
+            List<TResult> oldResults = RemoveItems(oldItems, previousNode, out oldStartingIndexInFlattenedCollection);
+            List<TResult> newResults = AddItems(newItems, previousNode);
+
+            if (oldResults.Count > 0 && newResults.Count > 0)
+            {
+                FireReplace(newResults, oldResults, oldStartingIndexInFlattenedCollection);
+            }
+            else if (oldResults.Count > 0)
+            {
+                FireRemove(oldResults, oldStartingIndexInFlattenedCollection);
+            }
+            else if (newResults.Count > 0)
+            {
+                FireAdd(newResults, oldStartingIndexInFlattenedCollection);
+            }
+        }
+
+        public override IEnumerator<TResult> GetEnumerator()
+        {
+            foreach (var subList in _collectionIndex)
+            {
+                foreach (var item in subList)
+                {
+                    yield return item;
+                }
+            }
+        }
+
         #endregion
     }
 }

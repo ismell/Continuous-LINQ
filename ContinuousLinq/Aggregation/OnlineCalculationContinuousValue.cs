@@ -51,7 +51,7 @@ namespace ContinuousLinq.Aggregates
         }
 
 
-        void OnItemAdded(int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnItemAdded(object sender, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             foreach (var item in newItems)
             {
@@ -61,7 +61,7 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        void OnRemove(int startingIndex, IEnumerable<TSource> items)
+        void OnRemove(object sender, int startingIndex, IEnumerable<TSource> items)
         {
             foreach (var item in items)
             {
@@ -97,14 +97,14 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             foreach (var item in oldItems)
             {
                 RemoveItem(item);
             }
 
-            OnItemAdded(newStartingIndex, newItems);
+            OnItemAdded(null, newStartingIndex, newItems);
 
             if (this.ItemRemovedValueUpdater == null)
             {
@@ -112,7 +112,7 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        void OnReset()
+        void OnReset(object sender)
         {
             Refresh();
         }
@@ -128,7 +128,7 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        protected override void OnItemChanged(INotifyPropertyChanged obj)
+        protected override void OnItemChanged(object sender, INotifyPropertyChanged obj)
         {
             var item = (TSource)obj;
 

@@ -51,11 +51,11 @@ namespace ContinuousLinq.Collections
             FireCollectionChanged(args);
         }
 
-        void OnItemChanged(INotifyPropertyChanged sender)
+        void OnItemChanged(object sender, INotifyPropertyChanged itemThatChanged)
         {
-            TSource senderAsTSource = (TSource)sender;
+            TSource item = (TSource)itemThatChanged;
 
-            Filter(senderAsTSource);
+            Filter(item);
         }
 
         private void Filter(TSource item)
@@ -96,7 +96,7 @@ namespace ContinuousLinq.Collections
             set { throw new AccessViolationException(); }
         }
 
-        void OnAdd(int index, IEnumerable<TSource> newItems)
+        void OnAdd(object sender, int index, IEnumerable<TSource> newItems)
         {
             AddNewItems(newItems);
         }
@@ -125,18 +125,18 @@ namespace ContinuousLinq.Collections
             }
         }
 
-        void OnRemove(int index, IEnumerable<TSource> oldItems)
+        void OnRemove(object sender, int index, IEnumerable<TSource> oldItems)
         {
             RemoveOldItems(oldItems);
         }
 
-        void OnReset()
+        void OnReset(object sender)
         {
             this.Output.Clear();
             this.ItemLookup.Clear();
         }
 
-        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveOldItems(oldItems);
             AddNewItems(newItems);

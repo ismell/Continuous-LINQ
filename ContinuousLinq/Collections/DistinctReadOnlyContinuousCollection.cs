@@ -82,7 +82,7 @@ namespace ContinuousLinq.Collections
         }
 
 
-        void OnAdd(int index, IEnumerable<TSource> newItems)
+        void OnAdd(object sender, int index, IEnumerable<TSource> newItems)
         {
             AddItemsAndNotifyCollectionChanged(newItems);
         }
@@ -97,7 +97,7 @@ namespace ContinuousLinq.Collections
             }
         }
 
-        void OnRemove(int index, IEnumerable<TSource> oldItems)
+        void OnRemove(object sender, int index, IEnumerable<TSource> oldItems)
         {
             RemoveItemsAndNotifyCollectionChanged(oldItems);
         }
@@ -112,7 +112,7 @@ namespace ContinuousLinq.Collections
             }
         }
 
-        void OnReset()
+        void OnReset(object sender)
         {
             this.Output.Clear();
             this.ReferenceCountTracker.Clear();
@@ -121,7 +121,7 @@ namespace ContinuousLinq.Collections
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             AddItemsAndNotifyCollectionChanged(newItems);
             RemoveItemsAndNotifyCollectionChanged(oldItems);

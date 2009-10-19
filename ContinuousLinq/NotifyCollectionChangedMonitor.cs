@@ -27,13 +27,13 @@ namespace ContinuousLinq
 
         public ReferenceCountTracker<T> ReferenceCountTracker { get; set; }
 
-        public event Action<int, IEnumerable<T>> Add;
-        public event Action<int, IEnumerable<T>> Remove;
-        public event Action<int, IEnumerable<T>, int, IEnumerable<T>> Replace;
-        public event Action<int, IEnumerable<T>, int, IEnumerable<T>> Move;
-        public event Action Reset;
+        public event Action<object, int, IEnumerable<T>> Add;
+        public event Action<object, int, IEnumerable<T>> Remove;
+        public event Action<object, int, IEnumerable<T>, int, IEnumerable<T>> Replace;
+        public event Action<object, int, IEnumerable<T>, int, IEnumerable<T>> Move;
+        public event Action<object> Reset;
 
-        public event Action<INotifyPropertyChanged> ItemChanged;
+        public event Action<object, INotifyPropertyChanged> ItemChanged;
 
         #region IWeakEventListener Members
 
@@ -130,7 +130,7 @@ namespace ContinuousLinq
             if (monitor.ItemChanged == null)
                 return;
 
-            monitor.ItemChanged((INotifyPropertyChanged)itemThatChanged);
+            monitor.ItemChanged(monitor, (INotifyPropertyChanged)itemThatChanged);
         }
 
         void OnAnyPropertyChangeInSubscriptionTree(SubscriptionTree sender)
@@ -207,14 +207,14 @@ namespace ContinuousLinq
                     UnsubscribeFromItems(collectionArgs.OldItems);
                     if (Remove != null)
                     {
-                        Remove(collectionArgs.OldStartingIndex, collectionArgs.OldItems.Cast<T>());
+                        Remove(this, collectionArgs.OldStartingIndex, collectionArgs.OldItems.Cast<T>());
                     }
                     break;
                 case NotifyCollectionChangedAction.Add:
                     SubscribeToItems(collectionArgs.NewItems);
                     if (Add != null)
                     {
-                        Add(collectionArgs.NewStartingIndex, collectionArgs.NewItems.Cast<T>());
+                        Add(this, collectionArgs.NewStartingIndex, collectionArgs.NewItems.Cast<T>());
                     }
                     break;
                 case NotifyCollectionChangedAction.Replace:
@@ -222,7 +222,8 @@ namespace ContinuousLinq
                     SubscribeToItems(collectionArgs.NewItems);
                     if (Replace != null)
                     {
-                        Replace(collectionArgs.OldStartingIndex,
+                        Replace(this, 
+                            collectionArgs.OldStartingIndex,
                             collectionArgs.OldItems.Cast<T>(),
                             collectionArgs.NewStartingIndex,
                             collectionArgs.NewItems.Cast<T>());
@@ -231,7 +232,8 @@ namespace ContinuousLinq
                 case NotifyCollectionChangedAction.Move:
                     if (Move != null)
                     {
-                        Move(collectionArgs.OldStartingIndex,
+                        Move(this,
+                            collectionArgs.OldStartingIndex,
                             collectionArgs.OldItems.Cast<T>(),
                             collectionArgs.NewStartingIndex,
                             collectionArgs.NewItems.Cast<T>());
@@ -242,7 +244,7 @@ namespace ContinuousLinq
                     SubscribeToItems(_input);
                     if (Reset != null)
                     {
-                        Reset();
+                        Reset(this);
                     }
                     break;
             }

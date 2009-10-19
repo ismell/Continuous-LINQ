@@ -33,6 +33,36 @@ namespace ContinuousLinq
             }
         }
 
+        protected void FireReset()
+        {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        protected void FireAdd(IList newItems, int startingIndex)
+        {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, startingIndex));
+        }
+
+        protected void FireRemove(IList oldItems, int startingIndex)
+        {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, startingIndex));
+        }
+
+        protected void FireReplace(IList newItems, IList oldItems, int startingIndex)
+        {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, startingIndex));
+        }
+
+        protected void FireReplace(object newItem, object oldItem, int startingIndex)
+        {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startingIndex));
+        }
+
+        protected void FireMove(IList newItems, int newStartingIndex, int oldStartingIndex)
+        {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItems, newStartingIndex, oldStartingIndex));
+        }
+
         #region IList<T> Members
 
         public int IndexOf(T item)
@@ -113,7 +143,7 @@ namespace ContinuousLinq
 
         #region IEnumerable<T> Members
 
-        public IEnumerator<T> GetEnumerator()
+        public virtual IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < this.Count; i++)
             {
@@ -127,10 +157,7 @@ namespace ContinuousLinq
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            for (int i = 0; i < this.Count; i++)
-            {
-                yield return this[i];
-            }
+            return this.GetEnumerator();
         }
 
         #endregion

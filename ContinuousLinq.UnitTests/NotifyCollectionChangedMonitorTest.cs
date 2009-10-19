@@ -34,7 +34,7 @@ namespace ContinuousLinq.UnitTests
         public void AddToSource_SingleItem_FiresAdd()
         {
             int callCount = 0;
-            _target.Add += (index, items) =>
+            _target.Add += (sender, index, items) =>
             {
                 callCount++;
                 Assert.AreEqual(2, index);
@@ -50,7 +50,7 @@ namespace ContinuousLinq.UnitTests
         public void RemoveFromSource_SingleItem_FiresRemove()
         {
             int callCount = 0;
-            _target.Remove += (index, items) =>
+            _target.Remove += (sender, index, items) =>
             {
                 callCount++;
                 Assert.AreEqual(1, index);
@@ -65,7 +65,7 @@ namespace ContinuousLinq.UnitTests
         public void ReplaceInSource_SingleItem_FiresReplace()
         {
             int callCount = 0;
-            _target.Replace += (oldIndex, oldItems, newIndex, newItems) =>
+            _target.Replace += (sender, oldIndex, oldItems, newIndex, newItems) =>
             {
                 callCount++;
                 Assert.AreEqual(0, oldIndex);
@@ -85,7 +85,7 @@ namespace ContinuousLinq.UnitTests
         public void MoveInSource_SingleItem_FiresMove()
         {
             int callCount = 0;
-            _target.Move += (oldIndex, oldItems, newIndex, newItems) =>
+            _target.Move += (sender, oldIndex, oldItems, newIndex, newItems) =>
             {
                 callCount++;
                 Assert.AreEqual(0, oldIndex);
@@ -105,7 +105,7 @@ namespace ContinuousLinq.UnitTests
         public void InsertInSource_SingleItem_FiresReplace()
         {
             int callCount = 0;
-            _target.Add += (index, items) =>
+            _target.Add += (sender, index, items) =>
             {
                 callCount++;
             };
@@ -118,7 +118,7 @@ namespace ContinuousLinq.UnitTests
         public void ClearSource_SingleItem_FiresReset()
         {
             int callCount = 0; 
-            _target.Reset += () =>
+            _target.Reset += (sender) =>
             {
                 callCount++;
             };
@@ -131,7 +131,7 @@ namespace ContinuousLinq.UnitTests
         public void SetPropertyOnItemInSourceCollection_PropertyDifferent_FiresItemChangedEvent()
         {
             int callCount = 0;
-            _target.ItemChanged += (item) =>
+            _target.ItemChanged += (sender, item) =>
             {
                 callCount++;
                 Assert.AreSame(_source[0], item);
@@ -144,9 +144,9 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void RemoveFromSourceAndChangePropertyOnItem_SingleItem_ItemChangedNotFired()
         {
-            Person person = _source[0]; 
-            
-            _target.ItemChanged += (item) => Assert.Fail();
+            Person person = _source[0];
+
+            _target.ItemChanged += (sender, item) => Assert.Fail();
 
             _source.Remove(person);
             person.Age = 1000;
@@ -157,7 +157,7 @@ namespace ContinuousLinq.UnitTests
         {
             Person person = _source[0];
 
-            _target.ItemChanged += (item) => Assert.Fail();
+            _target.ItemChanged += (sender, item) => Assert.Fail();
 
             _source[0] = new Person();
             person.Age = 1000;
@@ -167,7 +167,7 @@ namespace ContinuousLinq.UnitTests
         public void ReplaceItemInSourceAndChangePropertyOnNewItem_SingleItem_ItemChangedFired()
         {
             int callCount = 0;
-            _target.ItemChanged += (item) => callCount++;
+            _target.ItemChanged += (sender, item) => callCount++;
 
             Person newPerson = new Person();
             
@@ -183,7 +183,7 @@ namespace ContinuousLinq.UnitTests
             Person person = _source[0];
 
             int callCount = 0;
-            _target.ItemChanged += (item) => callCount++;
+            _target.ItemChanged += (sender, item) => callCount++;
 
             _source.Move(0, 1);
             person.Age = 1000;
@@ -196,7 +196,7 @@ namespace ContinuousLinq.UnitTests
         {
             Person person = _source[0];
 
-            _target.ItemChanged += (item) => Assert.Fail();
+            _target.ItemChanged += (sender, item) => Assert.Fail();
 
             _source.Clear();
             person.Age = 1000;
@@ -208,7 +208,7 @@ namespace ContinuousLinq.UnitTests
             Person person = _source[0];
             
             int callCount = 0;
-            _target.ItemChanged += (item) => callCount++;
+            _target.ItemChanged += (sender, item) => callCount++;
 
             _source.Add(person);
 
@@ -223,7 +223,7 @@ namespace ContinuousLinq.UnitTests
             Person person = _source[0];
 
             int callCount = 0;
-            _target.ItemChanged += (item) => callCount++;
+            _target.ItemChanged += (sender, item) => callCount++;
 
             _source.Add(person);
             _source.Remove(person);
@@ -239,7 +239,7 @@ namespace ContinuousLinq.UnitTests
             Person person = _source[0];
 
             int callCount = 0;
-            _target.ItemChanged += (item) => callCount++;
+            _target.ItemChanged += (sender, item) => callCount++;
 
             _source.Add(person);
             _source.Remove(person);

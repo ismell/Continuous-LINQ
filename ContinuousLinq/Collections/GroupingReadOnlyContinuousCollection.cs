@@ -136,29 +136,29 @@ namespace ContinuousLinq.Collections
 
         #region Source Changed Event Handlers
 
-        void OnAdd(int index, IEnumerable<TSource> newItems)
+        void OnAdd(object sender, int index, IEnumerable<TSource> newItems)
         {
             AddNewItems(newItems);
         }
 
-        void OnItemChanged(INotifyPropertyChanged sender)
+        void OnItemChanged(object sender, INotifyPropertyChanged itemThatChanged)
         {
-            TSource senderAsSource = (TSource)sender;
-            Regroup(senderAsSource);
+            TSource itemThatChangedAsSource = (TSource)itemThatChanged;
+            Regroup(itemThatChangedAsSource);
         }
 
-        void OnRemove(int index, IEnumerable<TSource> oldItems)
+        void OnRemove(object sender, int index, IEnumerable<TSource> oldItems)
         {
             RemoveOldItems(oldItems);
         }
 
-        void OnReset()
+        void OnReset(object sender)
         {
             this.Output.Clear();
             this.ItemToGroupIndex.Clear();
         }
 
-        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveOldItems(oldItems);
             AddNewItems(newItems);

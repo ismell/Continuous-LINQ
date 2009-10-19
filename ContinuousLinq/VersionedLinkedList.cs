@@ -13,11 +13,11 @@ namespace ContinuousLinq
     internal class VersionedLinkedList<T> 
     {
         public ulong Version { get; private set; }
-        internal VersionedLinkedListNode<T> First { get; set; }
-        internal VersionedLinkedListNode<T> Last { get; set; }
+        internal VersionedLinkedListNode First { get; set; }
+        internal VersionedLinkedListNode Last { get; set; }
         private int _recursionCount;
         private ulong _topMostVersion;
-        private Stack<VersionedLinkedListNode<T>> _toBeRemoved;
+        private Stack<VersionedLinkedListNode> _toBeRemoved;
 
         public bool IsEmpty
         {
@@ -26,14 +26,14 @@ namespace ContinuousLinq
 
         public VersionedLinkedList()
         {
-            _toBeRemoved = new Stack<VersionedLinkedListNode<T>>();
+            _toBeRemoved = new Stack<VersionedLinkedListNode>();
         }
 
         public void AddLast(T value)
         {
             this.Version++;
 
-            VersionedLinkedListNode<T> nodeToAdd = new VersionedLinkedListNode<T>(value, this.Version);
+            VersionedLinkedListNode nodeToAdd = new VersionedLinkedListNode(value, this.Version);
 
             if (this.Last == null)
             {
@@ -42,7 +42,7 @@ namespace ContinuousLinq
                 return;
             }
 
-            VersionedLinkedListNode<T> previousLast = this.Last;
+            VersionedLinkedListNode previousLast = this.Last;
             previousLast.Next = nodeToAdd;
             nodeToAdd.Previous = previousLast;
 
@@ -64,12 +64,12 @@ namespace ContinuousLinq
 
         public IVersionedLinkedListNode<T> GetNext(ulong version, IVersionedLinkedListNode<T> currentNode)
         {
-            VersionedLinkedListNode<T> node = (VersionedLinkedListNode<T>)currentNode;
+            VersionedLinkedListNode node = (VersionedLinkedListNode)currentNode;
             node = node.Next;
             return ScanListLookingForNextNodeMatchingVersion(version, node);
         }
 
-        private static IVersionedLinkedListNode<T> ScanListLookingForNextNodeMatchingVersion(ulong version, VersionedLinkedListNode<T> currentNode)
+        private static IVersionedLinkedListNode<T> ScanListLookingForNextNodeMatchingVersion(ulong version, VersionedLinkedListNode currentNode)
         {
             while (currentNode != null && currentNode.Version > version)
             {
@@ -95,7 +95,7 @@ namespace ContinuousLinq
 
         public void MarkForRemove(IVersionedLinkedListNode<T> nodeToRemove)
         {
-            VersionedLinkedListNode<T> node = (VersionedLinkedListNode<T>)nodeToRemove;
+            VersionedLinkedListNode node = (VersionedLinkedListNode)nodeToRemove;
             if (_recursionCount == 0)
             {
                 Remove(node);
@@ -107,7 +107,7 @@ namespace ContinuousLinq
             }
         }
 
-        private void Remove(VersionedLinkedListNode<T> nodeToRemove)
+        private void Remove(VersionedLinkedListNode nodeToRemove)
         {
             if (_recursionCount != 0)
                 throw new InvalidOperationException("You may not do a remove when iterating.  Use MarkForRemove instead.");
@@ -139,14 +139,14 @@ namespace ContinuousLinq
             nodeToRemove.Previous = null;
         }
 
-        internal class VersionedLinkedListNode<T> : IVersionedLinkedListNode<T>
+        internal class VersionedLinkedListNode : IVersionedLinkedListNode<T>
         {
             public ulong Version { get; private set; }
 
             public T Value { get; set; }
 
-            public VersionedLinkedListNode<T> Next { get; set; }
-            public VersionedLinkedListNode<T> Previous { get; set; }
+            public VersionedLinkedListNode Next { get; set; }
+            public VersionedLinkedListNode Previous { get; set; }
 
             public bool IsMarkedForDelete
             {

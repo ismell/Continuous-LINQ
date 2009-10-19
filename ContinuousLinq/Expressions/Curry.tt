@@ -25,6 +25,8 @@ namespace System
 	<#for(int i=5;i<=20;i++){#>public delegate TResult Func<T1, T2, T3, T4, <#FormatRange("T{0}, ", 5, i); #>TResult>(<#FormatRange("T{0} t{0}", ", ", 1, i);#>);
 	<#}#>
 
+	<#for(int i=5;i<=20;i++){#>public delegate void Action<T1, T2, T3, T4, <#FormatRange("T{0}", ", ", 5, i); #>>(<#FormatRange("T{0} t{0}", ", ", 1, i);#>);
+	<#}#>
 }
 
 <#+ 

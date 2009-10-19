@@ -36,19 +36,19 @@ namespace ContinuousLinq
         #region SelectMany
 
         public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
-            this ObservableCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
+            this ObservableCollection<TSource> source, Expression<Func<TSource, IList<TResult>>> manySelector)
         {
             return new SelectManyReadOnlyContinuousCollection<TSource, TResult>(source, manySelector);
         }
 
         public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
-            this ReadOnlyObservableCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
+            this ReadOnlyObservableCollection<TSource> source, Expression<Func<TSource, IList<TResult>>> manySelector)
         {
             return new SelectManyReadOnlyContinuousCollection<TSource, TResult>(source, manySelector);
         }
 
         public static ReadOnlyContinuousCollection<TResult> SelectMany<TSource, TResult>(
-            this ReadOnlyContinuousCollection<TSource> source, Expression<Func<TSource, IEnumerable<TResult>>> manySelector)
+            this ReadOnlyContinuousCollection<TSource> source, Expression<Func<TSource, IList<TResult>>> manySelector)
         {
             return new SelectManyReadOnlyContinuousCollection<TSource, TResult>(source, manySelector);
         }

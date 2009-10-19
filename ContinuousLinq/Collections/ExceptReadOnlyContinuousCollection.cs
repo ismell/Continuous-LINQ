@@ -128,17 +128,17 @@ namespace ContinuousLinq.Collections
 
         #region First Event Handlers
 
-        void OnAddToFirst(int index, IEnumerable<TSource> newItems)
+        void OnAddToFirst(object sender, int index, IEnumerable<TSource> newItems)
         {
             AddItemsToFirstAndFireNotifyCollectionChanged(newItems);
         }
 
-        void OnRemoveFromFirst(int index, IEnumerable<TSource> oldItems)
+        void OnRemoveFromFirst(object sender, int index, IEnumerable<TSource> oldItems)
         {
             RemoveItemsFromFirst(oldItems);
         }
 
-        void OnResetFirst()
+        void OnResetFirst(object sender)
         {
             this.Output.Clear();
             this.FirstItemLookup.Clear();
@@ -148,7 +148,7 @@ namespace ContinuousLinq.Collections
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        void OnReplaceOnFirst(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplaceOnFirst(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveItemsFromFirst(oldItems);
             AddItemsToFirstAndFireNotifyCollectionChanged(newItems);
@@ -158,17 +158,17 @@ namespace ContinuousLinq.Collections
 
         #region Second Event Handlers
 
-        void OnAddToSecond(int index, IEnumerable<TSource> newItems)
+        void OnAddToSecond(object sender, int index, IEnumerable<TSource> newItems)
         {
             AddItemsToSecond(newItems);
         }
 
-        void OnRemoveFromSecond(int index, IEnumerable<TSource> oldItems)
+        void OnRemoveFromSecond(object sender, int index, IEnumerable<TSource> oldItems)
         {
             RemoveItemsFromSecond(oldItems);
         }
 
-        void OnResetSecond()
+        void OnResetSecond(object sender)
         {
             this.Output.Clear();
             this.FirstItemLookup.Clear();
@@ -184,7 +184,7 @@ namespace ContinuousLinq.Collections
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        void OnReplaceOnSecond(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplaceOnSecond(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveItemsFromSecond(oldItems);
             AddItemsToSecond(newItems);

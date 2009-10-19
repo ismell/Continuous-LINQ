@@ -78,24 +78,24 @@ namespace ContinuousLinq.Collections
         }
 
         #region NotifyCollectionChangedMonitor Event Handlers
-        
-        void OnItemChanged(INotifyPropertyChanged sender)
+
+        void OnItemChanged(object sender, INotifyPropertyChanged itemThatChanged)
         {
-            TSource item = (TSource)sender;
+            TSource item = (TSource)itemThatChanged;
 
             RemoveItemFromOutput(item);                
             InsertItemInSortOrder(item);                
         }
 
-        void OnAdd(int index, IEnumerable<TSource> newItems)
+        void OnAdd(object sender, int index, IEnumerable<TSource> newItems)
         {
             foreach (TSource item in newItems)
             {
                 InsertItemInSortOrder(item);
             }
         }
-        
-        void OnRemove(int index, IEnumerable<TSource> oldItems)
+
+        void OnRemove(object sender, int index, IEnumerable<TSource> oldItems)
         {
             foreach (TSource oldItem in oldItems)
             {
@@ -103,13 +103,13 @@ namespace ContinuousLinq.Collections
             }
         }
         
-        void OnReset()
+        void OnReset(object sender)
         {
             this.Output.Clear();
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        void OnReplace(int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             foreach (TSource oldItem in oldItems)
             {

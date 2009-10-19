@@ -145,7 +145,7 @@ namespace ContinuousLinq.Aggregates
             this.AfterEffect(this.CurrentValue);
         }
 
-        protected virtual void OnItemChanged(INotifyPropertyChanged obj)
+        protected virtual void OnItemChanged(object sender, INotifyPropertyChanged obj)
         {
             Refresh();
         }
