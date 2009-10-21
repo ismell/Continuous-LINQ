@@ -89,7 +89,6 @@
     <Compile Include="ReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="ReferenceCountTrackerTest.cs" />
     <Compile Include="SelectManyTest.cs" />
-    <Compile Include="SelectManyTest1.cs" />
     <Compile Include="SelectReadOnlyContinuousCollectionDuplicatesTest.cs" />
     <Compile Include="SelectReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="SelectTest.cs" />

@@ -27,7 +27,7 @@ namespace ContinuousLinq.UnitTests
 
             _ageAccessNode = new PropertyAccessNode(typeof(Person).GetProperty("Age"));
             _brotherAccessNode = new PropertyAccessNode(typeof(Person).GetProperty("Brother")) { Children = new List<PropertyAccessTreeNode>() { _ageAccessNode } };
-            _parameterAccessNode = new ParameterNode(typeof(Person)) { Children = new List<PropertyAccessTreeNode>() { _brotherAccessNode } };
+            _parameterAccessNode = new ParameterNode(typeof(Person), "person") { Children = new List<PropertyAccessTreeNode>() { _brotherAccessNode } };
 
             _brotherNode = new SubscriptionNode() { AccessNode = _brotherAccessNode };
             _target = new SubscriptionNode() { AccessNode = _parameterAccessNode, Children = new List<SubscriptionNode>() { _brotherNode } };

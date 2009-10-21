@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using ContinuousLinq;
 
 
 namespace ContinuousLinq.UnitTests
@@ -118,6 +119,22 @@ namespace ContinuousLinq.UnitTests
 
                 _parents = value;
                 OnPropertyChanged("Parents");
+            }
+        }
+
+        ReadOnlyContinuousCollection<Person> _associatedPeople;
+        public ReadOnlyContinuousCollection<Person> AssociatedPeople
+        {
+            get { return _associatedPeople; }
+            set
+            {
+                if (value == _associatedPeople)
+                    return;
+#if USE_NOTIFYING_VERSION
+                OnPropertyChanging("AssociatedPeople");
+#endif
+                _associatedPeople = value;
+                OnPropertyChanged("AssociatedPeople");
             }
         }
 

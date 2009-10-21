@@ -10,6 +10,11 @@ namespace ContinuousLinq
     {
         #region Methods
 
+        public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression)
+        {
+            return Analyze(expression, DoesTypeImplementINotifyPropertyChanged);
+        }
+
         public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression, Predicate<Type> typeFilter)
         {
             if (!typeFilter(typeof(T)))
@@ -17,9 +22,30 @@ namespace ContinuousLinq
                 return null;
             }
 
-            PropertyAccessTree tree = BuildUnoptimizedTree(expression.Body, typeFilter);
+            PropertyAccessTree tree = AnalyzeLambda(expression, typeFilter);
+            return tree;
+        }
+
+        public static PropertyAccessTree Analyze<T0, T1, TResult>(Expression<Func<T0, T1, TResult>> expression)
+        {
+            PropertyAccessTree tree = AnalyzeLambda(expression, DoesTypeImplementINotifyPropertyChanged);
+            return tree;
+        }
+
+        private static PropertyAccessTree AnalyzeLambda(LambdaExpression expression, Predicate<Type> typeFilter)
+        {
+            PropertyAccessTree tree = new PropertyAccessTree();
+            //This is done to ensure that the tree has all the parameters and in the same order.
+            for (int i = 0; i < expression.Parameters.Count; i++)
+            {
+                ParameterExpression parameterExpression = expression.Parameters[0];
+                tree.Children.Add(new ParameterNode(parameterExpression.Type, parameterExpression.Name));
+            }
+            BuildUnoptimizedTree(tree, expression.Body, typeFilter);
+
             RemoveRedundantNodesFromTree(tree.Children);
             ApplyTypeFilter(tree.Children, typeFilter);
+        
             return tree;
         }
 
@@ -39,11 +65,6 @@ namespace ContinuousLinq
             }
         }
 
-        public static PropertyAccessTree Analyze<T, TResult>(Expression<Func<T, TResult>> expression)
-        {
-            return Analyze(expression, DoesTypeImplementINotifyPropertyChanged);
-        }
-
         private static void RemoveRedundantNodesFromTree(IList<PropertyAccessTreeNode> nodes)
         {
             for (int i = 0; i < nodes.Count; i++)
@@ -60,14 +81,10 @@ namespace ContinuousLinq
             }
         }
 
-        private static PropertyAccessTree BuildUnoptimizedTree(Expression expression, Predicate<Type> typeFilter)
+        private static void BuildUnoptimizedTree(PropertyAccessTree tree, Expression expression, Predicate<Type> typeFilter)
         {
-            PropertyAccessTree tree = new PropertyAccessTree();
-
             var currentNodeBranch = new Stack<PropertyAccessTreeNode>();
             BuildBranches(expression, tree, currentNodeBranch, typeFilter);
-
-            return tree;
         }
 
         private static bool DoesTypeImplementINotifyPropertyChanged(Type type)
@@ -167,7 +184,8 @@ namespace ContinuousLinq
                     break;
 
                 case ExpressionType.Parameter:
-                    ParameterNode parameterNode = new ParameterNode(expression.Type);
+                    ParameterExpression parameterExpression = (ParameterExpression)expression;
+                    ParameterNode parameterNode = new ParameterNode(expression.Type, parameterExpression.Name);
                     currentNodeBranch.Push(parameterNode);
                     AddBranch(tree, currentNodeBranch);
                     break;

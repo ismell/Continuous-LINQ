@@ -66,21 +66,50 @@ namespace ContinuousLinq
 
         #region GroupJoin
 
-        //public static ReadOnlyContinuousCollection<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
-        //    this ObservableCollection<TOuter> outer,
-        //    IList<TInner> inner,
-        //    Expression<Func<TOuter, TKey>> outerKeySelector,
-        //    Expression<Func<TInner, TKey>> innerKeySelector,
-        //    Expression<Func<TOuter, ReadOnlyContinuousCollection<TInner>, TResult>> resultSelector)
-        //{
-        //    return new GroupJoinReadOnlyContinuousCollection<TOuter, TInner, TKey, TResult>(
-        //        outer,
-        //        inner,
-        //        outerKeySelector,
-        //        innerKeySelector,
-        //        resultSelector);
-        //}
+        public static ReadOnlyContinuousCollection<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
+            this ObservableCollection<TOuter> outer,
+            IList<TInner> inner,
+            Expression<Func<TOuter, TKey>> outerKeySelector,
+            Expression<Func<TInner, TKey>> innerKeySelector,
+            Expression<Func<TOuter, ReadOnlyContinuousCollection<TInner>, TResult>> resultSelector)
+        {
+            return new GroupJoinReadOnlyContinuousCollection<TOuter, TInner, TKey, TResult>(
+                outer,
+                inner,
+                outerKeySelector,
+                innerKeySelector,
+                resultSelector);
+        }
 
+        public static ReadOnlyContinuousCollection<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
+            this ReadOnlyContinuousCollection<TOuter> outer,
+            IList<TInner> inner,
+            Expression<Func<TOuter, TKey>> outerKeySelector,
+            Expression<Func<TInner, TKey>> innerKeySelector,
+            Expression<Func<TOuter, ReadOnlyContinuousCollection<TInner>, TResult>> resultSelector)
+        {
+            return new GroupJoinReadOnlyContinuousCollection<TOuter, TInner, TKey, TResult>(
+                outer,
+                inner,
+                outerKeySelector,
+                innerKeySelector,
+                resultSelector);
+        }
+
+        public static ReadOnlyContinuousCollection<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
+            this ReadOnlyObservableCollection<TOuter> outer,
+            IList<TInner> inner,
+            Expression<Func<TOuter, TKey>> outerKeySelector,
+            Expression<Func<TInner, TKey>> innerKeySelector,
+            Expression<Func<TOuter, ReadOnlyContinuousCollection<TInner>, TResult>> resultSelector)
+        {
+            return new GroupJoinReadOnlyContinuousCollection<TOuter, TInner, TKey, TResult>(
+                outer,
+                inner,
+                outerKeySelector,
+                innerKeySelector,
+                resultSelector);
+        }
         #endregion
 
         #region Where

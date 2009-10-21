@@ -18,14 +18,18 @@ namespace ContinuousLinq
             get { return _type; }
         }
 
+        public string Name { get; private set; }
+
         public override bool IsRedundantVersion(PropertyAccessTreeNode other)
         {
-            return other != this && other is ParameterNode;
+            var otherAsParameterNode = other as ParameterNode;
+            return otherAsParameterNode != null && otherAsParameterNode != this && this.Name == otherAsParameterNode.Name;
         }
 
-        public ParameterNode(Type type)
+        public ParameterNode(Type type, string name)
         {
             _type = type;
+            this.Name = name;
         }
 
         public override SubscriptionNode CreateSubscription(INotifyPropertyChanged parameter)

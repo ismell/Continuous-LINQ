@@ -10,15 +10,15 @@ using ContinuousLinq.Expressions;
 
 namespace ContinuousLinq
 {
-    internal class SelectReadOnlyContinuousCollection<TSource, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult> 
+    internal class SelectReadOnlyContinuousCollection<TSource, TResult> : ReadOnlyAdapterContinuousCollection<TSource, TResult>
     {
         internal Func<TSource, TResult> SelectorFunction { get; set; }
-        
+
         internal Dictionary<TSource, TResult> CurrentValues { get; set; }
 
         internal ListIndexer<TSource> SourceIndex { get; set; }
 
-        public SelectReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource,TResult>> selectorExpression)
+        public SelectReadOnlyContinuousCollection(IList<TSource> list, Expression<Func<TSource, TResult>> selectorExpression)
             : base(list, ExpressionPropertyAnalyzer.Analyze(selectorExpression))
         {
             this.SelectorFunction = selectorExpression.CachedCompile();
@@ -51,7 +51,7 @@ namespace ContinuousLinq
 
             this.CurrentValues[itemThatChangedAsSource] = newValue;
 
-            HashSet<int> currentIndices = this.SourceIndex[itemThatChangedAsSource];
+            IEnumerable<int> currentIndices = this.SourceIndex[itemThatChangedAsSource];
 
             foreach (int index in currentIndices)
             {
@@ -123,7 +123,7 @@ namespace ContinuousLinq
             }
             return oldValues;
         }
-        
+
         void OnReset(object sender)
         {
             if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
@@ -140,7 +140,7 @@ namespace ContinuousLinq
         {
             if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
             {
-                this.SourceIndex.Move(oldStartingIndex, newStartingIndex);
+                this.SourceIndex.Move(oldStartingIndex, oldItems, newStartingIndex);
             }
             List<TResult> newSelectedItems = GetCurrentValues(newItems);
 

@@ -322,12 +322,12 @@ namespace ContinuousLinq.UnitTests
         }
 
         [Test]
-        public void Equals_ParameterExpressionSameType_True()
+        public void Equals_ParameterExpressionSameTypeButDifferentName_False()
         {
             Expression<Func<int, int, bool>> expressionZero = (one, two) => one == two;
             Expression<Func<int, int, bool>> expressionOne = (three, four) => three == four;
 
-            Assert.IsTrue(_target.Equals(expressionZero, expressionOne));
+            Assert.IsFalse(_target.Equals(expressionZero, expressionOne));
             Assert.AreEqual(_target.GetHashCode(expressionZero), _target.GetHashCode(expressionOne));
         }
 

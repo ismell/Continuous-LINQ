@@ -21,7 +21,7 @@ namespace ContinuousLinq.UnitTests
             _source = ClinqTestFactory.CreateTwoPersonSource();
 
             _propertyAccessTree = new PropertyAccessTree();
-            ParameterNode parameterNode = new ParameterNode(typeof(Person));
+            ParameterNode parameterNode = new ParameterNode(typeof(Person), "person");
             _propertyAccessTree.Children.Add(parameterNode);
 
             var agePropertyAccessNode = new PropertyAccessNode(typeof(Person).GetProperty("Age"));

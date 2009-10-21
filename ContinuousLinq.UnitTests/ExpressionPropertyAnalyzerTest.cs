@@ -107,13 +107,13 @@ namespace ContinuousLinq.UnitTests
             PropertyAccessTreeNode parameterNode = tree.Children[0];
             Assert.AreEqual(2, parameterNode.Children.Count);
 
-            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[0];
-            Assert.AreEqual(_nameProperty, nameNode.Property);
-            Assert.AreEqual(0, nameNode.Children.Count);
-
-            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[1];
+            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[0];
             Assert.AreEqual(_ageProperty, ageNode.Property);
             Assert.AreEqual(0, ageNode.Children.Count);
+
+            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[1];
+            Assert.AreEqual(_nameProperty, nameNode.Property);
+            Assert.AreEqual(0, nameNode.Children.Count);
         }
 
 
@@ -128,11 +128,11 @@ namespace ContinuousLinq.UnitTests
             PropertyAccessTreeNode parameterNode = tree.Children[0];
             Assert.AreEqual(2, parameterNode.Children.Count);
 
-            PropertyAccessNode firstLevelAgeNode = (PropertyAccessNode)parameterNode.Children[0];
+            PropertyAccessNode firstLevelAgeNode = (PropertyAccessNode)parameterNode.Children[1];
             Assert.AreEqual(_ageProperty, firstLevelAgeNode.Property);
             Assert.AreEqual(0, firstLevelAgeNode.Children.Count);
 
-            PropertyAccessNode brotherNode = (PropertyAccessNode)parameterNode.Children[1];
+            PropertyAccessNode brotherNode = (PropertyAccessNode)parameterNode.Children[0];
             Assert.AreEqual(_brotherProperty, brotherNode.Property);
             Assert.AreEqual(1, brotherNode.Children.Count);
 
@@ -177,9 +177,9 @@ namespace ContinuousLinq.UnitTests
 
             PropertyAccessTree tree = ExpressionPropertyAnalyzer.Analyze(expression);
 
-            Assert.AreEqual(1, tree.Children.Count);
+            Assert.AreEqual(2, tree.Children.Count);
 
-            PropertyAccessTreeNode constantNode = tree.Children[0];
+            PropertyAccessTreeNode constantNode = tree.Children[1];
             Assert.IsInstanceOfType(typeof(ConstantNode), constantNode);
             Assert.AreEqual(this, ((ConstantNode)constantNode).Value);
             Assert.AreEqual(1, constantNode.Children.Count);
@@ -255,13 +255,13 @@ namespace ContinuousLinq.UnitTests
             Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
             Assert.AreEqual(2, parameterNode.Children.Count);
 
-            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[0];
-            Assert.AreEqual(_nameProperty, nameNode.Property);
-            Assert.AreEqual(0, nameNode.Children.Count);
-
-            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[1];
+            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[0];
             Assert.AreEqual(_ageProperty, ageNode.Property);
             Assert.AreEqual(0, ageNode.Children.Count);
+
+            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[1];
+            Assert.AreEqual(_nameProperty, nameNode.Property);
+            Assert.AreEqual(0, nameNode.Children.Count);
         }
 
         [Test]
@@ -276,13 +276,13 @@ namespace ContinuousLinq.UnitTests
             Assert.IsInstanceOfType(typeof(ParameterNode), parameterNode);
             Assert.AreEqual(2, parameterNode.Children.Count);
 
-            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[0];
-            Assert.AreEqual(_nameProperty, nameNode.Property);
-            Assert.AreEqual(0, nameNode.Children.Count);
-
-            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[1];
+            PropertyAccessNode ageNode = (PropertyAccessNode)parameterNode.Children[0];
             Assert.AreEqual(_ageProperty, ageNode.Property);
             Assert.AreEqual(0, ageNode.Children.Count);
+
+            PropertyAccessNode nameNode = (PropertyAccessNode)parameterNode.Children[1];
+            Assert.AreEqual(_nameProperty, nameNode.Property);
+            Assert.AreEqual(0, nameNode.Children.Count);
         }
 
         [Test]
@@ -318,15 +318,53 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, constantNode.Children.Count);
         }
 
-        //[Test]
-        //public void Test()
-        //{
-        //    Expression<Func<Person, string>> nameAccessorZero = p => p.Name;
-        //    Expression<Func<Person, string>> nameAccessorOne = p => p.Name;
-        //    Assert.AreEqual(nameAccessorZero, nameAccessorOne);
-        //    //Assert.AreSame(typeof(Person).GetProperty("Name").Name, typeof(Person).GetProperty("Name").Name);
-        //    //Assert.AreSame("Name", typeof(Person).GetProperty("Name").Name);
-        //}
+        [Test]
+        public void Analyze_ExpressionHasMultipleParameters_ReturnsPropertyAccessTree()
+        {
+            Expression<Func<Person, SimpleNotifyValue, int>> ageAdder = (person, simpleNotify) => person.Age + simpleNotify.Value;
+
+            var tree = ExpressionPropertyAnalyzer.Analyze(ageAdder);
+
+            Assert.AreEqual(2, tree.Children.Count);
+
+            ParameterNode personParameterNode = (ParameterNode)tree.Children[0];
+            Assert.AreEqual(1, personParameterNode.Children.Count);
+            Assert.AreEqual("person", personParameterNode.Name);
+            PropertyAccessNode personAgePropertyAccessNode = (PropertyAccessNode)personParameterNode.Children[0];
+            Assert.AreEqual(typeof(Person), personAgePropertyAccessNode.Property.DeclaringType);
+            Assert.AreEqual("Age", personAgePropertyAccessNode.PropertyName);
+
+            ParameterNode simpleNotifyParameterNode = (ParameterNode)tree.Children[1];
+            Assert.AreEqual(1, simpleNotifyParameterNode.Children.Count);
+            Assert.AreEqual("simpleNotify", simpleNotifyParameterNode.Name);
+            PropertyAccessNode simpleNotifyValuePropertyAccessNode = (PropertyAccessNode)simpleNotifyParameterNode.Children[0];
+            Assert.AreEqual(typeof(SimpleNotifyValue), simpleNotifyValuePropertyAccessNode.Property.DeclaringType);
+            Assert.AreEqual("Value", simpleNotifyValuePropertyAccessNode.PropertyName);
+        }
+
+        [Test]
+        public void Analyze_ExpressionHasMultipleParametersWithReduntantAccessors_ReturnsMinimalPropertyAccessTree()
+        {
+            Expression<Func<Person, SimpleNotifyValue, int>> ageAdder = (person, simpleNotify) => person.Age + person.Age + simpleNotify.Value + simpleNotify.Value;
+
+            var tree = ExpressionPropertyAnalyzer.Analyze(ageAdder);
+
+            Assert.AreEqual(2, tree.Children.Count);
+
+            ParameterNode personParameterNode = (ParameterNode)tree.Children[0];
+            Assert.AreEqual(1, personParameterNode.Children.Count);
+            Assert.AreEqual("person", personParameterNode.Name);
+            PropertyAccessNode personAgePropertyAccessNode = (PropertyAccessNode)personParameterNode.Children[0];
+            Assert.AreEqual(typeof(Person), personAgePropertyAccessNode.Property.DeclaringType);
+            Assert.AreEqual("Age", personAgePropertyAccessNode.PropertyName);
+
+            ParameterNode simpleNotifyParameterNode = (ParameterNode)tree.Children[1];
+            Assert.AreEqual(1, simpleNotifyParameterNode.Children.Count);
+            Assert.AreEqual("simpleNotify", simpleNotifyParameterNode.Name);
+            PropertyAccessNode simpleNotifyValuePropertyAccessNode = (PropertyAccessNode)simpleNotifyParameterNode.Children[0];
+            Assert.AreEqual(typeof(SimpleNotifyValue), simpleNotifyValuePropertyAccessNode.Property.DeclaringType);
+            Assert.AreEqual("Value", simpleNotifyValuePropertyAccessNode.PropertyName);
+        }
 
         #region INotifyPropertyChanged Members
 
@@ -340,5 +378,36 @@ namespace ContinuousLinq.UnitTests
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion        
+
+        public class SimpleNotifyValue : INotifyPropertyChanged
+        {
+            private int _value;
+            public int Value
+            {
+                get { return _value; }
+                set
+                {
+                    if (value == _value)
+                        return;
+
+                    _value = value;
+                    OnPropertyChanged("Value");
+                }
+            }
+
+            public SimpleNotifyValue()
+            {
+                
+            }
+
+            private void OnPropertyChanged(string propertyName)
+            {
+                if (PropertyChanged == null)
+                    return;
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+        }
     }
 }

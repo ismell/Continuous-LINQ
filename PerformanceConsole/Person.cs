@@ -211,6 +211,21 @@ namespace PerformanceConsole
             }
         }
 
+        ReadOnlyContinuousCollection<NotifyingPerson> _associatedPeople;
+        public ReadOnlyContinuousCollection<NotifyingPerson> AssociatedPeople
+        {
+            get { return _associatedPeople; }
+            set
+            {
+                if (value == _associatedPeople)
+                    return;
+
+                OnPropertyChanging("AssociatedPeople");
+                _associatedPeople = value;
+                OnPropertyChanged("AssociatedPeople");
+            }
+        }
+
         #endregion
 
         #region Methods

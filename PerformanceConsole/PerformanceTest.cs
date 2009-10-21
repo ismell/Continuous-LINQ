@@ -252,10 +252,10 @@ namespace PerformanceConsole
             int ITEMS = 3000;
             int MAX = ITEMS * 4;
             int[] data = new int[ITEMS];
-            
-            for (int i=0; i<data.Length; i++) 
+
+            for (int i = 0; i < data.Length; i++)
             {
-                data[i]=rand.Next(MAX);
+                data[i] = rand.Next(MAX);
             }
 
             TimeSpan duration;
@@ -267,18 +267,18 @@ namespace PerformanceConsole
 
             duration = DateTime.Now - start;
             Console.WriteLine(duration.ToString());
-            
+
             data = new int[ITEMS];
-            
-            for (int i=0; i<data.Length; i++) 
+
+            for (int i = 0; i < data.Length; i++)
             {
-                data[i]=rand.Next(MAX);
+                data[i] = rand.Next(MAX);
             }
 
             start = DateTime.Now;
 
             QuickSort(data, 0, data.Length - 1);
-            
+
             duration = DateTime.Now - start;
             Console.WriteLine(duration.ToString());
         }
@@ -332,7 +332,7 @@ namespace PerformanceConsole
 
         private List<List<Person>> _people;
         private List<List<NotifyingPerson>> _notifyingPeople;
-        
+
         private List<ReadOnlyContinuousCollection<Person>> _peopleQueries;
         private List<ReadOnlyContinuousCollection<NotifyingPerson>> _notifyingPeopleQueries;
 
@@ -347,7 +347,7 @@ namespace PerformanceConsole
                 _people.Add(innerList);
             }
         }
-        
+
         private void CreateQueries(int OUTER_LIST_COUNT, int INNER_LIST_COUNT)
         {
             _peopleQueries = new List<ReadOnlyContinuousCollection<Person>>();
@@ -414,7 +414,7 @@ namespace PerformanceConsole
             //long memoryForJustLists;
             //memoryForJustLists = GC.GetTotalMemory(true) - totalMemoryBase;
             //Console.WriteLine("Simple Lists: {0}", memoryForJustLists);
-            
+
             //_people = null;
 
             //Thread.MemoryBarrier();
@@ -436,7 +436,7 @@ namespace PerformanceConsole
             //Thread.MemoryBarrier();
             //memoryForQueries = GC.GetTotalMemory(true) - totalMemoryBase;
             //Console.WriteLine("Queries: {0}", memoryForJustLists);
-            
+
             //DoCompleteCollect();
             //Console.ReadLine();
         }
@@ -522,7 +522,7 @@ namespace PerformanceConsole
         public void RecursiveFunctionVsStack()
         {
             const int trials = 1000000;
-            TimeIt(trials, () => 
+            TimeIt(trials, () =>
             {
                 const int iterations = 20;
 
@@ -552,7 +552,7 @@ namespace PerformanceConsole
                 foo = 20;
                 return;
             }
-            
+
             _lastUpdated = i;
 
             RecursiveCall(i++, out foo);
@@ -581,7 +581,7 @@ namespace PerformanceConsole
 
         const int TRIALS = 1;
         const int ITEMS = 1000000;
-        
+
         public void SkipListVsSortedDictionaryAdds()
         {
             Console.WriteLine("SkipListVsSortedDictionaryAdds");
@@ -647,10 +647,82 @@ namespace PerformanceConsole
             });
         }
 
+        public void GroupJoin()
+        {
+            Random rand = new Random();
+
+            //_standardLinqResults = from outerPerson in _outer.AsEnumerable()
+            //                       join innerPerson in _inner on outerPerson.Age equals innerPerson.Age into innersMatchingOuterAge
+            //                       select new Pair<Person, IEnumerable<Person>>(outerPerson, innersMatchingOuterAge);
+            Console.WriteLine("Ready");
+            Console.ReadLine();
+
+            int outerItems = 500;
+            int innerItems = 7000;
+
+            ContinuousCollection<NotifyingPerson> inner = new ContinuousCollection<NotifyingPerson>();
+            ContinuousCollection<NotifyingPerson> outer = new ContinuousCollection<NotifyingPerson>();
+
+            var clinqResults = from outerNotifyingPerson in outer
+                               join innerNotifyingPerson in inner on outerNotifyingPerson.Age equals innerNotifyingPerson.Age into innersMatchingOuterAge
+                               //select new KeyValuePair<NotifyingPerson, ReadOnlyContinuousCollection<NotifyingPerson>>(outerNotifyingPerson, innersMatchingOuterAge);
+                               select innersMatchingOuterAge;
+            TimeIt(1, () =>
+            {
+
+                //List<NotifyingPerson> innerPeople = new List<NotifyingPerson>();
+                //for (int i = 0; i < innerItems; i++)
+                //{
+                //    innerPeople.Add(new NotifyingPerson(i.ToString(), i % outerItems));
+                //}
+
+                //inner.AddRange(innerPeople);
+
+                for (int i = 0; i < innerItems; i++)
+                {
+                    inner.Add(new NotifyingPerson(i.ToString(), i % outerItems));
+                }
+
+                for (int i = 0; i < outerItems; i++)
+                {
+                    outer.Add(new NotifyingPerson(i.ToString(), i));
+                }
+
+                //for (int i = 0; i < outerItems; i++)
+                //{
+                //    outer.Move(rand.Next(outerItems), rand.Next(outerItems));
+                //}
+
+                //for (int i = outerItems - 1; i >= 0; i--)
+                //{
+                //    //if ((rand.Next() & 1) == 0)
+                //    if(i % 2 == 0)
+                //    {
+                //        outer.RemoveAt(i);
+                //    }
+                //}
+
+                //for (int i = 0; i < innerItems; i++)
+                //{
+                //    inner.Move(rand.Next(innerItems), rand.Next(innerItems));
+                //}
+
+                //for (int i = innerItems - 1; i >= 0; i--)
+                //{
+                //    if ((rand.Next() & 1) == 0)
+                //    {
+                //        inner.RemoveAt(i);
+                //    }
+                //}
+            });
+
+            Console.WriteLine(clinqResults.Count);
+        }
+
         //public void MySkipListVsLomontAdds()
         //{
         //    Console.WriteLine("MySkipListVsLomontAdds");
- 
+
         //    int[] keys = CreateRandomSetOfKeys(ITEMS);
 
         //    Console.WriteLine("SkipList");

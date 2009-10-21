@@ -30,9 +30,9 @@ namespace ContinuousLinq.UnitTests
         [Test]
         public void Construct_Always_HasIndicesOfItemsInSource()
         {
-            Assert.AreEqual(3, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
-            Assert.AreEqual(2, _target[_third].Count);
+            Assert.AreEqual(3, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
+            Assert.AreEqual(2, _target[_third].Count());
 
             int index = 0;
             Assert.IsTrue(_target[_first].Contains(index++));
@@ -63,10 +63,10 @@ namespace ContinuousLinq.UnitTests
             _source.Insert(0, people[0]);
             _target.Add(0, people);
 
-            Assert.AreEqual(1, _target[people[0]].Count);
-            Assert.AreEqual(3, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
-            Assert.AreEqual(2, _target[_third].Count);
+            Assert.AreEqual(1, _target[people[0]].Count());
+            Assert.AreEqual(3, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
+            Assert.AreEqual(2, _target[_third].Count());
 
             int index = 0; 
             Assert.IsTrue(_target[people[0]].Contains(index++));
@@ -86,9 +86,9 @@ namespace ContinuousLinq.UnitTests
             _source.Insert(0, people[0]);
             _target.Add(0, people);
 
-            Assert.AreEqual(4, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
-            Assert.AreEqual(2, _target[_third].Count);
+            Assert.AreEqual(4, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
+            Assert.AreEqual(2, _target[_third].Count());
 
             int index = 0;
             Assert.IsTrue(_target[_first].Contains(index++));
@@ -108,9 +108,9 @@ namespace ContinuousLinq.UnitTests
             _source.Insert(4, people[0]);
             _target.Add(4, people);
 
-            Assert.AreEqual(4, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
-            Assert.AreEqual(2, _target[_third].Count);
+            Assert.AreEqual(4, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
+            Assert.AreEqual(2, _target[_third].Count());
 
             int index = 0; 
             Assert.IsTrue(_target[_first].Contains(index++));
@@ -130,9 +130,9 @@ namespace ContinuousLinq.UnitTests
             _source.RemoveAt(0);
             _target.Remove(0, people);
 
-            Assert.AreEqual(2, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
-            Assert.AreEqual(2, _target[_third].Count);
+            Assert.AreEqual(2, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
+            Assert.AreEqual(2, _target[_third].Count());
 
             int index = 0;
             Assert.IsTrue(_target[_first].Contains(index++));
@@ -150,9 +150,9 @@ namespace ContinuousLinq.UnitTests
             _source.RemoveAt(5);
             _target.Remove(5, people);
 
-            Assert.AreEqual(3, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
-            Assert.AreEqual(1, _target[_third].Count);
+            Assert.AreEqual(3, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
+            Assert.AreEqual(1, _target[_third].Count());
 
             int index = 0;
             Assert.IsTrue(_target[_first].Contains(index++));
@@ -173,8 +173,8 @@ namespace ContinuousLinq.UnitTests
             _source.RemoveAt(4);
             _target.Remove(4, people);
 
-            Assert.AreEqual(3, _target[_first].Count);
-            Assert.AreEqual(1, _target[_second].Count);
+            Assert.AreEqual(3, _target[_first].Count());
+            Assert.AreEqual(1, _target[_second].Count());
 
             int index = 0;
             Assert.IsTrue(_target[_first].Contains(index++));

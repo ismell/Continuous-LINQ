@@ -11,6 +11,11 @@ namespace ContinuousLinq.Expressions
     {
         public bool Equals(Expression x, Expression y)
         {
+            return EqualsRecursive(x, y);
+        }
+
+        private bool EqualsRecursive(Expression x, Expression y)
+        {
             if (object.ReferenceEquals(x, y))
                 return true;
 
@@ -100,8 +105,7 @@ namespace ContinuousLinq.Expressions
 
             if (parameterExpressionX != null && parameterExpressionY != null)
             {
-                //return parameterExpressionX.Name == parameterExpressionY.Name;
-                return true;
+                return parameterExpressionX.Name == parameterExpressionY.Name;
             }
 
             NewExpression newExpressionX = x as NewExpression;
@@ -127,7 +131,6 @@ namespace ContinuousLinq.Expressions
 
             return false;
         }
-
         private bool AreAllArgumentsEqual<T>(IEnumerable<T> xArguments, IEnumerable<T> yArguments)
             where T : Expression
         {

@@ -27,7 +27,7 @@ namespace ContinuousLinq.UnitTests
 
         private void InitializeTargetJustAgeAccess()
         {
-            ParameterNode parameterNode = new ParameterNode(typeof(Person));
+            ParameterNode parameterNode = new ParameterNode(typeof(Person), "person");
             _target.Children.Add(parameterNode);
 
             _agePropertyAccessNode = new PropertyAccessNode(_ageProperty);
@@ -36,7 +36,7 @@ namespace ContinuousLinq.UnitTests
 
         private void InitializeTargetBrothersAgeAccess()
         {
-            ParameterNode parameterNode = new ParameterNode(typeof(Person));
+            ParameterNode parameterNode = new ParameterNode(typeof(Person), "person");
             _target.Children.Add(parameterNode);
 
             _brotherPropertyAccessNode = new PropertyAccessNode(_brotherProperty);

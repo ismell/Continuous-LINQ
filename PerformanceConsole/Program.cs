@@ -10,6 +10,7 @@ namespace PerformanceConsole
         static void Main(string[] args)
         {
             PerformanceTest performanceTest = new PerformanceTest();
+            performanceTest.GroupJoin();
             //performanceTest.MySkipListVsLomontLookups();
             //performanceTest.MySkipListVsLomontAdds();
             //performanceTest.SkipListVsSortedDictionaryAdds();
