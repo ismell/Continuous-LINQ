@@ -107,6 +107,8 @@ namespace ContinuousLinq.Collections
 
             if (collection != null && numberOfInstancesOfCollectionLeft == 0)
             {
+                var handler = _weakEventHandlers[collection];
+                handler.Deregister();
                 _weakEventHandlers.Remove(collection);
             }
         }
@@ -334,12 +336,21 @@ namespace ContinuousLinq.Collections
         private void ClearAndReset()
         {
             _collectionIndex.Clear();
-            _weakEventHandlers.Clear();
+            ClearWeakEventHandlers();
             _collectionToNode.Clear();
             _sourceToCollectionNode.Clear();
 
             RecordCurrentValues(_collectionIndex.TopLeft, this.Source);
             FireReset();
+        }
+
+        private void ClearWeakEventHandlers()
+        {
+            foreach (var handler in _weakEventHandlers.Values)
+            {
+                handler.Deregister();
+            }
+            _weakEventHandlers.Clear();
         }
 
         void OnMove(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
