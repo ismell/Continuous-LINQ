@@ -198,16 +198,13 @@ namespace ContinuousLinq
                         _children[i].Subscribe(newChildSubject, rootSubject, listener);
                     }
                 }
-                
+
                 public void Unsubscribe(
                     INotifyPropertyChanged subject,
                     object rootSubject,
                     TListener listener)
                 {
-                    WeakPropertyChangedEventManager.Unregister(
-                        subject,
-                        _propertyAccessNode.PropertyName,
-                        listener);
+                    WeakPropertyChangedEventManager.Unregister(subject, _propertyAccessNode.PropertyName, listener, rootSubject);
 
                     UnsubscribeFromChildren(listener, subject, rootSubject);
                 }

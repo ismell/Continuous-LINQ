@@ -45,7 +45,7 @@ namespace ContinuousLinq.UnitTests.WeakEvents
         public void RemoveListenerAndChangedProperty_NewValue_DoesNotCallCallback()
         {
             _target.AddListener("Name", _listener, (me, sender, args) => me.OnPropertyChanged(sender, args));
-            _target.RemoveListener(_listener, "Name");
+            _target.RemoveListener(_listener, "Name", null);
             _person.Name = "Foooo";
 
             Assert.AreEqual(0, _listener.CallCount);

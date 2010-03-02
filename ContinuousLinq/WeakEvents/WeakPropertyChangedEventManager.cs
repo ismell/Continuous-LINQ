@@ -74,7 +74,7 @@ namespace ContinuousLinq.WeakEvents
             UnregisterSource(source);
         }
 
-        public static void Unregister(INotifyPropertyChanged source, string propertyName, object listener)
+        public static void Unregister(INotifyPropertyChanged source, string propertyName, object listener, object rootSubject)
         {
             WeakPropertyBridge bridge;
 
@@ -89,7 +89,7 @@ namespace ContinuousLinq.WeakEvents
                 return;
             }
 
-            bridge.RemoveListener(listener, propertyName);
+            bridge.RemoveListener(listener, propertyName, rootSubject);
         }
 
         public static void UnregisterSource(INotifyPropertyChanged source)

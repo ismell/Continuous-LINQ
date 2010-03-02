@@ -36,29 +36,6 @@ namespace ContinuousLinq.WeakEvents
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            //var callbacksForProperty = LookupCallbacksForProperty(args.PropertyName);
-            //if (callbacksForProperty == null)
-            //{
-            //    return;
-            //}
-
-            //var currentNode = callbacksForProperty.First;
-            //while (currentNode != null)
-            //{
-            //    var nextNode = currentNode.Next;
-                
-            //    IWeakEventCallback<PropertyChangedEventArgs> callback = (IWeakEventCallback<PropertyChangedEventArgs>)currentNode.Value;
-
-            //    if (!callback.Invoke(sender, args))
-            //    {
-            //        callbacksForProperty.Remove(currentNode);
-            //    }
-
-            //    currentNode = nextNode;
-            //}
-
-            //CheckForUnsubscribe(callbacksForProperty, args.PropertyName);
-
             ForEachCallback(args.PropertyName, (callbacksForProperty, currentNode) =>
             {
                 IWeakEventCallback<PropertyChangedEventArgs> callback = (IWeakEventCallback<PropertyChangedEventArgs>)currentNode.Value;
@@ -67,51 +44,36 @@ namespace ContinuousLinq.WeakEvents
                 {
                     callbacksForProperty.MarkForRemove(currentNode);
                 }
+                return true;
             });
+            //CheckForUnsubscribe(callbacksForProperty, args.PropertyName);
         }
 
-        public void RemoveListener(object listener, string propertyName)
+        public void RemoveListener(object listener, string propertyName, object rootSubject)
         {
-            //var callbacksForProperty = LookupCallbacksForProperty(propertyName);
-
-            //if (callbacksForProperty == null)
-            //{
-            //    return;
-            //}
-
-            //var currentNode = callbacksForProperty.First;
-            //while (currentNode != null)
-            //{
-            //    var nextNode = currentNode.Next;
-
-            //    IWeakEventCallback<PropertyChangedEventArgs> callback = (IWeakEventCallback<PropertyChangedEventArgs>)currentNode.Value;
-            //    object listenerForCallback = callback.ListenerReference.Target;
-
-            //    if (listenerForCallback == null ||
-            //        listenerForCallback == listener)
-            //    {
-            //        callbacksForProperty.Remove(currentNode);
-            //    }
-
-            //    currentNode = nextNode;
-            //}
-
-            //CheckForUnsubscribe(callbacksForProperty, propertyName);
-
             ForEachCallback(propertyName, (callbacksForProperty, currentNode) =>
             {
                 IWeakEventCallback<PropertyChangedEventArgs> callback = (IWeakEventCallback<PropertyChangedEventArgs>)currentNode.Value;
                 object listenerForCallback = callback.ListenerReference.Target;
-
-                if (listenerForCallback == null ||
-                    listenerForCallback == listener)
+                object rootSubjectForCallback = callback.RootSubject.Target;
+ 
+                if (listenerForCallback == null)
                 {
                     callbacksForProperty.MarkForRemove(currentNode);
                 }
+                else if (listenerForCallback == listener && rootSubject == rootSubjectForCallback)
+                {
+                    callbacksForProperty.MarkForRemove(currentNode);
+                    return false;
+                }
+
+                return true;
             });
+
+            //CheckForUnsubscribe(callbacksForProperty, propertyName);
         }
 
-        private void ForEachCallback(string propertyName, Action<VersionedLinkedList<IWeakCallback>, IVersionedLinkedListNode<IWeakCallback>> action)
+        private void ForEachCallback(string propertyName, Func<VersionedLinkedList<IWeakCallback>, IVersionedLinkedListNode<IWeakCallback>, bool> action)
         {
             var callbacksForProperty = LookupCallbacksForProperty(propertyName);
             if (callbacksForProperty == null)
@@ -126,7 +88,10 @@ namespace ContinuousLinq.WeakEvents
             {
                 while (currentNode != null)
                 {
-                    action(callbacksForProperty, currentNode);
+                    if (!action(callbacksForProperty, currentNode))
+                    {
+                        break;
+                    }
 
                     currentNode = callbacksForProperty.GetNext(version, currentNode);
                 }
@@ -177,6 +142,7 @@ namespace ContinuousLinq.WeakEvents
                         callbacksForProperty.MarkForRemove(currentNode);
                     }
                 }
+                return true;
             });
         }
 

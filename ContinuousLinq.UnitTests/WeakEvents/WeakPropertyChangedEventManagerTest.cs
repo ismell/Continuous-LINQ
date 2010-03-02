@@ -93,7 +93,7 @@ namespace ContinuousLinq.UnitTests.WeakEvents
         {
             RegisterOnPersonName();
 
-            WeakPropertyChangedEventManager.Unregister(_person, "Name", _listener);
+            WeakPropertyChangedEventManager.Unregister(_person, "Name", _listener, null);
             _person.Name = "Bob";
 
             Assert.AreEqual(0, _listener.CallCount);

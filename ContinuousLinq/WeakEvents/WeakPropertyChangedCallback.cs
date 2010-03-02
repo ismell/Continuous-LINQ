@@ -12,13 +12,15 @@ namespace ContinuousLinq.WeakEvents
     public interface IWeakEventCallback<TArgs> : IWeakCallback
     {
         bool Invoke(object sender, TArgs args);
+        WeakReference RootSubject { get; }
     }
 
     public class WeakPropertyChangingCallback<TListener> : 
         IWeakEventCallback<PropertyChangingEventArgs>,
         IWeakEventCallback<PropertyChangedEventArgs> 
     {
-        private WeakReference _rootSource;
+        public WeakReference RootSubject { get; set; }
+
         public WeakReference ListenerReference { get; private set; }
 
         private Action<TListener, object, object, PropertyChangingEventArgs> _propertyChangingCallback;
@@ -30,7 +32,7 @@ namespace ContinuousLinq.WeakEvents
             Action<TListener, object, object, PropertyChangingEventArgs> propertyChangingCallback,
             Action<TListener, object, object, PropertyChangedEventArgs> propertyChangedCallback)
         {
-            _rootSource = new WeakReference(rootSource);
+            RootSubject = new WeakReference(rootSource);
             ListenerReference = new WeakReference(listener);
             _propertyChangingCallback = propertyChangingCallback;
             _propertyChangedCallback = propertyChangedCallback;
@@ -39,10 +41,10 @@ namespace ContinuousLinq.WeakEvents
         public bool Invoke(object sender, PropertyChangingEventArgs args)
         {
             TListener listenerForCallback = (TListener)ListenerReference.Target;
-            object rootSource = _rootSource.Target;
-            if (listenerForCallback != null && rootSource != null)
+            object rootSubject = RootSubject.Target;
+            if (listenerForCallback != null && rootSubject != null)
             {
-                _propertyChangingCallback(listenerForCallback, sender, rootSource, args);
+                _propertyChangingCallback(listenerForCallback, sender, rootSubject, args);
                 return true;
             }
             return false;
@@ -51,10 +53,10 @@ namespace ContinuousLinq.WeakEvents
         public bool Invoke(object sender, PropertyChangedEventArgs args)
         {
             TListener listenerForCallback = (TListener)ListenerReference.Target;
-            object rootSource = _rootSource.Target;
-            if (listenerForCallback != null && rootSource != null)
+            object rootSubject = RootSubject.Target;
+            if (listenerForCallback != null && rootSubject != null)
             {
-                _propertyChangedCallback(listenerForCallback, sender, rootSource, args);
+                _propertyChangedCallback(listenerForCallback, sender, rootSubject, args);
                 return true;
             }
             return false;
@@ -65,6 +67,9 @@ namespace ContinuousLinq.WeakEvents
     public class WeakEventCallback<TListener, TArgs> : IWeakEventCallback<TArgs>
     {
         public WeakReference ListenerReference { get; private set; }
+        //Unused
+        public WeakReference RootSubject { get; private set; }
+
 
         private Action<TListener, object, TArgs> _callback;
 
@@ -72,6 +77,7 @@ namespace ContinuousLinq.WeakEvents
             object listener,
             Action<TListener, object, TArgs> callback)
         {
+            this.RootSubject = new WeakReference(null);
             ListenerReference = new WeakReference(listener);
             _callback = callback;
         }

@@ -109,10 +109,10 @@ namespace ContinuousLinq
             for (int i = 0; i < this.AccessNode.Children.Count; i++)
             {
                 PropertyAccessNode propertyNode = (PropertyAccessNode)this.AccessNode.Children[i];
-               
-                WeakPropertyChangedEventManager.Unregister(subject, propertyNode.Property.Name, this);
+
+                WeakPropertyChangedEventManager.Unregister(subject, propertyNode.Property.Name, this, null);
             }
-            
+
             if (this.Children != null)
             {
                 for (int i = 0; i < this.Children.Count; i++)
