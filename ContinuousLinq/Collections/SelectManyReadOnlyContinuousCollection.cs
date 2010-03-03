@@ -161,9 +161,11 @@ namespace ContinuousLinq.Collections
                     case NotifyCollectionChangedAction.Add:
                         FireAdd(args.NewItems, indexOfNodeInOutput + args.NewStartingIndex);
                         break;
+#if !SILVERLIGHT   
                     case NotifyCollectionChangedAction.Move:
                         FireMove(args.NewItems, indexOfNodeInOutput + args.NewStartingIndex, indexOfNodeInOutput + args.OldStartingIndex);
                         break;
+#endif
                     case NotifyCollectionChangedAction.Remove:
                         FireRemove(args.OldItems, indexOfNodeInOutput + args.OldStartingIndex);
                         break;

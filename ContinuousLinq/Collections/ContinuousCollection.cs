@@ -22,7 +22,9 @@ namespace ContinuousLinq
     /// <typeparam name="T">Type of element contained within the collection</typeparam>
     public class ContinuousCollection<T> : ObservableCollection<T>
     {
+#if !SILVERLIGHT        
         private readonly Dispatcher _dispatcher;
+#endif
 
         private delegate void ZeroDelegate();
         private delegate void IndexDelegate(int index);
@@ -35,9 +37,12 @@ namespace ContinuousLinq
         /// </summary>
         public ContinuousCollection()
         {
+#if !SILVERLIGHT        
             _dispatcher = Dispatcher.FromThread(Thread.CurrentThread);
+#endif
         }
 
+#if !SILVERLIGHT        
         /// <summary>
         /// Initializes a new ContinuouseCollection using elements copied from
         /// the specified list and obtains a reference to the dispatcher.
@@ -47,6 +52,16 @@ namespace ContinuousLinq
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
         }
+#else 
+        /// <summary>
+        /// Initializes a new ContinuouseCollection using elements copied from
+        /// the specified list and obtains a reference to the dispatcher.
+        /// </summary>
+        public ContinuousCollection(List<T> list)
+        {
+            this.AddRange(list);
+        }
+#endif
 
         public int BinarySearch(T item)
         {
@@ -74,8 +89,9 @@ namespace ContinuousLinq
 
         public void InsertRange(int index, IEnumerable<T> collection)
         {
+#if !SILVERLIGHT   
             this.CheckReentrancy();
-
+#endif
             int indexToInsertAt = index;
 
             var addedItems = new List<T>();
@@ -95,8 +111,9 @@ namespace ContinuousLinq
 
         public void RemoveRange(int index, int count)
         {
+#if !SILVERLIGHT   
             this.CheckReentrancy();
-
+#endif
             var removedItems = new List<T>();
 
             for (int i = 0; i < count; i++)
@@ -113,8 +130,9 @@ namespace ContinuousLinq
 
         public void ReplaceRange(int index, IEnumerable<T> collection)
         {
+#if !SILVERLIGHT   
             this.CheckReentrancy();
-
+#endif
             int indexToReplaceAt = index;
             var oldItems = new List<T>();
 
@@ -133,6 +151,7 @@ namespace ContinuousLinq
             this.OnCollectionReplaced(NotifyCollectionChangedAction.Replace, newItems, oldItems, index);
         }
 
+#if !SILVERLIGHT
         /// <summary>
         /// If there is no dispatcher, NoInvoke will return true (e.g. Console app)
         /// If there is a dispatcher, and CheckAccess returns true, NoInvoke will return true
@@ -145,7 +164,12 @@ namespace ContinuousLinq
         {
             return _dispatcher == null || _dispatcher.CheckAccess();
         }
-
+#else
+        private bool NoInvoke()
+        {
+            return true;
+        }
+#endif
         /// <summary>
         /// Overridden method that does an "items reset" notification on the dispatch thread
         /// so that bound GUI elements will be aware when this collection is emptied.
@@ -158,7 +182,9 @@ namespace ContinuousLinq
             }
             else
             {
+#if !SILVERLIGHT   
                 _dispatcher.Invoke(DispatcherPriority.Normal, new ZeroDelegate(ClearItems));
+#endif
             }
         }
 
@@ -176,11 +202,15 @@ namespace ContinuousLinq
             }
             else
             {
+#if !SILVERLIGHT   
                 _dispatcher.Invoke(DispatcherPriority.Normal,
                     new IndexItemDelegate(InsertItem), index, item);
+#endif
             }
         }
+        
 
+#if !SILVERLIGHT
         protected override void MoveItem(int oldIndex, int newIndex)
         {
             if (NoInvoke())
@@ -193,7 +223,7 @@ namespace ContinuousLinq
                     new IndexIndexDelegate(MoveItem), oldIndex, newIndex);
             }
         }
-
+#endif
         /// <summary>
         /// Overridden method that performs a thread-safe removal of the item from the collection. Also sends 
         /// the notification of that removal to the Dispatcher thread.
@@ -208,7 +238,9 @@ namespace ContinuousLinq
             }
             else
             {
+#if !SILVERLIGHT 
                 _dispatcher.Invoke(DispatcherPriority.Normal, new IndexDelegate(RemoveItem), index);
+#endif
             }
 
         }
@@ -226,8 +258,10 @@ namespace ContinuousLinq
             }
             else
             {
+#if !SILVERLIGHT 
                 _dispatcher.Invoke(DispatcherPriority.Normal,
                     new IndexItemDelegate(SetItem), index, item);
+#endif
             }
         }
 

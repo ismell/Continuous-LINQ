@@ -31,8 +31,9 @@ namespace ContinuousLinq.Reactive
 
         protected ReactiveObject()
         {
+#if !SILVERLIGHT
             this.Dispatcher = Dispatcher.CurrentDispatcher;
-
+#endif
             Type type = this.GetType();
 
             CreateSubscriptionsStartingBaseFirst(type);

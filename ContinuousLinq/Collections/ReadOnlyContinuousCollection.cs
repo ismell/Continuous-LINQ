@@ -57,12 +57,17 @@ namespace ContinuousLinq
         {
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startingIndex));
         }
-
+#if !SILVERLIGHT
         protected void FireMove(IList newItems, int newStartingIndex, int oldStartingIndex)
         {
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItems, newStartingIndex, oldStartingIndex));
         }
-
+#else
+        protected void FireMove(IList newItems, int newStartingIndex, int oldStartingIndex)
+        {
+            throw new NotImplementedException("Silverlight does not support move operations.");
+        }
+#endif
         #region IList<T> Members
 
         public int IndexOf(T item)

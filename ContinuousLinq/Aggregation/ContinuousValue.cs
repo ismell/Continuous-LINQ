@@ -152,9 +152,10 @@ namespace ContinuousLinq.Aggregates
 
         protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+#if !SILVERLIGHT   
             if (e.Action == NotifyCollectionChangedAction.Move)
                 return;
-
+#endif
             Refresh();
         }
 

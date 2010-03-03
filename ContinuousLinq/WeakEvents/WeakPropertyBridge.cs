@@ -213,9 +213,12 @@ namespace ContinuousLinq.WeakEvents
 
         private VersionedLinkedList<IWeakCallback> LookupCallbacksForProperty(string propertyName)
         {
-            VersionedLinkedList<IWeakCallback> callbacksForProperty;
+            VersionedLinkedList<IWeakCallback> callbacksForProperty = null;
 
-            callbacksForProperty = (VersionedLinkedList<IWeakCallback>)_propertyNameToCallbacks[propertyName];
+            if (_propertyNameToCallbacks.Contains(propertyName))
+            {
+                callbacksForProperty = (VersionedLinkedList<IWeakCallback>)_propertyNameToCallbacks[propertyName];
+            }
             return callbacksForProperty;
         }
     }

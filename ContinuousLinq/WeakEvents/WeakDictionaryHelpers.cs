@@ -11,8 +11,9 @@ namespace ContinuousLinq.WeakEvents
     // the Create factory method is used in place of a constructor
     // to handle the case where target is null, but we want the
     // reference to still appear to be alive.
-    internal class WeakReference<T> : WeakReference where T : class
+    internal class WeakReference<T> where T : class
     {
+        WeakReference _reference;
         public static WeakReference<T> Create(T target)
         {
             if (target == null)
@@ -22,11 +23,18 @@ namespace ContinuousLinq.WeakEvents
         }
 
         protected WeakReference(T target)
-            : base(target, false) { }
-
-        public new T Target
         {
-            get { return (T)base.Target; }
+            _reference = new WeakReference(target, false);
+        }
+
+        public T Target
+        {
+            get { return (T)_reference.Target; }
+        }
+
+        public virtual bool IsAlive
+        {
+            get { return _reference.IsAlive; }
         }
     }
 

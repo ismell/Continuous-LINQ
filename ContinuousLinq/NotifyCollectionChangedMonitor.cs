@@ -229,6 +229,7 @@ namespace ContinuousLinq
                             collectionArgs.NewItems.Cast<T>());
                     }
                     break;
+#if !SILVERLIGHT   
                 case NotifyCollectionChangedAction.Move:
                     if (Move != null)
                     {
@@ -239,6 +240,7 @@ namespace ContinuousLinq
                             collectionArgs.NewItems.Cast<T>());
                     }
                     break;
+#endif
                 case NotifyCollectionChangedAction.Reset:
                     ClearSubscriptions();
                     SubscribeToItems(_input);

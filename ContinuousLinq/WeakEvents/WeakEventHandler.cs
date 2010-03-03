@@ -34,7 +34,7 @@ namespace ContinuousLinq.WeakEvents
     /// <summary>
     /// Helper class to add weak handlers to events of type System.EventHandler.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public sealed class WeakEventHandler
     {
         /// <summary>
@@ -141,7 +141,7 @@ namespace ContinuousLinq.WeakEvents
     /// <summary>
     /// Helper class to add weak handlers to events of type System.EventHandler{A}.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public static class WeakEventHandler<TEventArgs> where TEventArgs : EventArgs
     {
         /// <summary>
@@ -218,7 +218,7 @@ namespace ContinuousLinq.WeakEvents
     /// <summary>
     /// Helper class to add weak handlers to events of type PropertyChangedEventHandler.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public static class WeakPropertyChangedEventHandler
     {
         public static WeakEventHandler Register<TEventListener>(
@@ -278,7 +278,7 @@ namespace ContinuousLinq.WeakEvents
     /// <summary>
     /// Helper class to add weak handlers to events of type PropertyChangedEventHandler.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public static class WeakNotifyCollectionChangedEventHandler
     {
         
