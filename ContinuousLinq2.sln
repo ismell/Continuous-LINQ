@@ -11,9 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderBookDemo", "OrderBookD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContinuousLinqSL", "ContinuousLinqSL\ContinuousLinqSL.csproj", "{741C0309-9A6D-4A3C-8571-AF5C23D31F46}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverlightCompatibility", "SilverlightCompatibility\SilverlightCompatibility.csproj", "{1707358D-D349-43F5-B6E3-16600E6A783C}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -32,6 +34,9 @@ Global
 		SccProjectUniqueName5 = ContinuousLinqSL\\ContinuousLinqSL.csproj
 		SccProjectName5 = ContinuousLinqSL
 		SccLocalPath5 = ContinuousLinqSL
+		SccProjectUniqueName6 = SilverlightCompatibility\\SilverlightCompatibility.csproj
+		SccProjectName6 = SilverlightCompatibility
+		SccLocalPath6 = SilverlightCompatibility
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +63,10 @@ Global
 		{741C0309-9A6D-4A3C-8571-AF5C23D31F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{741C0309-9A6D-4A3C-8571-AF5C23D31F46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{741C0309-9A6D-4A3C-8571-AF5C23D31F46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1707358D-D349-43F5-B6E3-16600E6A783C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1707358D-D349-43F5-B6E3-16600E6A783C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1707358D-D349-43F5-B6E3-16600E6A783C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1707358D-D349-43F5-B6E3-16600E6A783C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
