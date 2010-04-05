@@ -42,8 +42,7 @@ namespace ContinuousLinq.UnitTests
             {
                 Assert.IsTrue(args.NewStartingIndex >= 0 && args.NewStartingIndex <= 2);
                 callCounts[args.NewStartingIndex]++;
-                Assert.AreEqual(args.NewStartingIndex, args.OldStartingIndex);
-
+                
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
                 Assert.IsTrue(args.NewItems.Contains("DifferentName"));
                 Assert.IsTrue(args.OldItems.Contains("Bob"));
@@ -66,8 +65,7 @@ namespace ContinuousLinq.UnitTests
             {
                 Assert.IsTrue(args.NewStartingIndex >= 0 && args.NewStartingIndex <= 1);
                 callCounts[args.NewStartingIndex]++;
-                Assert.AreEqual(args.NewStartingIndex, args.OldStartingIndex);
-
+                
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
                 Assert.IsTrue(args.NewItems.Contains("DifferentName"));
                 Assert.IsTrue(args.OldItems.Contains("Bob"));
@@ -78,6 +76,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, callCounts[1]);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void MoveItemsAndChangeMonitoredPropertyOnItemInSource_FirstToLast_FireCollectionChangedEvent()
         {
@@ -102,5 +101,6 @@ namespace ContinuousLinq.UnitTests
             Assert.IsTrue(changedIndices.Contains(1));
             Assert.IsTrue(changedIndices.Contains(5));
         }
+#endif
     }
 }

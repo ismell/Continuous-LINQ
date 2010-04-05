@@ -64,7 +64,7 @@ namespace ContinuousLinq.Collections
                 index = ~index;
             }
             this.Output.Insert(index, item);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+            FireAddItem(item, index);
         }
 
 
@@ -73,8 +73,8 @@ namespace ContinuousLinq.Collections
             int index = this.Output.IndexOf(item);
 
             this.Output.RemoveAt(index);
-            
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+
+            FireRemoveItem(item, index);
         }
 
         #region NotifyCollectionChangedMonitor Event Handlers
@@ -106,10 +106,10 @@ namespace ContinuousLinq.Collections
         void OnReset(object sender)
         {
             this.Output.Clear();
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             foreach (TSource oldItem in oldItems)
             {
@@ -130,7 +130,7 @@ namespace ContinuousLinq.Collections
 
             this.Output = new List<TSource>();
             this.Output.AddRange(sortedList);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
     }
 

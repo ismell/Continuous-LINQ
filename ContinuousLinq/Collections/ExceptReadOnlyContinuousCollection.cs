@@ -49,7 +49,9 @@ namespace ContinuousLinq.Collections
             List<TSource> itemsAdded = AddItemsToFirst(newItems);
 
             if (itemsAdded != null)
-                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemsAdded, indexOfAdd));
+            {
+                FireAdd(itemsAdded, indexOfAdd);
+            }
         }
 
         private List<TSource> AddItemsToFirst(IEnumerable<TSource> items)
@@ -93,7 +95,9 @@ namespace ContinuousLinq.Collections
             }
 
             if (itemsAdded != null)
-                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemsAdded, indexOfAdd));
+            {
+                FireAdd(itemsAdded, indexOfAdd);
+            }
         }
 
         private void RemoveItemsFromFirst(IEnumerable<TSource> items)
@@ -123,7 +127,7 @@ namespace ContinuousLinq.Collections
             int indexOfRemoval = this.Output.IndexOf(item);
             this.Output.Remove(item);
 
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, indexOfRemoval));
+            FireRemoveItem(item, indexOfRemoval);
         }
 
         #region First Event Handlers
@@ -145,10 +149,10 @@ namespace ContinuousLinq.Collections
 
             AddItemsToFirst(this.First);
 
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
 
-        void OnReplaceOnFirst(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplaceOnFirst(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveItemsFromFirst(oldItems);
             AddItemsToFirstAndFireNotifyCollectionChanged(newItems);
@@ -181,10 +185,10 @@ namespace ContinuousLinq.Collections
 
             AddItemsToFirst(this.First);
 
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
 
-        void OnReplaceOnSecond(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplaceOnSecond(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveItemsFromSecond(oldItems);
             AddItemsToSecond(newItems);

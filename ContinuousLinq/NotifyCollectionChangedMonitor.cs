@@ -29,7 +29,7 @@ namespace ContinuousLinq
 
         public event Action<object, int, IEnumerable<T>> Add;
         public event Action<object, int, IEnumerable<T>> Remove;
-        public event Action<object, int, IEnumerable<T>, int, IEnumerable<T>> Replace;
+        public event Action<object, IEnumerable<T>, int, IEnumerable<T>> Replace;
         public event Action<object, int, IEnumerable<T>, int, IEnumerable<T>> Move;
         public event Action<object> Reset;
 
@@ -223,7 +223,6 @@ namespace ContinuousLinq
                     if (Replace != null)
                     {
                         Replace(this, 
-                            collectionArgs.OldStartingIndex,
                             collectionArgs.OldItems.Cast<T>(),
                             collectionArgs.NewStartingIndex,
                             collectionArgs.NewItems.Cast<T>());

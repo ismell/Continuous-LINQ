@@ -18,6 +18,8 @@ namespace ContinuousLinq.UnitTests
             _target = new ContinuousCollection<Person>();
         }
 
+
+#if !SILVERLIGHT
         [Test]
         public void AddRange_Always_CallsNotifyCollectionChangedOnlyOnce()
         {
@@ -30,6 +32,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, timesCalled);
         }
+
 
         [Test]
         public void AddRange_Always_CallsNotifyCollectionChangedWithCorrectValues()
@@ -47,6 +50,7 @@ namespace ContinuousLinq.UnitTests
             var newItems = args.NewItems.Cast<Person>();
             Assert.IsTrue(people.SequenceEqual(newItems));
         }
+
 
         [Test]
         public void AddRange_Always_AddsItemsToEndOfList()
@@ -352,6 +356,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(10, sum.CurrentValue);
         }
+#endif
 
         private static IEnumerable<Person> GetPeople()
         {

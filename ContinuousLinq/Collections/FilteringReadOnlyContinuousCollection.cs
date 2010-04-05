@@ -48,7 +48,7 @@ namespace ContinuousLinq.Collections
 
         void RefireCollectionChangedFromOutput(object sender, NotifyCollectionChangedEventArgs args)
         {
-            FireCollectionChanged(args);
+            RefireCollectionChanged(args);
         }
 
         void OnItemChanged(object sender, INotifyPropertyChanged itemThatChanged)
@@ -136,7 +136,7 @@ namespace ContinuousLinq.Collections
             this.ItemLookup.Clear();
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveOldItems(oldItems);
             AddNewItems(newItems);

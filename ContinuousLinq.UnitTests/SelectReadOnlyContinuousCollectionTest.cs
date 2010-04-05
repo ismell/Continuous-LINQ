@@ -80,7 +80,7 @@ namespace ContinuousLinq.UnitTests
             _source.Clear();
             Assert.AreEqual(1, callCount);
         }
-
+#if !SILVERLIGHT
         [Test]
         public void MoveItemsInSource_Always_FireCollectionChangedEvent()
         {
@@ -100,6 +100,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, callCount);
         }
 
+#endif
         [Test]
         public void ReplaceItemsInSource_Always_FireCollectionChangedEvent()
         {
@@ -111,7 +112,6 @@ namespace ContinuousLinq.UnitTests
                 callCount++;
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
                 Assert.AreEqual(0, args.NewStartingIndex);
-                Assert.AreEqual(0, args.OldStartingIndex);
                 Assert.IsTrue(args.NewItems.Contains("NewPerson"));
                 Assert.IsTrue(args.OldItems.Contains("Bob"));
             };
@@ -130,7 +130,6 @@ namespace ContinuousLinq.UnitTests
                 callCount++;
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
                 Assert.AreEqual(0, args.NewStartingIndex);
-                Assert.AreEqual(0, args.OldStartingIndex);
                 Assert.IsTrue(args.NewItems.Contains("DifferentName"));
                 Assert.IsTrue(args.OldItems.Contains("Bob"));
             };

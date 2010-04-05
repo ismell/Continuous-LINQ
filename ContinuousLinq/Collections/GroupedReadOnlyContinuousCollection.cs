@@ -23,7 +23,7 @@ namespace ContinuousLinq.Collections
 
         void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            base.FireCollectionChanged(args);
+            RefireCollectionChanged(args);
         }
 
         #region IGrouping<TKey,TSource> Members

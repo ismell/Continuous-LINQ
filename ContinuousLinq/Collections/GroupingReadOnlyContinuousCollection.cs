@@ -58,7 +58,7 @@ namespace ContinuousLinq.Collections
 
         private void OnOutputCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            FireCollectionChanged(args);
+            RefireCollectionChanged(args);
         }
 
         private GroupedReadOnlyContinuousCollection<TKey, TSource> GetCollectionForKey(TKey key)
@@ -158,7 +158,7 @@ namespace ContinuousLinq.Collections
             this.ItemToGroupIndex.Clear();
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             RemoveOldItems(oldItems);
             AddNewItems(newItems);

@@ -145,7 +145,6 @@ namespace ContinuousLinq.UnitTests
                 callCount++;
 
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
-                Assert.AreEqual(1, args.OldStartingIndex);
                 Assert.AreEqual(1, args.OldItems.Count);
 
                 Assert.AreEqual(1, args.NewStartingIndex);
@@ -168,6 +167,7 @@ namespace ContinuousLinq.UnitTests
             AssertAreEquivalent(_standardLinqResults, _target);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void MoveInOuter_Always_NotifiesCollectionChanged()
         {
@@ -201,6 +201,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, callCount);
             AssertAreEquivalent(_standardLinqResults, _target);
         }
+#endif
 
         [Test]
         public void OnOuterKeyChanged_Always_UpdatesInnerResults()
@@ -245,6 +246,7 @@ namespace ContinuousLinq.UnitTests
             AssertAreEquivalent(_standardLinqResults, _target);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void MoveInInner_Always_UpdatesCollection()
         {
@@ -252,6 +254,7 @@ namespace ContinuousLinq.UnitTests
 
             AssertAreEquivalent(_standardLinqResults, _target);
         }
+#endif
 
         [Test]
         public void OnInnerKeyChanged_Always_UpdatesInnerResults()

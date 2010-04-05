@@ -137,6 +137,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("JimParent0", _target[2].Name);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void MoveItemInSource_InFirstSublist_FireCollectionChangedEvent()
         {
@@ -161,7 +162,9 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("JimParent0", _target[2].Name);
             Assert.AreEqual("JimParent1", _target[3].Name);
         }
+#endif
 
+#if !SILVERLIGHT
         [Test]
         public void MoveItemInSource_InSecond_FireCollectionChangedEvent()
         {
@@ -186,6 +189,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("JimParent1", _target[2].Name);
             Assert.AreEqual("JimParent0", _target[3].Name);
         }
+#endif
 
         [Test]
         public void ReplaceItemInSource_FirstCollection_FireCollectionChangedEvent()
@@ -198,7 +202,7 @@ namespace ContinuousLinq.UnitTests
             {
                 callCount++;
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
-                Assert.AreEqual(1, args.OldStartingIndex);
+                Assert.AreEqual(1, args.NewStartingIndex);
                 Assert.AreEqual(oldValue, args.OldItems[0]);
                 Assert.AreEqual(replacement, args.NewItems[0]);
             };
@@ -225,7 +229,7 @@ namespace ContinuousLinq.UnitTests
             {
                 callCount++;
                 Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
-                Assert.AreEqual(2, args.OldStartingIndex);
+                Assert.AreEqual(2, args.NewStartingIndex);
                 Assert.AreEqual(oldValue, args.OldItems[0]);
                 Assert.AreEqual(replacement, args.NewItems[0]);
             };
@@ -276,6 +280,36 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(2, _target.Count);
         }
 
+#if SILVERLIGHT
+        [Test]
+        public void AddNewSublistToSource_Always_FireCollectionChangedEvent()
+        {
+            Person newPerson = new Person("Ninja", 23);
+            ClinqTestFactory.InitializeParents(newPerson);
+
+            int callCount = 0;
+
+            _target.CollectionChanged += (sender, args) =>
+            {
+                Assert.AreEqual(NotifyCollectionChangedAction.Add, args.Action);
+                Assert.AreEqual(2 + callCount, args.NewStartingIndex);
+                Assert.AreEqual(newPerson.Parents[callCount], args.NewItems[0]);
+                callCount++;
+            };
+
+            _source.Insert(1, newPerson);
+            Assert.AreEqual(2, callCount);
+
+            Assert.AreEqual(6, _target.Count);
+            Assert.AreEqual("BobParent0", _target[0].Name);
+            Assert.AreEqual("BobParent1", _target[1].Name);
+            Assert.AreEqual("NinjaParent0", _target[2].Name);
+            Assert.AreEqual("NinjaParent1", _target[3].Name);
+            Assert.AreEqual("JimParent0", _target[4].Name);
+            Assert.AreEqual("JimParent1", _target[5].Name);
+        }
+
+#else
         [Test]
         public void AddNewSublistToSource_Always_FireCollectionChangedEvent()
         {
@@ -304,6 +338,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("JimParent1", _target[5].Name);
         }
 
+#endif
         [Test]
         public void AddNewSublistToSource_SublistIsNull_DoesNotFireCollectionChangedEvent()
         {
@@ -326,6 +361,29 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("JimParent1", _target[3].Name);
         }
 
+#if SILVERLIGHT
+        [Test]
+        public void RemoveSublistFromSource_Always_FireCollectionChangedEvent()
+        {
+            int callCount = 0;
+
+            _target.CollectionChanged += (sender, args) =>
+            {
+                Assert.AreEqual(NotifyCollectionChangedAction.Remove, args.Action);
+                Assert.AreEqual(2 + callCount, args.OldStartingIndex);
+                Assert.AreEqual(_parents[1][callCount], args.OldItems[0]);
+                callCount++;
+            };
+
+            _source.RemoveAt(1);
+
+            Assert.AreEqual(2, callCount);
+
+            Assert.AreEqual(2, _target.Count);
+            Assert.AreEqual("BobParent0", _target[0].Name);
+            Assert.AreEqual("BobParent1", _target[1].Name);
+        }
+#else
         [Test]
         public void RemoveSublistFromSource_Always_FireCollectionChangedEvent()
         {
@@ -347,7 +405,33 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("BobParent0", _target[0].Name);
             Assert.AreEqual("BobParent1", _target[1].Name);
         }
+#endif
 
+#if SILVERLIGHT
+        [Test]
+        public void ReplaceItemInSource_Always_FireCollectionChangedEvent()
+        {
+            Person replacement = new Person("Ninja", 23);
+            ClinqTestFactory.InitializeParents(replacement);
+
+            int callCount = 0;
+
+            _target.CollectionChanged += (sender, args) =>
+                {
+                    Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
+                    
+                    Assert.AreEqual(2 + callCount, args.NewStartingIndex);
+                    Assert.AreEqual(replacement.Parents[callCount], args.NewItems[0]);
+                    Assert.AreEqual(_parents[1][callCount], args.OldItems[0]);
+                    
+                    callCount++;
+                };
+
+            _source[1] = replacement;
+
+            Assert.AreEqual(2, callCount);
+        }
+#else
         [Test]
         public void ReplaceItemInSource_Always_FireCollectionChangedEvent()
         {
@@ -359,18 +443,43 @@ namespace ContinuousLinq.UnitTests
             _target.CollectionChanged += (sender, args) =>
                 {
                     callCount++;
-                    Assert.AreEqual(NotifyCollectionChangedAction.Replace, args.Action);
-                    Assert.AreEqual(2, args.OldStartingIndex);
-                    CollectionAssert.AreEqual(_parents[1], args.OldItems);
-                    Assert.AreEqual(2, args.NewStartingIndex);
-                    CollectionAssert.AreEqual(replacement.Parents, args.NewItems);
+                    TestUtilities.AssertReplace(args, 2, replacement.Parents.ToArray(), _parents[1].ToArray());
                 };
 
             _source[1] = replacement;
 
             Assert.AreEqual(1, callCount);
         }
+#endif
 
+#if SILVERLIGHT
+        [Test]
+        public void ReplaceExistingSublist_NewSublistEmpty_FiresRemoveCollectionChanged()
+        {
+            var replacementParents = new ObservableCollection<Person>()
+            {
+            };
+
+            int callCount = 0;
+
+            _target.CollectionChanged += (sender, args) =>
+            {
+                Assert.AreEqual(NotifyCollectionChangedAction.Remove, args.Action);
+                Assert.AreEqual(callCount + 2, args.OldStartingIndex);
+                Assert.AreEqual(_parents[1][callCount], args.OldItems[0]);
+                callCount++;
+            };
+
+            _source[1].Parents = replacementParents;
+
+            Assert.AreEqual(2, callCount);
+
+            Assert.AreEqual(2, _target.Count);
+            Assert.AreEqual("BobParent0", _target[0].Name);
+            Assert.AreEqual("BobParent1", _target[1].Name);
+        }
+
+#else
         [Test]
         public void ReplaceExistingSublist_NewSublistEmpty_FiresRemoveCollectionChanged()
         {
@@ -397,7 +506,38 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, callCount);
         }
+#endif
 
+#if SILVERLIGHT
+        [Test]
+        public void ReplaceExistingSublist_OldSublistEmpty_FiresAddCollectionChanged()
+        {
+            Person replacement = new Person("Ninja", 23);
+            ClinqTestFactory.InitializeParents(replacement);
+            _source[1].Parents = new ObservableCollection<Person>();
+
+            int callCount = 0;
+
+            _target.CollectionChanged += (sender, args) =>
+            {
+                Assert.AreEqual(NotifyCollectionChangedAction.Add, args.Action);
+                Assert.AreEqual(2 + callCount, args.NewStartingIndex);
+                Assert.AreEqual(replacement.Parents[callCount], args.NewItems[0]);
+                
+                callCount++;
+            };
+
+            _source[1] = replacement;
+
+            Assert.AreEqual(2, callCount);
+
+            Assert.AreEqual(4, _target.Count);
+            Assert.AreEqual("BobParent0", _target[0].Name);
+            Assert.AreEqual("BobParent1", _target[1].Name);
+            Assert.AreEqual("NinjaParent0", _target[2].Name);
+            Assert.AreEqual("NinjaParent1", _target[3].Name);
+        }
+#else
         [Test]
         public void ReplaceExistingSublist_OldSublistEmpty_FiresAddCollectionChanged()
         {
@@ -426,7 +566,32 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, callCount);
         }
+#endif
 
+#if SILVERLIGHT
+        [Test]
+        public void ReplaceExistingSublist_SublistIsNull_FireCollectionChangedEvent()
+        {
+            int callCount = 0;
+            _target.CollectionChanged += (sender, args) =>
+            {
+                Assert.AreEqual(NotifyCollectionChangedAction.Remove, args.Action);
+                Assert.AreEqual(callCount, args.OldStartingIndex);
+                
+                Assert.AreEqual(_parents[0][callCount], args.OldItems[0]);
+
+                callCount++;
+            };
+
+            _source[0].Parents = null;
+
+            Assert.AreEqual(2, callCount);
+
+            Assert.AreEqual(2, _target.Count);
+            Assert.AreEqual("JimParent0", _target[0].Name);
+            Assert.AreEqual("JimParent1", _target[1].Name);
+        }
+#else
         [Test]
         public void ReplaceExistingSublist_SublistIsNull_FireCollectionChangedEvent()
         {
@@ -448,7 +613,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("JimParent0", _target[0].Name);
             Assert.AreEqual("JimParent1", _target[1].Name);
         }
-
+#endif
         [Test]
         public void ResetSource_Always_FireCollectionChangedEvent()
         {

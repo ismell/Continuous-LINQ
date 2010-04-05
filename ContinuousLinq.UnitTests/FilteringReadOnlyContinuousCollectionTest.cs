@@ -115,6 +115,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(0, _target.Count);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void MoveItemsInSource_Never_FireCollectionChangedEvent()
         {
@@ -128,6 +129,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(0, callCount);
         }
+#endif
 
         [Test]
         public void ReplaceItemsInSource_ItemPassesFilter_FiresRemoveAndAddCollectionChangedEvents()

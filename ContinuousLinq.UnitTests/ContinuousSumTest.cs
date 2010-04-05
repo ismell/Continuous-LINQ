@@ -56,7 +56,7 @@ namespace ContinuousLinq.UnitTests
             ContinuousValue<int> sum = _source.ContinuousSum(p => p.Age);
             int callCount = 0;
             sum.PropertyChanged += (sender, args) =>
-            { 
+            {
                 callCount++;
                 Assert.AreEqual("CurrentValue", args.PropertyName);
             };
@@ -90,6 +90,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(70, sum.CurrentValue);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void SumIntegers_MoveItemInCollection_SumTheSame()
         {
@@ -98,6 +99,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(30, sum.CurrentValue);
         }
+#endif
 
 
     }

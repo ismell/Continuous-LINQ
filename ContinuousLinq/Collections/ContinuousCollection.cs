@@ -59,7 +59,10 @@ namespace ContinuousLinq
         /// </summary>
         public ContinuousCollection(List<T> list)
         {
-            this.AddRange(list);
+            for (int i = 0; i < list.Count; i++)
+            {
+                Add(list[i]);
+            }
         }
 #endif
 
@@ -81,17 +84,20 @@ namespace ContinuousLinq
             return list.BinarySearch(index, count, item, comparer);
         }
 
+#if !SILVERLIGHT 
         public void AddRange(IEnumerable<T> collection)
         {
             int index = this.Count;
             this.InsertRange(index, collection);
         }
+#endif
 
+#if !SILVERLIGHT   
         public void InsertRange(int index, IEnumerable<T> collection)
         {
-#if !SILVERLIGHT   
+
             this.CheckReentrancy();
-#endif
+
             int indexToInsertAt = index;
 
             var addedItems = new List<T>();
@@ -104,16 +110,17 @@ namespace ContinuousLinq
 
             this.OnPropertyChanged("Count");
             this.OnPropertyChanged("Item[]");
-
             
             this.OnCollectionChanged(NotifyCollectionChangedAction.Add, addedItems, index);
         }
+#endif
 
+#if !SILVERLIGHT 
         public void RemoveRange(int index, int count)
         {
-#if !SILVERLIGHT   
+  
             this.CheckReentrancy();
-#endif
+
             var removedItems = new List<T>();
 
             for (int i = 0; i < count; i++)
@@ -127,12 +134,12 @@ namespace ContinuousLinq
 
             this.OnCollectionChanged(NotifyCollectionChangedAction.Remove, removedItems, index);
         }
+#endif
 
+#if !SILVERLIGHT
         public void ReplaceRange(int index, IEnumerable<T> collection)
         {
-#if !SILVERLIGHT   
             this.CheckReentrancy();
-#endif
             int indexToReplaceAt = index;
             var oldItems = new List<T>();
 
@@ -150,6 +157,8 @@ namespace ContinuousLinq
             var newItems = new List<T>(collection);
             this.OnCollectionReplaced(NotifyCollectionChangedAction.Replace, newItems, oldItems, index);
         }
+
+#endif
 
 #if !SILVERLIGHT
         /// <summary>
@@ -270,6 +279,7 @@ namespace ContinuousLinq
             this.OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
+#if !SILVERLIGHT 
         private void OnCollectionChanged(NotifyCollectionChangedAction action, IList list, int index)
         {
             this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, list, index));
@@ -279,6 +289,7 @@ namespace ContinuousLinq
         {
             this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItems, oldItems, index));
         }
+#endif
     }
 }
 

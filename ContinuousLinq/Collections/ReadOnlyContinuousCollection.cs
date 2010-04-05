@@ -20,7 +20,7 @@ namespace ContinuousLinq
 
         #endregion
 
-        protected void FireCollectionChanged(NotifyCollectionChangedEventArgs args)
+        private void FireCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
             if (CollectionChanged != null)
             {
@@ -33,30 +33,149 @@ namespace ContinuousLinq
             }
         }
 
+        protected void RefireCollectionChanged(NotifyCollectionChangedEventArgs args)
+        {
+            FireCollectionChanged(args);
+        }
+
         protected void FireReset()
         {
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
-        protected void FireAdd(IList newItems, int startingIndex)
+        protected void FireAdd(IEnumerable<T> newItems, int startingIndex)
         {
+#if SILVERLIGHT
+            int lastIndex = startingIndex;
+            foreach (var item in newItems)
+            {
+                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, lastIndex));
+                lastIndex++;
+            }
+#else
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems as IList ?? newItems.ToList(), startingIndex));
+#endif
+        }
+
+        protected void FireAddList(IList newItems, int startingIndex)
+        {
+#if SILVERLIGHT
+            for (int i = 0; i < newItems.Count; i++)
+            {
+                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems[i], startingIndex + i));
+            }
+#else
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems, startingIndex));
+#endif
         }
 
-        protected void FireRemove(IList oldItems, int startingIndex)
+        protected void FireAddItem(T item, int startingIndex)
         {
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, startingIndex));
+        }
+
+
+        protected void FireRemove(IEnumerable<T> oldItems, int startingIndex)
+        {
+#if SILVERLIGHT
+
+            int lastIndex = startingIndex;
+            foreach (var item in oldItems)
+            {
+                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, lastIndex));
+                lastIndex++;
+            }
+#else
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems as IList ?? oldItems.ToList(), startingIndex));
+#endif
+        }
+
+        protected void FireRemoveList(IList oldItems, int startingIndex)
+        {
+#if SILVERLIGHT
+            for (int i = 0; i < oldItems.Count; i++)
+            {
+                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems[i], startingIndex + i));
+            }
+#else
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, startingIndex));
+#endif
         }
 
-        protected void FireReplace(IList newItems, IList oldItems, int startingIndex)
+        protected void FireRemoveItem(T item, int startingIndex)
         {
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, startingIndex));
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, startingIndex));
         }
 
-        protected void FireReplace(object newItem, object oldItem, int startingIndex)
+        protected void FireReplace(IEnumerable<T> newItems, IEnumerable<T> oldItems, int startingIndex)
+        {
+#if SILVERLIGHT
+            int currentIndexInCollection = startingIndex;
+
+            var newItemEnumerator = newItems.GetEnumerator();
+            var oldItemEnumerator = oldItems.GetEnumerator();
+
+            bool hasMoreItemsLeftInNew = newItemEnumerator.MoveNext();
+            bool hasMoreItemsLeftInOld = oldItemEnumerator.MoveNext();
+            while(hasMoreItemsLeftInNew && hasMoreItemsLeftInOld)
+            {
+                FireReplaceItem(newItemEnumerator.Current, oldItemEnumerator.Current, currentIndexInCollection++);
+                hasMoreItemsLeftInNew = newItemEnumerator.MoveNext();
+                hasMoreItemsLeftInOld = oldItemEnumerator.MoveNext();
+            }
+
+            while (hasMoreItemsLeftInNew)
+            {
+                FireAddItem(newItemEnumerator.Current, currentIndexInCollection++);
+                hasMoreItemsLeftInNew = newItemEnumerator.MoveNext();
+            }
+
+            while (hasMoreItemsLeftInOld)
+            {
+                FireRemoveItem(oldItemEnumerator.Current, currentIndexInCollection++);
+                hasMoreItemsLeftInOld = oldItemEnumerator.MoveNext();
+            }
+
+#else
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems as IList ?? newItems.ToList(), oldItems as IList ?? oldItems.ToList(), startingIndex));
+#endif
+
+        }
+
+        protected void FireReplaceList(IList newItems, IList oldItems, int startingIndex)
+        {
+#if SILVERLIGHT
+            int indexInOldItems = 0;
+            int indexInNewItems = 0;
+
+            int currentIndexInCollection = startingIndex;
+
+            while (indexInNewItems < newItems.Count && indexInOldItems < oldItems.Count)
+            {
+                FireReplaceItem((T)newItems[indexInNewItems++], (T)oldItems[indexInOldItems++], currentIndexInCollection++);
+            }
+
+            while (indexInNewItems < newItems.Count)
+            {
+                FireAddItem((T)newItems[indexInNewItems++], currentIndexInCollection++);
+            }
+
+            while (indexInOldItems < oldItems.Count)
+            {
+                FireRemoveItem((T)oldItems[indexInOldItems++], currentIndexInCollection++);
+            }
+
+#else
+            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, startingIndex));
+#endif
+
+        }
+
+        protected void FireReplaceItem(T newItem, T oldItem, int startingIndex)
         {
             FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startingIndex));
         }
+
 #if !SILVERLIGHT
         protected void FireMove(IList newItems, int newStartingIndex, int oldStartingIndex)
         {

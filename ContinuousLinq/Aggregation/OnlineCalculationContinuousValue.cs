@@ -97,7 +97,7 @@ namespace ContinuousLinq.Aggregates
             }
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             foreach (var item in oldItems)
             {

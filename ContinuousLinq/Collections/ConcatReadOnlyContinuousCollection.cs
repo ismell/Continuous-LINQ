@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Collections;
 
 namespace ContinuousLinq.Collections
 {
@@ -36,22 +37,22 @@ namespace ContinuousLinq.Collections
 
         void OnAddToFirst(object sender, int index, IEnumerable<TSource> newItems)
         {
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems.ToList(), index));
+            FireAdd(newItems, index);
         }
 
         void OnRemoveFromFirst(object sender, int index, IEnumerable<TSource> oldItems)
         {
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems.ToList(), index));
+            FireRemove(oldItems, index);
         }
 
         void OnResetFirst(object sender)
         {
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
 
-        void OnReplaceOnFirst(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplaceOnFirst(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems.ToList(), oldItems.ToList(), oldStartingIndex));
+            FireReplace(newItems, oldItems, newStartingIndex);
         }
 
         #endregion
@@ -62,27 +63,26 @@ namespace ContinuousLinq.Collections
         {
             int adjustedIndex = this.First.Count + index;
 
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItems.ToList(), adjustedIndex));
+            FireAdd(newItems, adjustedIndex);
         }
 
         void OnRemoveFromSecond(object sender, int index, IEnumerable<TSource> oldItems)
         {
             int adjustedIndex = this.First.Count + index;
 
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems.ToList(), adjustedIndex));
+            FireRemove(oldItems, adjustedIndex);
         }
 
         void OnResetSecond(object sender)
         {
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
 
-        void OnReplaceOnSecond(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplaceOnSecond(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
-            int adjustedIndex = this.First.Count + oldStartingIndex;
+            int adjustedIndex = this.First.Count + newStartingIndex;
 
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems.ToList(),
-                                                                       oldItems.ToList(), adjustedIndex));
+            FireReplace(newItems, oldItems, adjustedIndex);
         }
 
         #endregion

@@ -269,7 +269,7 @@ namespace ContinuousLinq.Collections
             FireMove(movedResults, newStartingIndex, oldStartingIndex);
         }
 
-        void OnOuterItemReplace(object sender, int oldStartingIndex, IEnumerable<TOuter> oldItems, int newStartingIndex, IEnumerable<TOuter> newItems)
+        void OnOuterItemReplace(object sender, IEnumerable<TOuter> oldItems, int newStartingIndex, IEnumerable<TOuter> newItems)
         {
             List<TResult> oldResults = new List<TResult>(1);
             foreach (var item in oldItems)
@@ -409,9 +409,9 @@ namespace ContinuousLinq.Collections
             //No need to do anything for a move
         }
 
-        void OnInnerItemReplace(object sender, int oldStartingIndex, IEnumerable<TInner> oldItems, int newStartingIndex, IEnumerable<TInner> newItems)
+        void OnInnerItemReplace(object sender, IEnumerable<TInner> oldItems, int newStartingIndex, IEnumerable<TInner> newItems)
         {
-            OnInnerRemove(sender, oldStartingIndex, oldItems);
+            OnInnerRemove(sender, newStartingIndex, oldItems);
             OnInnerAdd(sender, newStartingIndex, newItems);
         }
     }

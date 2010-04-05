@@ -140,7 +140,7 @@ namespace ContinuousLinq.UnitTests
                 callCount++;
             };
 
-            _target.FireBaseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new object(), new object()));
+            _target.FireBaseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new object(), new object(), 0));
 
             Assert.AreEqual(0, callCount);
         }
@@ -173,7 +173,7 @@ namespace ContinuousLinq.UnitTests
 
             public void FireBaseCollectionChanged(NotifyCollectionChangedEventArgs args)
             {
-                base.FireCollectionChanged(args);
+                RefireCollectionChanged(args);
             }
         }
     }

@@ -422,8 +422,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset), eventArgsList[0]);
+            TestUtilities.AssertReset(eventArgsList[0]);
         }
 
         [Test]
@@ -437,8 +436,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset), eventArgsList[0]);
+            TestUtilities.AssertReset(eventArgsList[0]);
         }
 
         [Test]
@@ -452,10 +450,10 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { person }, 2), eventArgsList[0]);
+            TestUtilities.AssertAdd(eventArgsList[0], 2, person);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void AddRangeToFirst_Always_RaisesNotifyCollectionChangedWithAddActionAndCorrectValues()
         {
@@ -470,9 +468,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, people, 2), eventArgsList[0]);
+            TestUtilities.AssertAdd(eventArgsList[0], 2, people.ToArray());
         }
+#endif
 
         [Test]
         public void RemoveFromFirst_Always_RaisesNotifyCollectionChangedWithRemoveActionAndCorrectValues()
@@ -483,10 +481,10 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 0), eventArgsList[0]);
+            TestUtilities.AssertRemove(eventArgsList[0], 0, _person1);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void RemoveRangeFromFirst_Always_RaisesNotifyCollectionChangedWithRemoveActionAndCorrectValues()
         {
@@ -499,9 +497,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1, _person2 }, 0), eventArgsList[0]);
+            TestUtilities.AssertRemove(eventArgsList[0], 0, _person1, _person2);
         }
+#endif
 
         [Test]
         public void ReplaceOnFirst_Always_RaisesNotifyCollectionChangedWithReplaceActionAndCorrectValues()
@@ -514,10 +512,10 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] { person }, new[] { _person1 }, 0), eventArgsList[0]);
+            TestUtilities.AssertReplace(eventArgsList[0], 0, new[] { person }, new[] { _person1 });
         }
 
+#if !SILVERLIGHT
         [Test]
         public void ReplaceRangeOnFirst_Always_RaisesNotifyCollectionChangedWithReplaceAction()
         {
@@ -532,9 +530,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace,  people, new[] { _person1, _person2 }, 0), eventArgsList[0]);
+            TestUtilities.AssertReplace(eventArgsList[0], 0, people.ToArray(), new[] { _person1, _person2 });
         }
+#endif
 
         [Test]
         public void AddToSecond_Always_RaisesNotifyCollectionChangedWithAddActionAndCorrectValues()
@@ -545,10 +543,10 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new[] { _person1 }, 2), eventArgsList[0]);
+            TestUtilities.AssertAdd(eventArgsList[0], 2, _person1);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void AddRangeToSecond_Always_RaisesNotifyCollectionChangedWithAddActionAndCorrectValues()
         {
@@ -563,9 +561,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, people, 2), eventArgsList[0]);
+            TestUtilities.AssertAdd(eventArgsList[0], 2, people.ToArray());
         }
+#endif
 
         [Test]
         public void RemoveFromSecond_Always_RaisesNotifyCollectionChangedWithRemoveActionAndCorrectValues()
@@ -578,10 +576,10 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1 }, 2), eventArgsList[0]);
+            TestUtilities.AssertRemove(eventArgsList[0], 2, _person1);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void RemoveRangeFromSecond_Always_RaisesNotifyCollectionChangedWithRemoveActionAndCorrectValuesForEachItemRemoved()
         {
@@ -594,9 +592,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new[] { _person1, _person2 }, 2), eventArgsList[0]);
+            TestUtilities.AssertRemove(eventArgsList[0], 2, _person1, _person2);
         }
+#endif
 
         [Test]
         public void ReplaceOnSecond_Always_RaisesNotifyCollectionChangedWithReplaceAction()
@@ -610,10 +608,10 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, new[] { person }, new[] { _person1 }, 2), eventArgsList[0]);
+            TestUtilities.AssertReplace(eventArgsList[0], 2, new[] { person }, new[] { _person1 });
         }
 
+#if !SILVERLIGHT
         [Test]
         public void ReplaceRangeOnSecond_Always_RaisesNotifyCollectionChangedWithReplaceAction()
         {
@@ -628,9 +626,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(1, eventArgsList.Count);
 
-            TestUtilities.AssertCollectionChangedEventArgsEqual(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, people, new[] { _person1, _person2 }, 2), eventArgsList[0]);
+            TestUtilities.AssertReplace(eventArgsList[0], 2, people.ToArray(), new[] { _person1, _person2 });
         }
+#endif
 
         private IEnumerable<Person> ConcatenateFirstAndSecond()
         {

@@ -55,7 +55,7 @@ namespace ContinuousLinq
 
             foreach (int index in currentIndices)
             {
-                FireReplace(newValue, oldValue, index);
+                FireReplaceItem(newValue, oldValue, index);
             }
         }
 
@@ -147,7 +147,7 @@ namespace ContinuousLinq
             FireMove(newSelectedItems, newStartingIndex, oldStartingIndex);
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             if (this.NotifyCollectionChangedMonitor.IsMonitoringChildProperties)
             {

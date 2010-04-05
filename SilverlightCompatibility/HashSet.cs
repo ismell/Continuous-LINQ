@@ -21,7 +21,7 @@ namespace System.Collections.Specialized
 
         public void Add(T item)
         {
-            this.Add(item, null);
+            this[item] = null;
         }
     }
 }

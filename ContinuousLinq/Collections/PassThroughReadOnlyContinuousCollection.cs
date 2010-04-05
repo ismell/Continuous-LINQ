@@ -18,7 +18,7 @@ namespace ContinuousLinq
 
         void OnSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            base.FireCollectionChanged(args);
+            RefireCollectionChanged(args);
         }
         
         public override int Count

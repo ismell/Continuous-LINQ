@@ -65,10 +65,9 @@ namespace ContinuousLinq.UnitTests
         public void ReplaceInSource_SingleItem_FiresReplace()
         {
             int callCount = 0;
-            _target.Replace += (sender, oldIndex, oldItems, newIndex, newItems) =>
+            _target.Replace += (sender, oldItems, newIndex, newItems) =>
             {
                 callCount++;
-                Assert.AreEqual(0, oldIndex);
                 Assert.IsNotNull(oldItems);
                 Assert.AreEqual(1, oldItems.Count());
                 
@@ -81,6 +80,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, callCount);
         }
 
+        #if !SILVERLIGHT
         [Test]
         public void MoveInSource_SingleItem_FiresMove()
         {
@@ -100,6 +100,7 @@ namespace ContinuousLinq.UnitTests
             _source.Move(0, 1);
             Assert.AreEqual(1, callCount);
         }
+        #endif
 
         [Test]
         public void InsertInSource_SingleItem_FiresReplace()
@@ -177,6 +178,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(1, callCount);
         }
 
+#if !SILVERLIGHT
         [Test]
         public void MoveItemInSourceAndChangePropertyOnItem_SingleItem_ItemChangedNotFired()
         {
@@ -190,6 +192,7 @@ namespace ContinuousLinq.UnitTests
             
             Assert.AreEqual(1, callCount);
         }
+#endif
 
         [Test]
         public void ClearSourceAndChangePropertyOnItem_SingleItem_ItemChangedNotFired()

@@ -93,7 +93,7 @@ namespace ContinuousLinq.Collections
             List<TSource> newlyAddedItems = AddValues(newItems, out indexInOutput);
             if (newlyAddedItems != null)
             {
-                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newlyAddedItems, indexInOutput));
+                FireAdd(newlyAddedItems, indexInOutput);
             }
         }
 
@@ -108,7 +108,7 @@ namespace ContinuousLinq.Collections
             List<TSource> removedItems = RemoveValues(oldItems, out indexInOutput);
             if (removedItems != null)
             {
-                FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removedItems, indexInOutput));
+                FireRemove(removedItems, indexInOutput);
             }
         }
 
@@ -118,10 +118,10 @@ namespace ContinuousLinq.Collections
             this.ReferenceCountTracker.Clear();
             int indexInOutput;
             AddValues(this.Source, out indexInOutput);
-            FireCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            FireReset();
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             AddItemsAndNotifyCollectionChanged(newItems);
             RemoveItemsAndNotifyCollectionChanged(oldItems);

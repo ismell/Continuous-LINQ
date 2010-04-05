@@ -159,7 +159,7 @@ namespace ContinuousLinq.Collections
                 switch (args.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
-                        FireAdd(args.NewItems, indexOfNodeInOutput + args.NewStartingIndex);
+                        FireAddList(args.NewItems, indexOfNodeInOutput + args.NewStartingIndex);
                         break;
 #if !SILVERLIGHT   
                     case NotifyCollectionChangedAction.Move:
@@ -167,10 +167,10 @@ namespace ContinuousLinq.Collections
                         break;
 #endif
                     case NotifyCollectionChangedAction.Remove:
-                        FireRemove(args.OldItems, indexOfNodeInOutput + args.OldStartingIndex);
+                        FireRemoveList(args.OldItems, indexOfNodeInOutput + args.OldStartingIndex);
                         break;
                     case NotifyCollectionChangedAction.Replace:
-                        FireReplace(args.NewItems, args.OldItems, indexOfNodeInOutput + args.NewStartingIndex);
+                        FireReplaceList(args.NewItems, args.OldItems, indexOfNodeInOutput + args.NewStartingIndex);
                         break;
                     case NotifyCollectionChangedAction.Reset:
                         FireReset();
@@ -207,15 +207,15 @@ namespace ContinuousLinq.Collections
 
             if (oldCollection != null && newCollection != null && oldCollection.Count > 0 && newCollection.Count > 0)
             {
-                FireReplace(newCollection, oldCollection, indexInFlattenedCollection);
+                FireReplaceList((IList)newCollection, (IList)oldCollection, indexInFlattenedCollection);
             }
             else if (oldCollection != null && oldCollection.Count > 0)
             {
-                FireRemove(oldCollection as IList ?? oldCollection.ToList(), indexInFlattenedCollection);
+                FireRemoveList((IList)oldCollection, indexInFlattenedCollection);
             }
             else if (newCollection.Count > 0)
             {
-                FireAdd(newCollection as IList ?? newCollection.ToList(), indexInFlattenedCollection);
+                FireAddList((IList)newCollection, indexInFlattenedCollection);
             }
         }
 
@@ -384,7 +384,7 @@ namespace ContinuousLinq.Collections
             }
         }
 
-        void OnReplace(object sender, int oldStartingIndex, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
+        void OnReplace(object sender, IEnumerable<TSource> oldItems, int newStartingIndex, IEnumerable<TSource> newItems)
         {
             IndexingSkipList<IList<TResult>>.Node previousNode;
 
