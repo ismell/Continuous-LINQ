@@ -34,7 +34,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreEqual(cachedZero, cachedOne);
         }
-
+#if !SILVERLIGHT
         [Test]
         public void GetCompiledExpression_ClosureInExpression_DifferentDelegate()
         {
@@ -48,6 +48,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.AreNotEqual(cachedZero, cachedOne);
         }
+#endif
 
         [Test]
         public void GetCompiledExpressionAndExecuteBoth_ClosureInExpression_SameResult()

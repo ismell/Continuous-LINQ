@@ -33,7 +33,7 @@ namespace ContinuousLinq.UnitTests
 
             Assert.IsTrue(target.WasAlreadyOpen);
         }
-
+#if !SILVERLIGHT
         [Test]
         public void WasAlreadyStatic_OriginalClosed_False()
         {
@@ -43,7 +43,9 @@ namespace ContinuousLinq.UnitTests
 
             Assert.IsFalse(target.WasAlreadyOpen);
         }
+#endif
 
+#if !SILVERLIGHT
         [Test]
         public void OpenVersion_OriginalHasClosedVariable_OpenVersionHasTransformRootExpression()
         {
@@ -59,7 +61,7 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual(typeof(Person), target.OpenVersion.Parameters[1].Type);
             Assert.AreEqual(typeof(Func<,,>), target.OpenVersion.Type.GetGenericTypeDefinition());
         }
-
+#endif
         [Test]
         public void OpenVersion_OriginalIsOpenAndHasConstantDefinedInExpression_DoesNotTransform()
         {

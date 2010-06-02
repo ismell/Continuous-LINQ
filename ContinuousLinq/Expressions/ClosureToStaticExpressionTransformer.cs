@@ -13,7 +13,11 @@ namespace ContinuousLinq.Expressions
         public ClosedToOpenExpressionTransformer(LambdaExpression rootExpression)
         {
             _rootExpression = rootExpression;
+#if SILVERLIGHT
+            this.OpenVersion = _rootExpression;
+#else
             Visit(rootExpression);
+#endif
         }
 
         public LambdaExpression OpenVersion { get; private set; }

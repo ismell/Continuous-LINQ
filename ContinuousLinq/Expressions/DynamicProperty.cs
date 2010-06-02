@@ -75,22 +75,20 @@ namespace ContinuousLinq.Expressions
                     return;
                 }
 
-                MethodInfo getterMethodInfo = _property.GetGetMethod(true);
+                MethodInfo getterMethodInfo = _property.GetGetMethod();
 
                 if (getterMethodInfo == null)
                     throw new InvalidOperationException("No getter method found on property");
 
                 DynamicMethod dynamicMethod = new DynamicMethod(
-                    string.Format("_dynamicGet{0}{1}{2}", _property.DeclaringType, _property.Name, Guid.NewGuid()),
+                    string.Empty,
                     typeof(object),
-                    new[] { typeof(object) },
-                    _property.Module,
-                    true);
+                    new[] { typeof(object) });
 
                 ILGenerator il = dynamicMethod.GetILGenerator();
 
                 il.Emit(OpCodes.Ldarg_0);
-                //il.Emit(OpCodes.Castclass, _property.DeclaringType);
+                il.Emit(OpCodes.Castclass, _property.DeclaringType);
 
                 il.EmitCall(OpCodes.Callvirt, getterMethodInfo, null);
 
