@@ -69,6 +69,9 @@
     <Compile Include="..\ContinuousLinq.UnitTests\AsReadOnlyTest.cs">
       <Link>AsReadOnlyTest.cs</Link>
     </Compile>
+    <Compile Include="..\ContinuousLinq.UnitTests\BaseReadOnlyCollectionTest.cs">
+      <Link>BaseReadOnlyCollectionTest.cs</Link>
+    </Compile>
     <Compile Include="..\ContinuousLinq.UnitTests\ClinqTestFactory.cs">
       <Link>ClinqTestFactory.cs</Link>
     </Compile>
@@ -119,6 +122,9 @@
     </Compile>
     <Compile Include="..\ContinuousLinq.UnitTests\ExpressionPropertyAnalyzerTest.cs">
       <Link>ExpressionPropertyAnalyzerTest.cs</Link>
+    </Compile>
+    <Compile Include="..\ContinuousLinq.UnitTests\Extensions.cs">
+      <Link>Extensions.cs</Link>
     </Compile>
     <Compile Include="..\ContinuousLinq.UnitTests\FilteringReadOnlyContinuousCollectionTest.cs">
       <Link>FilteringReadOnlyContinuousCollectionTest.cs</Link>
@@ -186,6 +192,9 @@
     <Compile Include="..\ContinuousLinq.UnitTests\SkipListTest.cs">
       <Link>SkipListTest.cs</Link>
     </Compile>
+    <Compile Include="..\ContinuousLinq.UnitTests\SkipReadOnlyContinuousCollectionTest.cs">
+      <Link>SkipReadOnlyContinuousCollectionTest.cs</Link>
+    </Compile>
     <Compile Include="..\ContinuousLinq.UnitTests\SortTest.cs">
       <Link>SortTest.cs</Link>
     </Compile>
@@ -194,6 +203,9 @@
     </Compile>
     <Compile Include="..\ContinuousLinq.UnitTests\SubscriptionTreeTest.cs">
       <Link>SubscriptionTreeTest.cs</Link>
+    </Compile>
+    <Compile Include="..\ContinuousLinq.UnitTests\TakeReadOnlyContinuousCollectionTest.cs">
+      <Link>TakeReadOnlyContinuousCollectionTest.cs</Link>
     </Compile>
     <Compile Include="..\ContinuousLinq.UnitTests\TestUtilities.cs">
       <Link>TestUtilities.cs</Link>

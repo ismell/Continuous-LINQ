@@ -65,7 +65,13 @@
     <Compile Include="Collections\OrderedReadOnlyContinuousCollection.cs" />
     <Compile Include="Collections\ReadOnlyTwoCollectionOperationContinuousCollection.cs" />
     <Compile Include="Collections\SelectManyReadOnlyContinuousCollection.cs" />
+    <Compile Include="Collections\SkipReadOnlyContinuousCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Collections\SortingReadOnlyContinuousCollection.cs" />
+    <Compile Include="Collections\TakeReadOnlyContinuousCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Collections\ThenByReadOnlyContinuousCollection.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="Expressions\ClosureToStaticExpressionFactory.cs" />

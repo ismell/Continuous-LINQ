@@ -327,5 +327,34 @@ namespace ContinuousLinq
 
         #endregion
 
+        #region Take
+        public static ReadOnlyContinuousCollection<TSource> Take<TSource>(this ObservableCollection<TSource> collection, int count)
+        {
+            return new TakeReadOnlyContinuousCollection<TSource>(collection, count);
+        }
+        public static ReadOnlyContinuousCollection<TSource> Take<TSource>(this ReadOnlyObservableCollection<TSource> collection, int count)
+        {
+            return new TakeReadOnlyContinuousCollection<TSource>(collection, count);
+        }
+        public static ReadOnlyContinuousCollection<TSource> Take<TSource>(this ReadOnlyContinuousCollection<TSource> collection, int count)
+        {
+            return new TakeReadOnlyContinuousCollection<TSource>(collection, count);
+        }
+        #endregion
+
+        #region Skip
+        public static ReadOnlyContinuousCollection<TSource> Skip<TSource>(this ObservableCollection<TSource> collection, int count)
+        {
+            return new SkipReadOnlyContinuousCollection<TSource>(collection, count);
+        }
+        public static ReadOnlyContinuousCollection<TSource> Skip<TSource>(this ReadOnlyObservableCollection<TSource> collection, int count)
+        {
+            return new SkipReadOnlyContinuousCollection<TSource>(collection, count);
+        }
+        public static ReadOnlyContinuousCollection<TSource> Skip<TSource>(this ReadOnlyContinuousCollection<TSource> collection, int count)
+        {
+            return new SkipReadOnlyContinuousCollection<TSource>(collection, count);
+        }
+        #endregion
     }
 }

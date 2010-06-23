@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Visual Studio 2008\Projects\TestSolution\WpfApplication1\bin\Debug\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -56,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsReadOnlyTest.cs" />
+    <Compile Include="BaseReadOnlyCollectionTest.cs" />
     <Compile Include="ClinqTestFactory.cs" />
     <Compile Include="ClosureToStaticExpressionFactoryTest.cs" />
     <Compile Include="ClosureToStaticExpressionTransformerTest.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="ExceptReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="ExpressionEqualityComparerTest.cs" />
     <Compile Include="ExpressionPropertyAnalyzerTest.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="FilteringReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="FirstOrDefaultTest.cs" />
     <Compile Include="GroupByTest.cs" />
@@ -96,9 +99,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NotifyCollectionChangedMonitorTest.cs" />
     <Compile Include="SkipListTest.cs" />
+    <Compile Include="SkipReadOnlyContinuousCollectionTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SortTest.cs" />
     <Compile Include="SubscriptionNodeTest.cs" />
     <Compile Include="SubscriptionTreeTest.cs" />
+    <Compile Include="TakeReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="ThenByTest.cs" />
     <Compile Include="VersionedLinkedListTest.cs" />

@@ -41,14 +41,17 @@ namespace ContinuousLinq.UnitTests
         }
         public static ObservableCollection<Person> CreateSixPersonSource()
         {
+            return CreateAnyPersonSource(6);
+        }
+        public static ObservableCollection<Person>CreateAnyPersonSource(int persons)
+        {
             ObservableCollection<Person> source = new ObservableCollection<Person>();
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < persons; i++)
             {
                 source.Add(new Person(i.ToString(), i * 10));
             }
             return source;
         }
-
         public static ObservableCollection<Person> CreateSixPersonSourceWithDuplicates()
         {
             Person bob = new Person("Bob", 10);

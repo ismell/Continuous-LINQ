@@ -24,7 +24,90 @@ namespace PerformanceConsole
                 _source.Add(new Person(i.ToString(), i));
             }
         }
+        public void TakeTest()
+        {
+            DateTime start = DateTime.Now;
+            var result = _source.Take(500);
+            for (int i = _source.Count; i > 0; i--)
+            {
+                _source.RemoveAt(0);
+            }
+            var duration = DateTime.Now - start;
+            Console.WriteLine(duration.TotalMilliseconds + " ms");
+            start = DateTime.Now;
+            for (int i = 0; i < 3000; i++)
+            {
+                _source.Add(new Person(i.ToString(), i));
+            }
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.TotalMilliseconds + " ms");
+        }
 
+        public void SkipTest()
+        {
+            DateTime start = DateTime.Now;
+            var result = _source.Skip(500);
+            for (int i = _source.Count; i > 0; i--)
+            {
+                _source.RemoveAt(0);
+            }
+            var duration = DateTime.Now - start;
+            Console.WriteLine(duration.TotalMilliseconds+" ms");
+            start = DateTime.Now;
+            for(int i = 0; i<3000; i++)
+            {
+                _source.Add(new Person(i.ToString(), i));
+            }
+            duration = DateTime.Now - start;
+            Console.WriteLine(duration.TotalMilliseconds + " ms");  
+        }
+        public void SkipTakeCombineAssertTest()
+        {
+            DateTime start = DateTime.Now;
+
+            //var result = (from p in _source
+            //             where p.Age % 3 == 0
+            //             select p).Skip(100).Take(45);
+            //System.Diagnostics.Debug.Assert(result[0].Age==300);
+            //System.Diagnostics.Debug.Assert(result.Count == 45);
+            //int countIndex = 0;
+            //start = DateTime.Now;
+            //foreach(int num in result.Select(p=>p.Age))
+            //{
+            //    System.Diagnostics.Debug.Assert((countIndex + 100)*3 == num);
+            //    countIndex++;
+            //}
+            //System.Diagnostics.Debug.Assert(countIndex == 45);
+            //var duration = DateTime.Now - start;
+            //Console.WriteLine(duration.TotalMilliseconds + " ms");
+            var result = (from p in
+                              ((from p in _source
+                                select p).Skip(100).Take(45))
+                          where p.Age % 3 == 0
+                          select p).OrderBy(i => i.Age);
+
+            System.Diagnostics.Debug.Assert(result[0].Age == 102);
+            System.Diagnostics.Debug.Assert(result.Count == 15);
+            int countIndex = 0;
+            start = DateTime.Now;
+            foreach (int num in result.Select(p => p.Age))
+            {
+                System.Diagnostics.Debug.Assert((countIndex + 34) * 3 == num);
+                countIndex++;
+            }
+            _source.Insert(101, new Person("", 2));
+            _source.Insert(105, new Person("", 33));
+            countIndex = 0;
+            System.Diagnostics.Debug.Assert(result[0].Age==33);
+            foreach (int num in result.Select(p => p.Age).Skip(1))
+            {
+                System.Diagnostics.Debug.Assert((countIndex + 34) * 3 == num);
+                countIndex++;
+            }
+            System.Diagnostics.Debug.Assert(countIndex == 14);
+            var duration = DateTime.Now - start;
+            Console.WriteLine(duration.TotalMilliseconds + " ms");
+        }
         public void WhereTest()
         {
             Random rand = new Random();

@@ -10,7 +10,7 @@ namespace PerformanceConsole
         static void Main(string[] args)
         {
             PerformanceTest performanceTest = new PerformanceTest();
-            performanceTest.GroupJoin();
+            //performanceTest.GroupJoin();
             //performanceTest.MySkipListVsLomontLookups();
             //performanceTest.MySkipListVsLomontAdds();
             //performanceTest.SkipListVsSortedDictionaryAdds();
@@ -30,6 +30,9 @@ namespace PerformanceConsole
             //performanceTest.WhereTest();
             //performanceTest.ContinuousSumWithoutPausing();
             //performanceTest.ContinuousSumWithPausing();
+            //performanceTest.TakeTest();
+            //performanceTest.SkipTest();
+            performanceTest.SkipTakeCombineAssertTest();
         }
     }
 }
