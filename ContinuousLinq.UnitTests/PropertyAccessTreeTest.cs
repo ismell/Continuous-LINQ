@@ -179,14 +179,22 @@ namespace ContinuousLinq.UnitTests
         public void DoesEntireTreeSupportINotifyPropertyChanging_OneLevelAndDoesNot_ReturnsFalse()
         {
             InitializeTargetJustAgeAccess();
+#if USE_NOTIFYING_VERSION
+            Assert.IsTrue(_target.DoesEntireTreeSupportINotifyPropertyChanging);
+#else
             Assert.IsFalse(_target.DoesEntireTreeSupportINotifyPropertyChanging);
+#endif
         }
 
         [Test]
         public void DoesEntireTreeSupportINotifyPropertyChanging_TwoLevelAndDoesNot_ReturnsFalse()
         {
             InitializeTargetBrothersAgeAccess();
+#if USE_NOTIFYING_VERSION
+            Assert.IsTrue(_target.DoesEntireTreeSupportINotifyPropertyChanging);
+#else
             Assert.IsFalse(_target.DoesEntireTreeSupportINotifyPropertyChanging);
+#endif
         }
 
         [Test]

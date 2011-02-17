@@ -22,7 +22,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;USE_NOTIFYING_VERSION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -69,6 +69,7 @@
     <Compile Include="ContinuousCountTest.cs" />
     <Compile Include="ContinuousMaxTest.cs" />
     <Compile Include="ContinuousSumTest.cs" />
+    <Compile Include="CollectionMonitorTest.cs" />
     <Compile Include="DistinctReadOnlyContinuousCollectionTest.cs" />
     <Compile Include="DistinctTest.cs" />
     <Compile Include="DynamicPropertyTest.cs" />

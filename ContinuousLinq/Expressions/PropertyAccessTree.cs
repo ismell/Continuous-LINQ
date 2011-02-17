@@ -101,21 +101,33 @@ namespace ContinuousLinq
             }
         }
 
-        public IPropertyAccessTreeSubscriber<TListener> CreateCallbackSubscription<TListener>(Action<TListener, object> onPropertyChanged)
+        public IPropertyAccessTreeSubscriber<TListener> CreateCallbackSubscription<TListener>(Action<TListener, object, PropertyChangingEventArgs> onPropertyChanging, Action<TListener, object, PropertyChangedEventArgs> onPropertyChanged)
         {
             if (!this.DoesEntireTreeSupportINotifyPropertyChanging)
             {
                 throw new Exception();
             }
             
-            return new PropertyAccessTreeSubscriberINotifyPropertyChanging<TListener>(this, onPropertyChanged);
+            return new PropertyAccessTreeSubscriberINotifyPropertyChanging<TListener>(this, onPropertyChanging, onPropertyChanged);
         }
+
+        public IPropertyAccessTreeSubscriber<TListener> CreateCallbackSubscription<TListener>(Action<TListener, object, PropertyChangedEventArgs> onPropertyChanged)
+        {
+            return CreateCallbackSubscription(null, onPropertyChanged);
+        }
+
+        public IPropertyAccessTreeSubscriber<TListener> CreateCallbackSubscription<TListener>(Action<TListener, object> onPropertyChanged)
+        {
+            return CreateCallbackSubscription<TListener>(null, (me, obj, args) => onPropertyChanged(me, obj));
+        }
+
 
         private class PropertyAccessTreeSubscriberINotifyPropertyChanging<TListener> : IPropertyAccessTreeSubscriber<TListener>
         {
             private class SubscriptionNode
             {
-                private Action<TListener, object> _subscriberCallback;
+                private Action<TListener, object, PropertyChangingEventArgs> _subscriberChangingCallback;
+                private Action<TListener, object, PropertyChangedEventArgs> _subscriberChangedCallback;
                 private PropertyAccessNode _propertyAccessNode;
 
                 private Action<TListener, object, object, PropertyChangedEventArgs> _onChangedCallback;
@@ -124,11 +136,14 @@ namespace ContinuousLinq
                 private List<SubscriptionNode> _children;
 
                 public SubscriptionNode(
-                    Action<TListener, object> subscriberCallback,
+                    Action<TListener, object, PropertyChangingEventArgs> subscriberChangingCallback,
+                    Action<TListener, object, PropertyChangedEventArgs> subscriberChangedCallback,
                     PropertyAccessNode propertyAccessNode)
                 {
                     _children = new List<SubscriptionNode>();
-                    _subscriberCallback = subscriberCallback;
+                    _subscriberChangingCallback = subscriberChangingCallback;
+                    _subscriberChangedCallback = subscriberChangedCallback;
+
                     _propertyAccessNode = propertyAccessNode;
 
                     _onChangedCallback = OnPropertyChanged;
@@ -141,7 +156,7 @@ namespace ContinuousLinq
                 {
                     for (int i = 0; i < _propertyAccessNode.Children.Count; i++)
                     {
-                        var childSubscriptionNode = new SubscriptionNode(_subscriberCallback, (PropertyAccessNode)_propertyAccessNode.Children[i]);
+                        var childSubscriptionNode = new SubscriptionNode(_subscriberChangingCallback, _subscriberChangedCallback, (PropertyAccessNode)_propertyAccessNode.Children[i]);
                         _children.Add(childSubscriptionNode);
                     }
                 }
@@ -153,6 +168,8 @@ namespace ContinuousLinq
                     PropertyChangingEventArgs args)
                 {
                     UnsubscribeFromChildren(listener, subject, rootSubject);
+                    if (_subscriberChangingCallback != null) 
+                        _subscriberChangingCallback(listener, rootSubject, args);
                 }
 
                 private void OnPropertyChanged(
@@ -162,7 +179,8 @@ namespace ContinuousLinq
                     PropertyChangedEventArgs args)
                 {
                     SubscribeToChildren(listener, subject, rootSubject);
-                    _subscriberCallback(listener, rootSubject);
+                    if (_subscriberChangedCallback != null)
+                        _subscriberChangedCallback(listener, rootSubject, args);
                 }
 
                 public void Subscribe(
@@ -230,17 +248,20 @@ namespace ContinuousLinq
 
             private class RootSubscription
             {
-                private Action<TListener, object> _subscriberCallback;
+                private Action<TListener, object, PropertyChangingEventArgs> _subscriberChangingCallback;
+                private Action<TListener, object, PropertyChangedEventArgs> _subscriberChangedCallback;
                 private PropertyAccessTreeNode _propertyAccessTreeNode;
                 private List<SubscriptionNode> _children;
 
                 public RootSubscription(
-                    Action<TListener, object> subscriberCallback,
+                    Action<TListener, object, PropertyChangingEventArgs> subscriberChangingCallback,
+                    Action<TListener, object, PropertyChangedEventArgs> subscriberChangedCallback,
                     PropertyAccessTreeNode parameterNode)
                 {
                     _propertyAccessTreeNode = parameterNode;
                     _children = new List<SubscriptionNode>();
-                    _subscriberCallback = subscriberCallback;
+                    _subscriberChangingCallback = subscriberChangingCallback;
+                    _subscriberChangedCallback = subscriberChangedCallback;
 
                     BuildChildren(parameterNode);
                 }
@@ -249,7 +270,7 @@ namespace ContinuousLinq
                 {
                     for (int i = 0; i < root.Children.Count; i++)
                     {
-                        var childSubscriptionNode = new SubscriptionNode(_subscriberCallback, (PropertyAccessNode)root.Children[i]);
+                        var childSubscriptionNode = new SubscriptionNode(_subscriberChangingCallback, _subscriberChangedCallback, (PropertyAccessNode)root.Children[i]);
                         _children.Add(childSubscriptionNode);
                     }
                 }
@@ -297,7 +318,8 @@ namespace ContinuousLinq
 
             public PropertyAccessTreeSubscriberINotifyPropertyChanging(
                 PropertyAccessTree propertyAccessTree,
-                Action<TListener, object> subscriberCallback)
+                Action<TListener, object, PropertyChangingEventArgs> subscriberChangingCallback,
+                Action<TListener, object, PropertyChangedEventArgs> subscriberChangedCallback)
             {
                 _subscriptions = new List<RootSubscription>();
 
@@ -305,7 +327,7 @@ namespace ContinuousLinq
 
                 for (int i = 0; i < propertyAccessTree.Children.Count; i++)
                 {
-                    var rootSubscription = new RootSubscription(subscriberCallback, propertyAccessTree.Children[i]);
+                    var rootSubscription = new RootSubscription(subscriberChangingCallback, subscriberChangedCallback, propertyAccessTree.Children[i]);
                     _subscriptions.Add(rootSubscription);
                 }
             }

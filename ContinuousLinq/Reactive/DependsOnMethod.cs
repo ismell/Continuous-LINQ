@@ -50,7 +50,7 @@ namespace ContinuousLinq.Reactive
             return this;
         }
 
-        private static void OnAnyPropertyInSubscriptionChanges(DependsOnMethod<T> me, object objectThatChanged)
+        private static void OnAnyPropertyInSubscriptionChanges(DependsOnMethod<T> me, object objectThatChanged, PropertyChangedEventArgs args)
         {
             me._callback((T)objectThatChanged);
         }

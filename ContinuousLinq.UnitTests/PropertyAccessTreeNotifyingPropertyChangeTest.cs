@@ -56,7 +56,7 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0;
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) =>
+                (me, sender, args) =>
                 {
                     Assert.AreEqual(this, me);
                     Assert.AreEqual(person, sender);
@@ -82,7 +82,7 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0;
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) =>
+                (me, sender, args) =>
                 {
                     Assert.AreEqual(this, me);
                     Assert.AreEqual(person, sender);
@@ -108,7 +108,7 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0;
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) =>
+                (me, sender, args) =>
                 {
                     Assert.AreEqual(this, me);
                     Assert.AreEqual(person, sender);
@@ -133,7 +133,7 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0;
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) =>
+                (me, sender, args) =>
                 {
                     Assert.AreEqual(this, me);
                     Assert.AreEqual(person, sender);
@@ -162,7 +162,7 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0;
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) =>
+                (me, sender, args) =>
                 {
                     Assert.AreEqual(this, me);
                     Assert.AreEqual(person, sender);
@@ -190,7 +190,7 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0;
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) =>
+                (me, sender, args) =>
                 {
                     Assert.AreEqual(this, me);
                     Assert.AreEqual(person, sender);
@@ -217,7 +217,7 @@ namespace ContinuousLinq.UnitTests
             WeakReference personRef = new WeakReference(person);
 
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) => { });
+                (me, sender, args) => { });
 
             callbackSubscription.SubscribeToChanges(
                 person,
@@ -246,7 +246,7 @@ namespace ContinuousLinq.UnitTests
             person.Brother = brother;
 
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) => {});
+                (me, sender, args) => {});
 
             callbackSubscription.SubscribeToChanges(
                 person,
@@ -277,7 +277,7 @@ namespace ContinuousLinq.UnitTests
             person.Brother = brother;
 
             var callbackSubscription = _target.CreateCallbackSubscription<PropertyAccessTreeNotifyingPropertyChangeTest>(
-                (me, sender) => {});
+                (me, sender, args) => {});
 
             callbackSubscription.SubscribeToChanges(
                 person,

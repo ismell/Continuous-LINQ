@@ -73,7 +73,17 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\ThenByReadOnlyContinuousCollection.cs" />
+    <Compile Include="CollectionMonitor.cs" />
     <Compile Include="DictionaryExtensions.cs" />
+    <None Include="EventExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EventExtensions1.cs</LastGenOutput>
+    </None>
+    <Compile Include="EventExtensions1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EventExtensions.tt</DependentUpon>
+    </Compile>
     <Compile Include="Expressions\ClosureToStaticExpressionFactory.cs" />
     <Compile Include="Expressions\ClosureToStaticExpressionTransformer.cs" />
     <Compile Include="Expressions\CompiledExpressionCache.cs" />
@@ -100,6 +110,7 @@
     <Compile Include="Expressions\PropertyAccessTreeNode.cs" />
     <Compile Include="Collections\ReadOnlyAdapterContinuousCollection.cs" />
     <Compile Include="Collections\ReadOnlyContinuousCollection.cs" />
+    <Compile Include="PropertyNotifier.cs" />
     <Compile Include="IndexingSkipList.cs" />
     <Compile Include="ListIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Threading;
+using System.Xml.Serialization;
 
 namespace ContinuousLinq.Reactive
 {
@@ -12,12 +13,44 @@ namespace ContinuousLinq.Reactive
     {
     }
 
-    public abstract class ReactiveObject : IReactiveObject
-    {
+    public abstract class ReactiveObject : IReactiveObject {
+        #region Data Members
+#if !SILVERLIGHT
+        [NonSerialized]
+#endif
+        private bool _SuppressPropertyChanged;
+
+#if !SILVERLIGHT
+        [NonSerialized]
+#endif
+        private Dispatcher _Dispatcher;
+
+        #endregion
+
+        #region Properties
+
+        private static Dictionary<Type, IDependsOn> DependsOn { get; set; }
+
+        private List<SubscriptionTree> _subscriptionTrees;
+
+        [XmlIgnore]
+        public bool SuppressPropertyChanged {
+            get { return _SuppressPropertyChanged; }
+            set { _SuppressPropertyChanged = value; }
+        }
+
+        [XmlIgnore]
+        public Dispatcher Dispatcher {
+            get { return _Dispatcher; }
+            set { _Dispatcher = value; }
+        }
+
+        #endregion
+
         #region Events & Delegates
 
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
         public event PropertyChangingEventHandler PropertyChanging;
         
         #endregion
@@ -38,18 +71,6 @@ namespace ContinuousLinq.Reactive
 
             CreateSubscriptionsStartingBaseFirst(type);
         }
-
-        #endregion
-
-        #region Properties
-
-        private static Dictionary<Type, IDependsOn> DependsOn { get; set; }
-
-        private List<SubscriptionTree> _subscriptionTrees;
-
-        public bool SuppressPropertyChanged { get; set; }
-
-        public Dispatcher Dispatcher { get; set; }
 
         #endregion
 
@@ -84,21 +105,31 @@ namespace ContinuousLinq.Reactive
         }
 
         [DebuggerNonUserCode]
-        protected void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged == null || this.SuppressPropertyChanged)
-                return;
-
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         [DebuggerNonUserCode]
-        protected void OnPropertyChanging(string propertyName)
+        protected virtual void OnPropertyChanging(string propertyName)
         {
+            OnPropertyChanging(new PropertyChangingEventArgs(propertyName));
+        }
+
+        [DebuggerNonUserCode]
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs args) {
+            if (PropertyChanged == null || this.SuppressPropertyChanged)
+                return;
+
+            PropertyChanged(this, args);
+        }
+
+        [DebuggerNonUserCode]
+        protected virtual void OnPropertyChanging(PropertyChangingEventArgs args) {
             if (PropertyChanging == null || this.SuppressPropertyChanged)
                 return;
 
-            PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+            PropertyChanging(this, args);
         }
 
         #endregion

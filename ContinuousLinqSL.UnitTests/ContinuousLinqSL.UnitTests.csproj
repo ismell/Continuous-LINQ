@@ -189,6 +189,11 @@
     <Compile Include="..\ContinuousLinq.UnitTests\SelectTest.cs">
       <Link>SelectTest.cs</Link>
     </Compile>
+
+    <Compile Include="..\ContinuousLinq.UnitTests\CollectionMonitorTest.cs">
+      <Link>CollectionMonitorTest.cs</Link>
+    </Compile>
+
     <Compile Include="..\ContinuousLinq.UnitTests\SkipListTest.cs">
       <Link>SkipListTest.cs</Link>
     </Compile>

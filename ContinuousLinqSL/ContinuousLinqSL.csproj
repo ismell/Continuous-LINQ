@@ -213,6 +213,20 @@
     <Compile Include="..\ContinuousLinq\SkipList.cs">
       <Link>SkipList.cs</Link>
     </Compile>
+
+    <Compile Include="..\ContinuousLinq\CollectionMonitor.cs">
+      <Link>CollectionMonitor.cs</Link>
+    </Compile>
+
+    <Compile Include="..\ContinuousLinq\PropertyNotifier.cs">
+      <Link>PropertyNotifier.cs</Link>
+    </Compile>
+
+    <Compile Include="..\ContinuousLinq\EventExtensions1.cs">
+      <Link>EventExtensions1.cs</Link>
+    </Compile>
+
+
     <Compile Include="..\ContinuousLinq\VersionedLinkedList.cs">
       <Link>VersionedLinkedList.cs</Link>
     </Compile>
