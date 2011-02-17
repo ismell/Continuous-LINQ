@@ -118,18 +118,18 @@ namespace ContinuousLinq.Reactive
 
         [DebuggerNonUserCode]
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs args) {
-            if (PropertyChanged == null || this.SuppressPropertyChanged)
+            if (this.SuppressPropertyChanged)
                 return;
 
-            PropertyChanged(this, args);
+            PropertyChanged.Raise(this, args);
         }
 
         [DebuggerNonUserCode]
         protected virtual void OnPropertyChanging(PropertyChangingEventArgs args) {
-            if (PropertyChanging == null || this.SuppressPropertyChanged)
+            if (this.SuppressPropertyChanged)
                 return;
 
-            PropertyChanging(this, args);
+            PropertyChanging.Raise(this, args);
         }
 
         #endregion
