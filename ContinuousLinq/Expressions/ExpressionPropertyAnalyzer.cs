@@ -32,6 +32,23 @@ namespace ContinuousLinq
             return tree;
         }
 
+        public static string ExtractPropertyName<T, TResult>(Expression<Func<T, TResult>> propertyAccessor) {
+            var lambda = propertyAccessor as LambdaExpression;
+            MemberExpression memberExpression;
+            if (lambda.Body is UnaryExpression) {
+                var unaryExpression = lambda.Body as UnaryExpression;
+                memberExpression = unaryExpression.Operand as MemberExpression;
+            } else {
+                memberExpression = lambda.Body as MemberExpression;
+            }
+
+            var propertyInfo = memberExpression.Member as PropertyInfo;
+
+            var name = propertyInfo.Name;
+
+            return name;
+        }
+
         private static PropertyAccessTree AnalyzeLambda(LambdaExpression expression, Predicate<Type> typeFilter)
         {
             PropertyAccessTree tree = new PropertyAccessTree();

@@ -203,8 +203,45 @@ namespace ContinuousLinq.UnitTests.Reactive
         }
 
         [Test]
-        public void DependsOn_BridgeInnerProperty() {
+        public void DependsOn_BridgePublicProperty() {
             var wrapper = new ReactiveWrapper();
+
+#if USE_NOTIFYING_VERSION
+            Assert.IsTrue(wrapper.ChangingCount == 2);
+#else
+            Assert.IsTrue(wrapper.ChangingCount == 0);
+#endif
+            Assert.IsTrue(wrapper.ChangedCount == 1);
+
+#if USE_NOTIFYING_VERSION
+            Assert.IsTrue(wrapper.BothCount == 2);
+#else
+            Assert.IsTrue(wrapper.BothCount == 1);
+#endif
+
+            wrapper.ChangeNameTo("Smith");
+
+            // The name change doesn't throw PropertyChanging
+            // so the counts should not change
+#if USE_NOTIFYING_VERSION
+            Assert.IsTrue(wrapper.ChangingCount == 2);
+#else
+            Assert.IsTrue(wrapper.ChangingCount == 0);
+#endif
+
+            Assert.IsTrue(wrapper.ChangedCount == 2);
+
+#if USE_NOTIFYING_VERSION
+            Assert.IsTrue(wrapper.BothCount == 4);
+#else
+            Assert.IsTrue(wrapper.BothCount == 2);
+#endif
+        }
+
+        #if USE_NOTIFYING_VERSION
+        [Test]
+        public void DependsOn_BridgePrivateProperty() {
+            var wrapper = new ReactivePrivateWrapper();
             Assert.IsTrue(wrapper.ChangingCount == 1);
             Assert.IsTrue(wrapper.ChangedCount == 1);
             Assert.IsTrue(wrapper.BothCount == 2);
@@ -215,6 +252,7 @@ namespace ContinuousLinq.UnitTests.Reactive
             Assert.IsTrue(wrapper.ChangedCount == 2);
             Assert.IsTrue(wrapper.BothCount == 4);
         }
+        #endif
 
         public class ReactiveType0 : ReactiveObject
         {
@@ -405,21 +443,25 @@ namespace ContinuousLinq.UnitTests.Reactive
 
         public class ReactiveWrapper : ReactiveObject {
 
+            private static IPropertyBridge<ReactiveWrapper, Person> NamePropertyBridge { get; set; }
+
             static ReactiveWrapper() {
                 var dependsOn = Register<ReactiveWrapper>();
-                dependsOn.Call(me => me.ChangedCount++)
+                dependsOn.Call(me => {
+                        me.ChangedCount++;
+                    })
                     .OnChanged(me => me.Name);
-
-                dependsOn.Call(me => me.ChangingCount++)
+                
+                dependsOn.Call(me => {
+                        me.ChangingCount++;
+                    })
                     .OnChanging(me => me.Name);
 
                 dependsOn.Call(me => me.BothCount++)
                     .OnChanged(me => me.Name)
                     .OnChanging(me => me.Name);
 
-                dependsOn.Call(me => { })
-                    .OnChanged(me => me.Original.Name);
-
+                // This works as long as the property is public
                 dependsOn.Bridge(me => me.Name)
                     .With(me => me.Original.Name);
             }
@@ -448,11 +490,78 @@ namespace ContinuousLinq.UnitTests.Reactive
 
             public string Name { get { return Original.Name; } }
 
+            #region Normal Changes
+
             public int ChangedCount { get; set; }
             public int ChangingCount { get; set; }
 
             public int BothCount { get; set; }
+
+            #endregion
         }
+
+        #if USE_NOTIFYING_VERSION
+
+        public class ReactivePrivateWrapper : ReactiveObject {
+            private static IPropertyBridge<ReactivePrivateWrapper, Person> NamePropertyBridge { get; set; }
+
+            static ReactivePrivateWrapper() {
+                var dependsOn = Register<ReactivePrivateWrapper>();
+
+                dependsOn.Call(me => me.ChangedCount++)
+                    .OnChanged(me => me.Name);
+
+                dependsOn.Call(me => me.ChangingCount++)
+                    .OnChanged(me => me.Name);
+
+                dependsOn.Call(me => me.BothCount++)
+                    .OnChanged(me => me.Name)
+                    .OnChanging(me => me.Name);
+
+                // This work for any property but you have to
+                // manually subscribe
+                NamePropertyBridge = dependsOn
+                    .ManualBridge(me => me.Name)
+                    .With<Person>(person => person.Name);
+
+            }
+
+            public ReactivePrivateWrapper() {
+
+                // We have to manually raise the events the first time
+                OnPropertyChanging("Name");
+                _Original = new Person("I'm joe", 10);
+                OnPropertyChanged("Name");
+
+                NamePropertyBridge.Subscribe(this, _Original);
+            }
+
+            #region Original
+        
+            private readonly Person _Original;
+            private Person Original {
+                get { return _Original; }
+            }
+            
+            #endregion
+
+            public void ChangeNameTo(string name) {
+                Original.Name = name;
+            }
+
+            public string Name { get { return Original.Name; } }
+
+            #region Normal Changes
+
+            public int ChangedCount { get; set; }
+            public int ChangingCount { get; set; }
+
+            public int BothCount { get; set; }
+
+            #endregion
+        }
+
+        #endif
 
         [Test]
         public void Test()

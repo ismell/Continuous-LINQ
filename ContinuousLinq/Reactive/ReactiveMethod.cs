@@ -16,16 +16,16 @@ namespace ContinuousLinq.Reactive {
             PropertyChanging
         }
 
-        private Action<T> _changedCallback;
-        private Action<T> _changingCallback;
+        private readonly Action<T> _changingCallback;
+        private readonly Action<T> _changedCallback;
         private List<PropertyAccessTree> _accessTreesWithoutNotifyPropertyChanging;
         private List<IPropertyAccessTreeSubscriber<ReactiveMethod<T>>> _propertyChangeSubscribers;
 
         #region Constructor
 
-        internal ReactiveMethod(Action<T> changedCallback, Action<T> changingCallback) {
-            _changedCallback = changedCallback;
+        internal ReactiveMethod(Action<T> changingCallback, Action<T> changedCallback) {
             _changingCallback = changingCallback;
+            _changedCallback = changedCallback;
         }
 
         #endregion
@@ -100,6 +100,9 @@ namespace ContinuousLinq.Reactive {
                     listToAppendTo = new List<SubscriptionTree>();
                 }
 
+                // Don't make a closure on "this"
+                var callback = _changedCallback;
+
                 for (int i = 0; i < _accessTreesWithoutNotifyPropertyChanging.Count; i++)
                 {
                     var accessTree = _accessTreesWithoutNotifyPropertyChanging[i];
@@ -108,7 +111,7 @@ namespace ContinuousLinq.Reactive {
 
                     listToAppendTo.Add(subscriptionTree);
 
-                    subscriptionTree.PropertyChanged += obj => _changedCallback((T)obj.Parameter);
+                    subscriptionTree.PropertyChanged += obj => callback((T)obj.Parameter);
                 }
             }
         }

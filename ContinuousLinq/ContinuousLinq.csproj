@@ -125,6 +125,7 @@
     <Compile Include="Reactive\BridgeMethod.cs" />
     <Compile Include="Reactive\DependsOn.cs" />
     <Compile Include="Reactive\DependsOnMethod.cs" />
+    <Compile Include="Reactive\ManualBridgeMethod.cs" />
     <Compile Include="Reactive\ReactiveMethod.cs" />
     <Compile Include="Reactive\ReactiveObject.cs" />
     <Compile Include="ReferenceCountTracker.cs" />
