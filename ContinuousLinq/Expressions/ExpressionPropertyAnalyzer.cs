@@ -170,7 +170,7 @@ namespace ContinuousLinq
                     FieldInfo fieldInfo = memberExpression.Member as FieldInfo;
                     if (property != null)
                     {
-                        PropertyAccessNode node = new PropertyAccessNode(property);
+                        PropertyAccessNode node = new PropertyAccessNode(memberExpression);
                         currentNodeBranch.Push(node);
 
                         BuildBranches(memberExpression.Expression, tree, currentNodeBranch, typeFilter);

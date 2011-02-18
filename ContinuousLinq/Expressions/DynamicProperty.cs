@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Linq.Expressions;
 
 namespace ContinuousLinq.Expressions
 {
@@ -16,6 +17,7 @@ namespace ContinuousLinq.Expressions
         private static readonly Dictionary<PropertyInfo, DynamicProperty> _dynamicPropertyCache;
 
         private readonly PropertyInfo _property;
+        private readonly MemberExpression _expression;
 
         private Func<object, object> _getterDelegate;
 
@@ -32,6 +34,12 @@ namespace ContinuousLinq.Expressions
         public DynamicProperty(PropertyInfo property)
         {
             _property = property;
+            CreateDynamicGetterDelegate();
+        }
+
+        public DynamicProperty(MemberExpression expression) {
+            _property = (PropertyInfo)expression.Member;
+            _expression = expression;
             CreateDynamicGetterDelegate();
         }
 
@@ -61,10 +69,70 @@ namespace ContinuousLinq.Expressions
             return cached;
         }
 
+        public static DynamicProperty Create(MemberExpression expression) {
+            DynamicProperty cached;
+            var propertyInfo = (PropertyInfo)expression.Member;
+            lock (_dynamicPropertyCache) {
+                if (!_dynamicPropertyCache.TryGetValue(propertyInfo, out cached)) {
+                    cached = new DynamicProperty(expression);
+                    _dynamicPropertyCache.Add(propertyInfo, cached);
+                }
+            }
+            return cached;
+        }
+
         public object GetValue(object obj)
         {
             return _getterDelegate(obj);
         }
+        private static Func<object, object> CreateDynamicExpressionGettingDelegate(MemberExpression member) {
+            var parameter = member.Expression as ParameterExpression;
+            if (parameter == null) {
+                parameter = Expression.Parameter(member.Expression.Type, "me");
+                member = Expression.MakeMemberAccess(parameter, member.Member);
+            }
+            var objectParamater = Expression.Parameter(typeof(object), "other");
+
+            var casted = Expression.Convert(objectParamater, parameter.Type);
+            var lambda = Expression.Lambda(member, parameter);
+
+            var invoke = Expression.Invoke(lambda, casted);
+
+            var oLambda = Expression.Lambda<Func<object, object>>(invoke, objectParamater);
+            Func<object, object> del = oLambda.Compile();
+
+            return del;
+        }
+
+        private static Func<object, object> CreateDynamicILGetterDelegate(PropertyInfo property) {
+            MethodInfo getterMethodInfo = property.GetGetMethod();
+
+            if (getterMethodInfo == null)
+                throw new InvalidOperationException("No getter method found on property");
+
+            DynamicMethod dynamicMethod = new DynamicMethod(
+                string.Empty,
+                typeof(object),
+                new[] { typeof(object) });
+
+            ILGenerator il = dynamicMethod.GetILGenerator();
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Castclass, property.DeclaringType);
+
+            il.EmitCall(OpCodes.Callvirt, getterMethodInfo, null);
+
+            if (property.PropertyType.IsValueType) {
+                il.Emit(OpCodes.Box, property.PropertyType);
+            }
+
+            il.Emit(OpCodes.Ret);
+
+            var getter = (Func<object, object>)dynamicMethod.CreateDelegate(typeof(Func<object, object>));
+
+            return getter;
+        }
+
 
         private void CreateDynamicGetterDelegate()
         {
@@ -74,33 +142,10 @@ namespace ContinuousLinq.Expressions
                 {
                     return;
                 }
-
-                MethodInfo getterMethodInfo = _property.GetGetMethod();
-
-                if (getterMethodInfo == null)
-                    throw new InvalidOperationException("No getter method found on property");
-
-                DynamicMethod dynamicMethod = new DynamicMethod(
-                    string.Empty,
-                    typeof(object),
-                    new[] { typeof(object) });
-
-                ILGenerator il = dynamicMethod.GetILGenerator();
-
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Castclass, _property.DeclaringType);
-
-                il.EmitCall(OpCodes.Callvirt, getterMethodInfo, null);
-
-                if (_property.PropertyType.IsValueType)
-                {
-                    il.Emit(OpCodes.Box, _property.PropertyType);
-                }
-
-                il.Emit(OpCodes.Ret);
-
-                _getterDelegate = (Func<object, object>)dynamicMethod.CreateDelegate(typeof(Func<object, object>));
-
+                if (_expression != null)
+                    _getterDelegate = CreateDynamicExpressionGettingDelegate(_expression);
+                else
+                    _getterDelegate = CreateDynamicILGetterDelegate(_property);
 
                 _getterDelegateCache.Add(_property, _getterDelegate);
             }

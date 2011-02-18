@@ -447,14 +447,10 @@ namespace ContinuousLinq.UnitTests.Reactive
 
             static ReactiveWrapper() {
                 var dependsOn = Register<ReactiveWrapper>();
-                dependsOn.Call(me => {
-                        me.ChangedCount++;
-                    })
+                dependsOn.Call(me => me.ChangedCount++)
                     .OnChanged(me => me.Name);
                 
-                dependsOn.Call(me => {
-                        me.ChangingCount++;
-                    })
+                dependsOn.Call(me => me.ChangingCount++)
                     .OnChanging(me => me.Name);
 
                 dependsOn.Call(me => me.BothCount++)
@@ -468,7 +464,6 @@ namespace ContinuousLinq.UnitTests.Reactive
 
             public ReactiveWrapper() {
 
-
                 // Set the static value
                 OnPropertyChanging("Original");
                 _Original = new Person("I'm joe", 10);
@@ -478,7 +473,7 @@ namespace ContinuousLinq.UnitTests.Reactive
             #region Original
         
             private readonly Person _Original;
-            public Person Original {
+            private Person Original {
                 get { return _Original; }
             }
             

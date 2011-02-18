@@ -23,10 +23,16 @@ namespace ContinuousLinq
         }
 
         private DynamicProperty _dynamicProperty;
+        private MemberExpression _Expression;
 
         public PropertyAccessNode(PropertyInfo property)
         {
             this.Property = property;
+        }
+
+        public PropertyAccessNode(MemberExpression expression) {
+            _Expression = expression;
+            this.Property = (PropertyInfo)expression.Member;
         }
 
         public override bool IsRedundantVersion(PropertyAccessTreeNode other)
@@ -52,8 +58,12 @@ namespace ContinuousLinq
 
         public object GetPropertyValue(object obj)
         {
-            if (_dynamicProperty == null)
-                _dynamicProperty = DynamicProperty.Create(this.Property);
+            if (_dynamicProperty == null) {
+                if (_Expression != null)
+                    _dynamicProperty = DynamicProperty.Create(_Expression);
+                else
+                    _dynamicProperty = DynamicProperty.Create(this.Property);
+            }
 
             return _dynamicProperty.GetValue(obj);
         }
