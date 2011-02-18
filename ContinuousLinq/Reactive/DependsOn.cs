@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ContinuousLinq.Reactive
 {
@@ -11,20 +13,20 @@ namespace ContinuousLinq.Reactive
         void CreateSubscriptions(INotifyPropertyChanged subject, ref List<SubscriptionTree> listToAppendTo);
     }
 
-    public class DependsOn<T> : IDependsOn where T : class, INotifyPropertyChanged
+    public class DependsOn<T> : IDependsOn where T : ReactiveObject
     {
         #region Constructor
 
         internal DependsOn()
         {
-            this.Methods = new List<DependsOnMethod<T>>();
+            this.Methods = new List<ReactiveMethod<T>>();
         }
 
         #endregion
 
         #region Properties
 
-        private List<DependsOnMethod<T>> Methods { get; set; }
+        private List<ReactiveMethod<T>> Methods { get; set; }
 
         #endregion
 
@@ -44,6 +46,14 @@ namespace ContinuousLinq.Reactive
             this.Methods.Add(dependsOnMethod);
 
             return dependsOnMethod;
+        }
+
+        public BridgeMethod<T> Bridge<TResult>(Expression<Func<T, TResult>> propertyAccessor) {
+            var bridgeMethod = BridgeMethod<T>.Create(propertyAccessor);
+
+            this.Methods.Add(bridgeMethod);
+
+            return bridgeMethod;
         }
 
         #endregion

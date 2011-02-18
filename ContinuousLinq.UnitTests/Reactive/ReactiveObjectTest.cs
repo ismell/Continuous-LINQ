@@ -202,6 +202,20 @@ namespace ContinuousLinq.UnitTests.Reactive
             Assert.AreEqual(3, root.Updates);
         }
 
+        [Test]
+        public void DependsOn_BridgeInnerProperty() {
+            var wrapper = new ReactiveWrapper();
+            Assert.IsTrue(wrapper.ChangingCount == 1);
+            Assert.IsTrue(wrapper.ChangedCount == 1);
+            Assert.IsTrue(wrapper.BothCount == 2);
+
+            wrapper.ChangeNameTo("Smith");
+
+            Assert.IsTrue(wrapper.ChangingCount == 2);
+            Assert.IsTrue(wrapper.ChangedCount == 2);
+            Assert.IsTrue(wrapper.BothCount == 4);
+        }
+
         public class ReactiveType0 : ReactiveObject
         {
             private string _name;
@@ -387,6 +401,57 @@ namespace ContinuousLinq.UnitTests.Reactive
             {
                 this.OnReactiveBrotherAgeChangedCalledCount++;
             }
+        }
+
+        public class ReactiveWrapper : ReactiveObject {
+
+            static ReactiveWrapper() {
+                var dependsOn = Register<ReactiveWrapper>();
+                dependsOn.Call(me => me.ChangedCount++)
+                    .OnChanged(me => me.Name);
+
+                dependsOn.Call(me => me.ChangingCount++)
+                    .OnChanging(me => me.Name);
+
+                dependsOn.Call(me => me.BothCount++)
+                    .OnChanged(me => me.Name)
+                    .OnChanging(me => me.Name);
+
+                dependsOn.Call(me => { })
+                    .OnChanged(me => me.Original.Name);
+
+                dependsOn.Bridge(me => me.Name)
+                    .With(me => me.Original.Name);
+            }
+
+            public ReactiveWrapper() {
+
+
+                // Set the static value
+                OnPropertyChanging("Original");
+                _Original = new Person("I'm joe", 10);
+                OnPropertyChanged("Original");
+            }
+
+            #region Original
+        
+            private readonly Person _Original;
+            public Person Original {
+                get { return _Original; }
+            }
+            
+            #endregion
+
+            public void ChangeNameTo(string name) {
+                Original.Name = name;
+            }
+
+            public string Name { get { return Original.Name; } }
+
+            public int ChangedCount { get; set; }
+            public int ChangingCount { get; set; }
+
+            public int BothCount { get; set; }
         }
 
         [Test]

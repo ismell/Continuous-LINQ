@@ -90,7 +90,7 @@ namespace ContinuousLinq.Reactive
             }
         }
 
-        protected static DependsOn<T> Register<T>() where T : class, INotifyPropertyChanged
+        protected static DependsOn<T> Register<T>() where T : ReactiveObject
         {
             Type type = typeof(T);
 
@@ -105,19 +105,19 @@ namespace ContinuousLinq.Reactive
         }
 
         [DebuggerNonUserCode]
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected internal void OnPropertyChanged(string propertyName)
         {
             OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
 
         [DebuggerNonUserCode]
-        protected virtual void OnPropertyChanging(string propertyName)
+        protected internal void OnPropertyChanging(string propertyName)
         {
             OnPropertyChanging(new PropertyChangingEventArgs(propertyName));
         }
 
         [DebuggerNonUserCode]
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs args) {
+        protected internal void OnPropertyChanged(PropertyChangedEventArgs args) {
             if (this.SuppressPropertyChanged)
                 return;
 
@@ -125,7 +125,7 @@ namespace ContinuousLinq.Reactive
         }
 
         [DebuggerNonUserCode]
-        protected virtual void OnPropertyChanging(PropertyChangingEventArgs args) {
+        protected internal void OnPropertyChanging(PropertyChangingEventArgs args) {
             if (this.SuppressPropertyChanged)
                 return;
 
