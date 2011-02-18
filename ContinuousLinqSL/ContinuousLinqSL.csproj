@@ -18,10 +18,14 @@
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <FileUpgradeFlags>
@@ -198,11 +202,17 @@
     <Compile Include="..\ContinuousLinq\NotifyCollectionChangedMonitor.cs">
       <Link>NotifyCollectionChangedMonitor.cs</Link>
     </Compile>
+    <Compile Include="..\ContinuousLinq\Reactive\BridgeMethod.cs">
+      <Link>Reactive\BridgeMethod.cs</Link>
+    </Compile>
     <Compile Include="..\ContinuousLinq\Reactive\DependsOn.cs">
       <Link>Reactive\DependsOn.cs</Link>
     </Compile>
     <Compile Include="..\ContinuousLinq\Reactive\DependsOnMethod.cs">
       <Link>Reactive\DependsOnMethod.cs</Link>
+    </Compile>
+    <Compile Include="..\ContinuousLinq\Reactive\ReactiveMethod.cs">
+      <Link>Reactive\ReactiveMethod.cs</Link>
     </Compile>
     <Compile Include="..\ContinuousLinq\Reactive\ReactiveObject.cs">
       <Link>Reactive\ReactiveObject.cs</Link>
@@ -213,20 +223,15 @@
     <Compile Include="..\ContinuousLinq\SkipList.cs">
       <Link>SkipList.cs</Link>
     </Compile>
-
     <Compile Include="..\ContinuousLinq\CollectionMonitor.cs">
       <Link>CollectionMonitor.cs</Link>
     </Compile>
-
     <Compile Include="..\ContinuousLinq\PropertyNotifier.cs">
       <Link>PropertyNotifier.cs</Link>
     </Compile>
-
     <Compile Include="..\ContinuousLinq\EventExtensions1.cs">
       <Link>EventExtensions1.cs</Link>
     </Compile>
-
-
     <Compile Include="..\ContinuousLinq\VersionedLinkedList.cs">
       <Link>VersionedLinkedList.cs</Link>
     </Compile>

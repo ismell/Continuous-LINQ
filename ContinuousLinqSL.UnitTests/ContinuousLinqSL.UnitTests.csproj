@@ -14,10 +14,14 @@
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -189,11 +193,9 @@
     <Compile Include="..\ContinuousLinq.UnitTests\SelectTest.cs">
       <Link>SelectTest.cs</Link>
     </Compile>
-
     <Compile Include="..\ContinuousLinq.UnitTests\CollectionMonitorTest.cs">
       <Link>CollectionMonitorTest.cs</Link>
     </Compile>
-
     <Compile Include="..\ContinuousLinq.UnitTests\SkipListTest.cs">
       <Link>SkipListTest.cs</Link>
     </Compile>
