@@ -211,9 +211,6 @@
     <Compile Include="..\ContinuousLinq\Reactive\DependsOnMethod.cs">
       <Link>Reactive\DependsOnMethod.cs</Link>
     </Compile>
-    <Compile Include="..\ContinuousLinq\Reactive\ManualBridgeMethod.cs">
-      <Link>Reactive\ManualBridgeMethod.cs</Link>
-    </Compile>
     <Compile Include="..\ContinuousLinq\Reactive\ReactiveMethod.cs">
       <Link>Reactive\ReactiveMethod.cs</Link>
     </Compile>

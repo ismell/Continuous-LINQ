@@ -11,6 +11,12 @@ namespace ContinuousLinq.Reactive
     public class BridgeMethod<T> : ReactiveMethod<T> where T : ReactiveObject {
 
         public static BridgeMethod<T> Create<TResult>(Expression<Func<T, TResult>> propertyAccessor) {
+            MemberExpression memberExpression = ExpressionPropertyAnalyzer.UnwrapLambda(propertyAccessor);
+
+            if (!(memberExpression.Expression is ParameterExpression)) {
+                throw new InvalidOperationException("Extended Properties are not allowed.");
+            }
+            
             var name = ExpressionPropertyAnalyzer.ExtractPropertyName(propertyAccessor);
 
             Action<T> changedCallback = me => me.OnPropertyChanged(name);

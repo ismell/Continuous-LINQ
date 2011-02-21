@@ -33,6 +33,16 @@ namespace ContinuousLinq
         }
 
         public static string ExtractPropertyName<T, TResult>(Expression<Func<T, TResult>> propertyAccessor) {
+            MemberExpression memberExpression = UnwrapLambda(propertyAccessor);
+
+            var propertyInfo = memberExpression.Member as PropertyInfo;
+
+            var name = propertyInfo.Name;
+
+            return name;
+        }
+
+        public static MemberExpression UnwrapLambda<T, TResult>(Expression<Func<T, TResult>> propertyAccessor) {
             var lambda = propertyAccessor as LambdaExpression;
             MemberExpression memberExpression;
             if (lambda.Body is UnaryExpression) {
@@ -42,11 +52,7 @@ namespace ContinuousLinq
                 memberExpression = lambda.Body as MemberExpression;
             }
 
-            var propertyInfo = memberExpression.Member as PropertyInfo;
-
-            var name = propertyInfo.Name;
-
-            return name;
+            return memberExpression;
         }
 
         private static PropertyAccessTree AnalyzeLambda(LambdaExpression expression, Predicate<Type> typeFilter)

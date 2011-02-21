@@ -179,11 +179,11 @@ namespace ContinuousLinq.UnitTests
 
             _target.AddProperty(p => p.Age,
                 (item, args) => {
-                    callCount++;
+                    callCountChanging++;
                     Assert.AreSame(newPerson, item);
                 },
                 (item, args) => {
-                    callCountChanging++;
+                    callCount++;
                     Assert.AreSame(newPerson, item);
                 }
             );
@@ -205,8 +205,8 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0, callCountChanging = 0;
             _target.AddProperty(p => p.Age,
-                (item, args) => callCount++,
-                (item, args) => callCountChanging++
+                (item, args) => callCountChanging++,
+                (item, args) => callCount++
             );
 
             _source.Move(0, 1);
@@ -240,8 +240,8 @@ namespace ContinuousLinq.UnitTests
             
             int callCount = 0, callCountChanging = 0;
             _target.AddProperty(p => p.Age,
-                (item, args) => callCount++,
-                (item, args) => callCountChanging++
+                (item, args) => callCountChanging++,
+                (item, args) => callCount++
             );
 
             _source.Add(person);
@@ -261,8 +261,8 @@ namespace ContinuousLinq.UnitTests
 
             int callCount = 0, callCountChanging = 0;
             _target.AddProperty(p => p.Age,
-                (item, args) => callCount++,
-                (item, args) => callCountChanging++
+                (item, args) => callCountChanging++,
+                (item, args) => callCount++
             );
 
             _source.Add(person);
@@ -301,8 +301,8 @@ namespace ContinuousLinq.UnitTests
             Person person = _source[0];
             int callCountAge = 0, callCountAgeChanging = 0;
             _target.AddProperty(p => p.Age,
-                (item, args) => callCountAge++,
-                (item, args) => callCountAgeChanging++
+                (item, args) => callCountAgeChanging++,
+                (item, args) => callCountAge++
             );
 
             int callCountName = 0, callCountNameChanging = 0;

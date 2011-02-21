@@ -56,12 +56,6 @@ namespace ContinuousLinq.Reactive
             return bridgeMethod;
         }
 
-        public ManualBridgeMethod<T> ManualBridge<TResult>(Expression<Func<T, TResult>> what) {
-            var propertyBridge = ManualBridgeMethod<T>.Create(what);
-
-            return propertyBridge;
-        }
-
         #endregion
     }
 }

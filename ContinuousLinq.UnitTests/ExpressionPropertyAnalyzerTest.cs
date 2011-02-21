@@ -366,6 +366,50 @@ namespace ContinuousLinq.UnitTests
             Assert.AreEqual("Value", simpleNotifyValuePropertyAccessNode.PropertyName);
         }
 
+        [Test]
+        public static void ExtractPropertyName_WithTypedProperty() {
+            Expression<Func<Person, int>> exp;
+            exp = me => me.Age;
+
+            var propName = ExpressionPropertyAnalyzer.ExtractPropertyName(exp);
+
+            Assert.AreEqual("Age", propName);
+
+        }
+
+        [Test]
+        public static void ExtractPropertyName_WithConvertProperty() {
+            Expression<Func<Person, object>> exp;
+            exp = me => me.Age;
+
+            var propName = ExpressionPropertyAnalyzer.ExtractPropertyName(exp);
+
+            Assert.AreEqual("Age", propName);
+
+        }
+
+        [Test]
+        public static void ExtractPropertyName_WithMultiStepProperty() {
+            Expression<Func<Person, int>> exp;
+            exp = me => me.Brother.Age;
+
+            var propName = ExpressionPropertyAnalyzer.ExtractPropertyName(exp);
+
+            Assert.AreEqual("Age", propName);
+
+        }
+
+        [Test]
+        public static void ExtractPropertyName_WithMultiStepConvertProperty() {
+            Expression<Func<Person, object>> exp;
+            exp = me => me.Brother.Age;
+
+            var propName = ExpressionPropertyAnalyzer.ExtractPropertyName(exp);
+
+            Assert.AreEqual("Age", propName);
+
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
